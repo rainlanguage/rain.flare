@@ -29,7 +29,7 @@ library LibOpFtsoCurrentPriceUsd {
             revert InactiveFtso();
         }
 
-        (,,IFtso.PriceFinalizationType priceFinalizationType,,) = ftso.getCurrentPriceDetails();
+        (,, IFtso.PriceFinalizationType priceFinalizationType,,) = ftso.getCurrentPriceDetails();
         if (priceFinalizationType != IFtso.PriceFinalizationType.WEIGHTED_MEDIAN) {
             revert PriceNotFinalized(priceFinalizationType);
         }

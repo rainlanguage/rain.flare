@@ -6,7 +6,6 @@ import {LibFork} from "test/fork/LibFork.sol";
 import {LibFlareContractRegistry, IFtsoRegistry} from "src/lib/registry/LibFlareContractRegistry.sol";
 
 contract LibFlareContractRegistryTest is Test {
-
     uint256 constant BLOCK_NUMBER = 18262564;
 
     constructor() {
@@ -15,5 +14,6 @@ contract LibFlareContractRegistryTest is Test {
 
     function testGetFtsoRegistry() external {
         IFtsoRegistry ftsoRegistry = LibFlareContractRegistry.getFtsoRegistry();
+        assertEq(address(ftsoRegistry), address(0x13DC2b5053857AE17a4f95aFF55530b267F3E040));
     }
 }
