@@ -7,5 +7,6 @@ libs = ["lib"]
 
 remappings = [
     "rain.interpreter/=lib/rain.interpreter/src/",
-    "@openzeppelin/=lib/openzeppelin-contracts/"
+    "@openzeppelin/=lib/openzeppelin-contracts/",
+    "rain.intorastring/=lib/rain.intorastring/src/",
 ]
