@@ -6,5 +6,6 @@ libs = ["lib"]
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
 
 remappings = [
-    "rain.interpreter/=lib/rain.interpreter/src/"
+    "rain.interpreter/=lib/rain.interpreter/src/",
+    "@openzeppelin/=lib/openzeppelin-contracts/"
 ]
