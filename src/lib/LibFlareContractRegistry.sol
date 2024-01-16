@@ -16,6 +16,8 @@ library LibFlareContractRegistry {
     /// registry.
     string constant FTSO_REGISTRY_NAME = "FtsoRegistry";
 
+    /// Sugar for getting the FTSO registry address from the Flare contract
+    /// registry.
     function getFtsoRegistry() internal view returns (IFtsoRegistry) {
         return IFtsoRegistry(FLARE_CONTRACT_REGISTRY.getContractAddressByName(FTSO_REGISTRY_NAME));
     }
