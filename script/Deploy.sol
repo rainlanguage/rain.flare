@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Script} from "forge-std/Script.sol";
-import {FlareFTSOExtern} from "../src/FlareFTSOExtern.sol";
+import {FlareFTSOExtern} from "../src/concrete/FlareFTSOExtern.sol";
 
 contract Deploy is Script {
     function run() public {
