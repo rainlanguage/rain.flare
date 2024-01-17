@@ -14,6 +14,10 @@ error StalePrice(uint256 timestamp, uint256 timeout);
 library LibOpFtsoCurrentPriceUsd {
     using LibIntOrAString for IntOrAString;
 
+    function integrity(Operand, uint256, uint256) internal pure returns (uint256, uint256) {
+        return (2, 1);
+    }
+
     function run(Operand, uint256[] memory inputs) internal view returns (uint256[] memory) {
         IntOrAString symbol;
         uint256 timeout;
@@ -52,9 +56,5 @@ library LibOpFtsoCurrentPriceUsd {
             mstore(add(outputs, 0x20), price18)
         }
         return outputs;
-    }
-
-    function integrity(Operand, uint256, uint256) internal pure returns (uint256, uint256) {
-        return (2, 1);
     }
 }

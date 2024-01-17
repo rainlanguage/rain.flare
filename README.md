@@ -1,66 +1,55 @@
-## Foundry
+# rain.flare
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Provides an extern and sub parser so that functionality native to Flare Network
+is available to rainlang authors.
 
-Foundry consists of:
+## Words
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+`ftso-current-price-usd`
 
-## Documentation
+Accepts 2 inputs, the symbol string used by the FTSO and the timeout in seconds.
 
-https://book.getfoundry.sh/
+Attempts to be as conservative as possible and only provide a price if everything
+is obviously correct. Fallback/default values never allowed and the word will
+revert if there is ever doubt.
 
-## Usage
+For example the word will error if (non exhaustive list):
 
-### Build
+- The FTSO registry does not exist on the current chain
+- An FTSO for the given symbol cannot be found in the registry
+- The FTSO is not self reporting as "active"
+- The price finalization type is not "weighted median"
+  - E.g. the finalization type might be "trusted fallback" which is disallowed
+  - E.g. the finalization type might be unknown if the ftso code returns
+    something outside the current `IFtso` interface
+- The finalisation timestamp of the current price is older than the timeout
+  relative to the current block time
+- Rescaling prices to 18 decimal fixed point causes an overflow
 
-```shell
-$ forge build
-```
+### Timeouts
 
-### Test
+The rainlang author must provide a timeout which is used to guarantee that prices
+are never older than this many seconds relative to now.
 
-```shell
-$ forge test
-```
+If the author does not care about the age of some price they can simply set this
+to the max int value.
 
-### Format
+FTSOs have several timestamps in their life cycle, as there is a period between
+the opening time and finalization time. The timestamps used for stale checks are
+the final update times.
 
-```shell
-$ forge fmt
-```
+### Decimals
 
-### Gas Snapshots
+The rainlang word always provides prices normalised to 18 decimal fixed point
+values. This differs from the underlying FTSO values as the raw data is a tuple
+of value and decimals.
 
-```shell
-$ forge snapshot
-```
+The rescaling is generally lossless except in two edge cases:
 
-### Anvil
+- When scaling numbers _up_ (i.e. ftso decimals is less than 18) if the final
+  value overflows the max `uint256` which is ~1.15^77
+- When scaling numbers _down_ (i.e. ftso decimals is more than 18) there can be
+  loss of precision for the significant figures beyond 18 decimals
 
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+In the latter case of precision loss, rounding is always down as per EVM default
+behaviour.
