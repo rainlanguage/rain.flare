@@ -18,6 +18,8 @@ import {
     IFlareContractRegistry
 } from "src/lib/registry/LibFlareContractRegistry.sol";
 import {LibFixedPointDecimalScale} from "rain.math.fixedpoint/lib/LibFixedPointDecimalScale.sol";
+import {LibWillOverflow} from "rain.math.fixedpoint/lib/LibWillOverflow.sol";
+import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
 
 contract LibOpFtsoCurrentPriceUsdTest is Test {
     struct PriceDetails {
@@ -39,7 +41,7 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
 
     /// Seems to be a bug in foundry where it can't create enums in structs in
     /// the fuzzer without erroring.
-    function conformPriceDetails(PriceDetails memory priceDetails) internal {
+    function conformPriceDetails(PriceDetails memory priceDetails) internal pure {
         priceDetails.priceFinalizationType = uint8(
             bound(
                 uint256(priceDetails.priceFinalizationType),
@@ -56,7 +58,7 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
         );
     }
 
-    function mockRegistry() internal {
+    function mockRegistry(string memory symbol) internal {
         vm.etch(address(FLARE_CONTRACT_REGISTRY), hex"fe");
         vm.etch(FTSO_REGISTRY, hex"fe");
         vm.etch(FTSO, hex"fe");
@@ -70,11 +72,20 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
             abi.encodeWithSelector(IFlareContractRegistry.getContractAddressByName.selector, FTSO_REGISTRY_NAME),
             abi.encode(FTSO_REGISTRY)
         );
-        vm.mockCall(FTSO_REGISTRY, abi.encodeWithSelector(IFtsoRegistry.getFtsoBySymbol.selector), abi.encode(FTSO));
+        vm.expectCall(
+            address(FLARE_CONTRACT_REGISTRY),
+            abi.encodeWithSelector(IFlareContractRegistry.getContractAddressByName.selector, FTSO_REGISTRY_NAME),
+            1
+        );
+        vm.mockCall(
+            FTSO_REGISTRY, abi.encodeWithSelector(IFtsoRegistry.getFtsoBySymbol.selector, symbol), abi.encode(FTSO)
+        );
+        vm.expectCall(FTSO_REGISTRY, abi.encodeWithSelector(IFtsoRegistry.getFtsoBySymbol.selector, symbol), 1);
     }
 
     function activateFtso() internal {
         vm.mockCall(FTSO, abi.encodeWithSelector(IFtso.active.selector), abi.encode(true));
+        vm.expectCall(FTSO, abi.encodeWithSelector(IFtso.active.selector), 1);
     }
 
     function mockPriceDetails(PriceDetails memory priceDetails) internal {
@@ -89,9 +100,10 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
                 IFtso.PriceFinalizationType(priceDetails.lastPriceEpochFinalizationType)
             )
         );
+        vm.expectCall(FTSO, abi.encodeWithSelector(IFtso.getCurrentPriceDetails.selector), 1);
     }
 
-    function finalizePrice(PriceDetails memory priceDetails) internal {
+    function finalizePrice(PriceDetails memory priceDetails) internal pure {
         priceDetails.priceFinalizationType = uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN);
     }
 
@@ -114,7 +126,18 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
         return LibOpFtsoCurrentPriceUsd.run(operand, inputs);
     }
 
-    function testRunHappy(Operand operand, uint256 symbol, uint256 timeout, uint256 currentTime, PriceDetails memory priceDetails, CurrentPrice memory currentPrice) external {
+    function testRunHappy(
+        Operand operand,
+        string memory symbol,
+        uint256 timeout,
+        uint256 currentTime,
+        PriceDetails memory priceDetails,
+        CurrentPrice memory currentPrice
+    ) external {
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
+        vm.assume(!LibWillOverflow.scale18WillOverflow(currentPrice.price, currentPrice.decimals, 0));
+
         // timeout = bound(timeout, 1, type(uint256).max);
         currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout);
         currentTime = bound(currentTime, currentPrice.timestamp, currentPrice.timestamp + timeout);
@@ -123,21 +146,64 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
         conformPriceDetails(priceDetails);
         finalizePrice(priceDetails);
 
-        mockRegistry();
+        mockRegistry(symbol);
         activateFtso();
         mockPriceDetails(priceDetails);
         mockPrice(currentPrice);
 
         uint256[] memory inputs = new uint256[](2);
-        inputs[0] = symbol;
+        inputs[0] = intSymbol;
         inputs[1] = timeout;
         uint256[] memory outputs = this.externalRun(operand, inputs);
         assertEq(outputs.length, 1);
         assertEq(outputs[0], LibFixedPointDecimalScale.scale18(currentPrice.price, currentPrice.decimals, 0));
     }
 
+    /// If the decimal rescale will overflow, it should revert.
+    function testRunDecimalOverflow(
+        Operand operand,
+        string memory symbol,
+        uint256 timeout,
+        uint256 currentTime,
+        PriceDetails memory priceDetails,
+        CurrentPrice memory currentPrice
+    ) external {
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
+        vm.assume(LibWillOverflow.scale18WillOverflow(currentPrice.price, currentPrice.decimals, 0));
+
+        // timeout = bound(timeout, 1, type(uint256).max);
+        currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout);
+        currentTime = bound(currentTime, currentPrice.timestamp, currentPrice.timestamp + timeout);
+        vm.warp(currentTime);
+
+        conformPriceDetails(priceDetails);
+        finalizePrice(priceDetails);
+
+        mockRegistry(symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+        mockPrice(currentPrice);
+
+        vm.expectRevert();
+        uint256[] memory inputs = new uint256[](2);
+        inputs[0] = intSymbol;
+        inputs[1] = timeout;
+        this.externalRun(operand, inputs);
+    }
+
     /// If the timestamp is too old, the price is stale.
-    function testRunStale(Operand operand, uint256 symbol, uint256 timeout, uint256 currentTime, PriceDetails memory priceDetails, CurrentPrice memory currentPrice) external {
+    function testRunStale(
+        Operand operand,
+        string memory symbol,
+        uint256 timeout,
+        uint256 currentTime,
+        PriceDetails memory priceDetails,
+        CurrentPrice memory currentPrice
+    ) external {
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
+
         timeout = bound(timeout, 0, type(uint256).max - 2);
         currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout - 1);
         currentTime = bound(currentTime, currentPrice.timestamp + timeout + 1, type(uint256).max);
@@ -146,81 +212,68 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
         conformPriceDetails(priceDetails);
         finalizePrice(priceDetails);
 
-        mockRegistry();
+        mockRegistry(symbol);
         activateFtso();
         mockPriceDetails(priceDetails);
         mockPrice(currentPrice);
 
         vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, currentPrice.timestamp, timeout));
         uint256[] memory inputs = new uint256[](2);
-        inputs[0] = symbol;
+        inputs[0] = intSymbol;
         inputs[1] = timeout;
         this.externalRun(operand, inputs);
     }
 
     /// Anything other than WEIGHTED_MEDIAN should revert as it means the price
     /// is either not final or oracle participation was too low.
-    function testRunFtsoNotFinal(Operand operand, uint256[] memory inputs, PriceDetails memory priceDetails) external {
+    function testRunFtsoNotFinal(
+        Operand operand,
+        string memory symbol,
+        uint256 timeout,
+        PriceDetails memory priceDetails
+    ) external {
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
+
         conformPriceDetails(priceDetails);
         vm.assume(priceDetails.priceFinalizationType != uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN));
-        address ftsoRegistry = address(0x1000000);
-        vm.label(ftsoRegistry, "ftsoRegistry");
-        address ftso = address(0x2000000);
-        vm.label(ftso, "ftso");
-        vm.etch(address(FLARE_CONTRACT_REGISTRY), hex"fe");
-        vm.mockCall(
-            address(FLARE_CONTRACT_REGISTRY),
-            abi.encodeWithSelector(IFlareContractRegistry.getContractAddressByName.selector, FTSO_REGISTRY_NAME),
-            abi.encode(ftsoRegistry)
-        );
-        vm.etch(ftsoRegistry, hex"fe");
-        vm.mockCall(ftsoRegistry, abi.encodeWithSelector(IFtsoRegistry.getFtsoBySymbol.selector), abi.encode(ftso));
-        vm.etch(ftso, hex"fe");
-        vm.mockCall(ftso, abi.encodeWithSelector(IFtso.active.selector), abi.encode(true));
-        vm.mockCall(
-            ftso,
-            abi.encodeWithSelector(IFtso.getCurrentPriceDetails.selector),
-            abi.encode(
-                priceDetails.price,
-                priceDetails.priceTimestamp,
-                IFtso.PriceFinalizationType(priceDetails.priceFinalizationType),
-                priceDetails.lastPriceEpochFinalizationTimestamp,
-                IFtso.PriceFinalizationType(priceDetails.lastPriceEpochFinalizationType)
-            )
-        );
+
+        mockRegistry(symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+
+        uint256[] memory inputs = new uint256[](2);
+        inputs[0] = intSymbol;
+        inputs[1] = timeout;
+
         vm.expectRevert(abi.encodeWithSelector(PriceNotFinalized.selector, priceDetails.priceFinalizationType));
         this.externalRun(operand, inputs);
     }
 
-    function testRunFtsoNotActive(Operand operand, uint256[] memory inputs) external {
-        address ftsoRegistry = address(0x1000000);
-        address ftso = address(0x2000000);
-        vm.etch(address(FLARE_CONTRACT_REGISTRY), hex"fe");
-        vm.mockCall(
-            address(FLARE_CONTRACT_REGISTRY),
-            abi.encodeWithSelector(IFlareContractRegistry.getContractAddressByName.selector, FTSO_REGISTRY_NAME),
-            abi.encode(ftso)
-        );
-        vm.etch(ftsoRegistry, hex"fe");
-        vm.mockCall(ftso, abi.encodeWithSelector(IFtsoRegistry.getFtsoBySymbol.selector), abi.encode(ftso));
-        vm.etch(ftso, hex"fe");
-        vm.mockCall(ftso, abi.encodeWithSelector(IFtso.active.selector), abi.encode(false));
+    function testRunFtsoNotActive(Operand operand, string memory symbol, uint256 timeout) external {
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
+
+        mockRegistry(symbol);
+        vm.mockCall(FTSO, abi.encodeWithSelector(IFtso.active.selector), abi.encode(false));
+
+        uint256[] memory inputs = new uint256[](2);
+        inputs[0] = intSymbol;
+        inputs[1] = timeout;
         vm.expectRevert(abi.encodeWithSelector(InactiveFtso.selector));
         this.externalRun(operand, inputs);
     }
 
-    function testRunNoFtso(Operand operand, uint256[] memory inputs) external {
-        address ftsoRegistry = address(0x1000000);
-        address ftso = address(0x2000000);
+    function testRunInvalidFtso(Operand operand, uint256[] memory inputs) external {
         vm.etch(address(FLARE_CONTRACT_REGISTRY), hex"fe");
         vm.mockCall(
             address(FLARE_CONTRACT_REGISTRY),
             abi.encodeWithSelector(IFlareContractRegistry.getContractAddressByName.selector, FTSO_REGISTRY_NAME),
-            abi.encode(ftso)
+            abi.encode(FTSO)
         );
-        vm.etch(ftsoRegistry, hex"fe");
-        vm.mockCall(ftso, abi.encodeWithSelector(IFtsoRegistry.getFtsoBySymbol.selector), abi.encode(ftso));
-        vm.etch(ftso, hex"fe");
+        vm.etch(FTSO_REGISTRY, hex"fe");
+        vm.mockCall(FTSO_REGISTRY, abi.encodeWithSelector(IFtsoRegistry.getFtsoBySymbol.selector), abi.encode(FTSO));
+        vm.etch(FTSO, hex"fe");
         vm.expectRevert();
         this.externalRun(operand, inputs);
     }

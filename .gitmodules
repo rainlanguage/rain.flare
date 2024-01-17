@@ -16,6 +16,3 @@
 [submodule "lib/rain.math.fixedpoint"]
 	path = lib/rain.math.fixedpoint
 	url = https://github.com/rainlanguage/rain.math.fixedpoint
-[submodule "lib/rain.will-overflow"]
-	path = lib/rain.will-overflow
-	url = https://github.com/rainlanguage/rain.will-overflow
