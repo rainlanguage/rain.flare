@@ -38,10 +38,10 @@ library LibOpFtsoCurrentPriceUsd {
             revert PriceNotFinalized(priceFinalizationType);
         }
 
-        (uint256 price, uint256 timestamp, uint256 decimals) = ftso.getCurrentPriceWithDecimals();
+        (uint256 price, uint256 priceTimestamp, uint256 decimals) = ftso.getCurrentPriceWithDecimals();
 
-        if (block.timestamp - timestamp > timeout) {
-            revert StalePrice(timestamp, timeout);
+        if (block.timestamp > priceTimestamp + timeout) {
+            revert StalePrice(priceTimestamp, timeout);
         }
 
         // Flags are 0 i.e. round down and don't saturate (error instead).
