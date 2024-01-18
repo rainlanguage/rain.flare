@@ -10,9 +10,9 @@ import {AuthoringMetaV2} from "rain.interpreter/interface/IParserV1.sol";
 
 bytes constant SUB_PARSER_PARSE_META = hex"01000000000000000000000000000000000000000000080000000000000000000000008057ab";
 
-bytes constant SUB_PARSER_WORD_PARSERS = hex"05e7";
+bytes constant SUB_PARSER_WORD_PARSERS = hex"06c6";
 
-bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0956";
+bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0acd";
 
 uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD = 0;
 uint256 constant SUB_PARSER_WORD_PARSERS_LENGTH = 1;

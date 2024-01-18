@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import {Operand} from "rain.interpreter/interface/unstable/IInterpreterV2.sol";
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
 import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
-import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
+import {LibIntOrAString, IntOrAString} from "rain.intorastring/src/lib/LibIntOrAString.sol";
 import {LibFixedPointDecimalScale} from "rain.math.fixedpoint/lib/LibFixedPointDecimalScale.sol";
 
 error InactiveFtso();

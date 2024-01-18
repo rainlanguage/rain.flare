@@ -5,8 +5,8 @@ import {BaseRainterpreterExternNPE2, Operand} from "rain.interpreter/abstract/Ba
 import {LibConvert} from "rain.lib.typecast/LibConvert.sol";
 import {LibOpFtsoCurrentPriceUsd} from "../lib/op/LibOpFtsoCurrentPriceUsd.sol";
 
-bytes constant INTEGRITY_FUNCTION_POINTERS = hex"0982";
-bytes constant OPCODE_FUNCTION_POINTERS = hex"069c";
+bytes constant INTEGRITY_FUNCTION_POINTERS = hex"0b12";
+bytes constant OPCODE_FUNCTION_POINTERS = hex"077b";
 
 uint256 constant OPCODE_FTSO_CURRENT_PRICE_USD = 0;
 uint256 constant OPCODE_FUNCTION_POINTERS_LENGTH = 1;
