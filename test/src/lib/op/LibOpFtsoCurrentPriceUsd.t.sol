@@ -146,6 +146,13 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
         assertEq(outputs[0], 575700000000000000);
+
+        // USDT is interesting as it probably has different decimals to the
+        // others, but should still get normalized to 18 decimals.
+        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("USDT"));
+        outputs = this.externalRun(Operand.wrap(0), inputs);
+        assertEq(outputs.length, 1);
+        assertEq(outputs[0], 998830000000000000);
     }
 
     function testRunHappy(
