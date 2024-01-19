@@ -51,7 +51,13 @@ library LibOpFtsoCurrentPriceUsd {
             revert InactiveFtso();
         }
 
-        (uint256 price, uint256 priceTimestamp, IFtso.PriceFinalizationType priceFinalizationType, uint256 lastPriceEpochFinalizationTimestamp, IFtso.PriceFinalizationType lastPriceEpochFinalizationType) = ftso.getCurrentPriceDetails();
+        (
+            uint256 price,
+            uint256 priceTimestamp,
+            IFtso.PriceFinalizationType priceFinalizationType,
+            uint256 lastPriceEpochFinalizationTimestamp,
+            IFtso.PriceFinalizationType lastPriceEpochFinalizationType
+        ) = ftso.getCurrentPriceDetails();
         (lastPriceEpochFinalizationTimestamp, lastPriceEpochFinalizationType); // Silence unused variable warning.
 
         if (priceFinalizationType != IFtso.PriceFinalizationType.WEIGHTED_MEDIAN) {
