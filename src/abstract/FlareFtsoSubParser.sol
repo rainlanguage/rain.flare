@@ -19,6 +19,7 @@ uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD = 0;
 uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR = 1;
 uint256 constant SUB_PARSER_WORD_PARSERS_LENGTH = 2;
 
+//slither-disable-next-line dead-code
 function authoringMetaV2() pure returns (bytes memory) {
     AuthoringMetaV2[] memory meta = new AuthoringMetaV2[](SUB_PARSER_WORD_PARSERS_LENGTH);
     meta[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD] = AuthoringMetaV2(
@@ -75,6 +76,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
         return LibConvert.unsafeTo16BitBytes(pointers);
     }
 
+    //slither-disable-next-line dead-code
     function ftsoCurrentPriceUsdSubParser(uint256 constantsHeight, uint256 inputsByte, Operand operand)
         internal
         view
@@ -92,6 +94,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
         );
     }
 
+    //slither-disable-next-line dead-code
     function ftsoCurrentPricePairSubParser(uint256 constantsHeight, uint256 inputsByte, Operand operand)
         internal
         view
