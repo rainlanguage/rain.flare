@@ -13,7 +13,7 @@ bytes constant SUB_PARSER_PARSE_META =
 
 bytes constant SUB_PARSER_WORD_PARSERS = hex"07a207c6";
 
-bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0c170c17";
+bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0c650c65";
 
 uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD = 0;
 uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR = 1;

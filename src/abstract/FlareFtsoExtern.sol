@@ -6,8 +6,8 @@ import {LibConvert} from "rain.lib.typecast/LibConvert.sol";
 import {LibOpFtsoCurrentPriceUsd} from "../lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {LibOpFtsoCurrentPricePair} from "../lib/op/LibOpFtsoCurrentPricePair.sol";
 
-bytes constant INTEGRITY_FUNCTION_POINTERS = hex"0c5c0c68";
-bytes constant OPCODE_FUNCTION_POINTERS = hex"086c0bbe";
+bytes constant INTEGRITY_FUNCTION_POINTERS = hex"0caa0cb6";
+bytes constant OPCODE_FUNCTION_POINTERS = hex"086c0c0c";
 
 uint256 constant OPCODE_FTSO_CURRENT_PRICE_USD = 0;
 uint256 constant OPCODE_FTSO_CURRENT_PRICE_PAIR = 1;
