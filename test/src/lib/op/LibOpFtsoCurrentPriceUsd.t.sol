@@ -42,7 +42,7 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
 
     /// Seems to be a bug in foundry where it can't create enums in structs in
     /// the fuzzer without erroring.
-    function conformPriceDetails(PriceDetails memory priceDetails) internal pure {
+    function conformPriceDetails(PriceDetails memory priceDetails, CurrentPrice memory currentPrice) internal pure {
         priceDetails.priceFinalizationType = uint8(
             bound(
                 uint256(priceDetails.priceFinalizationType),
@@ -57,6 +57,8 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
                 uint256(type(IFtso.PriceFinalizationType).max)
             )
         );
+        priceDetails.price = currentPrice.price;
+        priceDetails.priceTimestamp = currentPrice.timestamp;
     }
 
     function mockRegistry(string memory symbol) internal {
@@ -172,7 +174,7 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
         currentTime = bound(currentTime, currentPrice.timestamp, currentPrice.timestamp + timeout);
         vm.warp(currentTime);
 
-        conformPriceDetails(priceDetails);
+        conformPriceDetails(priceDetails, currentPrice);
         finalizePrice(priceDetails);
 
         mockRegistry(symbol);
@@ -206,7 +208,7 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
         currentTime = bound(currentTime, currentPrice.timestamp, currentPrice.timestamp + timeout);
         vm.warp(currentTime);
 
-        conformPriceDetails(priceDetails);
+        conformPriceDetails(priceDetails, currentPrice);
         finalizePrice(priceDetails);
 
         mockRegistry(symbol);
@@ -238,7 +240,7 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
         currentTime = bound(currentTime, currentPrice.timestamp + timeout + 1, type(uint256).max);
         vm.warp(currentTime);
 
-        conformPriceDetails(priceDetails);
+        conformPriceDetails(priceDetails, currentPrice);
         finalizePrice(priceDetails);
 
         mockRegistry(symbol);
@@ -259,12 +261,13 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
         Operand operand,
         string memory symbol,
         uint256 timeout,
-        PriceDetails memory priceDetails
+        PriceDetails memory priceDetails,
+        CurrentPrice memory currentPrice
     ) external {
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
 
-        conformPriceDetails(priceDetails);
+        conformPriceDetails(priceDetails, currentPrice);
         vm.assume(priceDetails.priceFinalizationType != uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN));
 
         mockRegistry(symbol);
