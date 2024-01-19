@@ -34,7 +34,7 @@ contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
                 )
             ),
             expectedStack,
-            "ftso-current-price-usd(\"ETH\", 3600) = 2524344570000000000000"
+            "ftso-current-price-usd(\"ETH\" 3600) = 2524344570000000000000"
         );
     }
 }
