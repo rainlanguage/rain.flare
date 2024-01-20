@@ -18,6 +18,7 @@ import {
 } from "../abstract/FlareFtsoSubParser.sol";
 
 contract FlareFtsoWords is FlareFtsoExtern, FlareFtsoSubParser {
+    //slither-disable-next-line dead-code
     function extern() internal view override returns (address) {
         return address(this);
     }

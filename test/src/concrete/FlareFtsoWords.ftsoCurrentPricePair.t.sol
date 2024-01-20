@@ -9,7 +9,7 @@ import {EXPRESSION_DEPLOYER_NP_META_PATH} from
     "rain.interpreter/../test/util/lib/constants/ExpressionDeployerNPConstants.sol";
 import {BLOCK_NUMBER} from "../lib/registry/LibFlareContractRegistry.t.sol";
 
-contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
+contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
     using Strings for address;
 
     function beforeOpTestConstructor() internal override {
@@ -20,22 +20,22 @@ contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
         return string.concat("lib/rain.interpreter/", EXPRESSION_DEPLOYER_NP_META_PATH);
     }
 
-    function testFlareFtsoWordsFtsoCurrentPriceUsdHappyFork() external {
+    function testFlareFtsoWordsFtsoCurrentPricePairHappyFork() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 2470929440000000000000;
+        expectedStack[0] = 59404379770348933;
 
         checkHappy(
             bytes(
                 string.concat(
                     "using-words-from ",
                     address(flareFtsoWords).toHexString(),
-                    " _: ftso-current-price-usd(\"ETH\" 3600);"
+                    " _: ftso-current-price-pair(\"ETH\" \"BTC\" 3600);"
                 )
             ),
             expectedStack,
-            "ftso-current-price-usd(\"ETH\" 3600)"
+            "ftso-current-price-pair(\"ETH\" \"BTC\" 3600)"
         );
     }
 }

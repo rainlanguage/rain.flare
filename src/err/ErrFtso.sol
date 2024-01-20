@@ -20,3 +20,7 @@ error PriceNotFinalized(IFtso.PriceFinalizationType priceFinalizationType);
 /// @param timestamp The timestamp of the last price update.
 /// @param timeout The timeout in seconds.
 error StalePrice(uint256 timestamp, uint256 timeout);
+
+/// Thrown when an FTSO reports values from different methods that MUST agree
+/// with each other, but do not.
+error InconsistentFtso();

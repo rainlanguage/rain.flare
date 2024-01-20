@@ -7,7 +7,7 @@ import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
 import {LibIntOrAString, IntOrAString} from "rain.intorastring/src/lib/LibIntOrAString.sol";
 import {LibFixedPointDecimalScale} from "rain.math.fixedpoint/lib/LibFixedPointDecimalScale.sol";
 
-import {InactiveFtso, PriceNotFinalized, StalePrice} from "../../err/ErrFtso.sol";
+import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "../../err/ErrFtso.sol";
 
 /// @title LibOpFtsoCurrentPriceUsd
 /// Implements the `ftsoCurrentPriceUsd` externed opcode.
@@ -51,13 +51,26 @@ library LibOpFtsoCurrentPriceUsd {
             revert InactiveFtso();
         }
 
-        (,, IFtso.PriceFinalizationType priceFinalizationType,,) = ftso.getCurrentPriceDetails();
+        (
+            uint256 price,
+            uint256 priceTimestamp,
+            IFtso.PriceFinalizationType priceFinalizationType,
+            uint256 lastPriceEpochFinalizationTimestamp,
+            IFtso.PriceFinalizationType lastPriceEpochFinalizationType
+        ) = ftso.getCurrentPriceDetails();
+        (lastPriceEpochFinalizationTimestamp, lastPriceEpochFinalizationType); // Silence unused variable warning.
+
         if (priceFinalizationType != IFtso.PriceFinalizationType.WEIGHTED_MEDIAN) {
             revert PriceNotFinalized(priceFinalizationType);
         }
 
-        (uint256 price, uint256 priceTimestamp, uint256 decimals) = ftso.getCurrentPriceWithDecimals();
+        (uint256 price1, uint256 priceTimestamp1, uint256 decimals) = ftso.getCurrentPriceWithDecimals();
 
+        if (price != price1 || priceTimestamp != priceTimestamp1) {
+            revert InconsistentFtso();
+        }
+
+        //slither-disable-next-line timestamp
         if (block.timestamp > priceTimestamp + timeout) {
             revert StalePrice(priceTimestamp, timeout);
         }
