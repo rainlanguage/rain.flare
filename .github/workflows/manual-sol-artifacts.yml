@@ -25,10 +25,12 @@ jobs:
 
       - run: nix run .#rainix-sol-prelude
         working-directory: ./lib/rain.interpreter
+      - run: nix run .#rainix-rs-prelude
+        working-directory: ./lib/rain.interpreter
       - run: nix run .#i9r-prelude
         working-directory: ./lib/rain.interpreter
 
-      - run: nix run .#rainix-prelude
+      - run: nix run .#rainix-sol-prelude
       - run: nix run .#rainix-sol-artifacts
         env:
           ETH_RPC_URL: ${{ inputs.network == 'songbird' && secrets.CI_DEPLOY_SONGBIRD_RPC_URL || secrets.CI_DEPLOY_RPC_URL }}
