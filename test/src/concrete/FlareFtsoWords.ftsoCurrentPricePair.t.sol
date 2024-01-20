@@ -7,12 +7,13 @@ import {LibFork} from "test/fork/LibFork.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
 import {EXPRESSION_DEPLOYER_NP_META_PATH} from
     "rain.interpreter/../test/util/lib/constants/ExpressionDeployerNPConstants.sol";
+import {BLOCK_NUMBER} from "../lib/registry/LibFlareContractRegistry.t.sol";
 
 contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
     using Strings for address;
 
     function beforeOpTestConstructor() internal override {
-        vm.createSelectFork(LibFork.rpcUrlFlare(vm), 18262564);
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
     }
 
     function constructionMetaPath() internal pure override returns (string memory) {
@@ -23,7 +24,7 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 59051217413684564;
+        expectedStack[0] = 59404379770348933;
 
         checkHappy(
             bytes(
@@ -34,7 +35,7 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
                 )
             ),
             expectedStack,
-            "ftso-current-price-pair(\"ETH\" \"BTC\" 3600) = 59051217413684564"
+            "ftso-current-price-pair(\"ETH\" \"BTC\" 3600)"
         );
     }
 }

@@ -21,6 +21,7 @@ import {LibFixedPointDecimalScale} from "rain.math.fixedpoint/lib/LibFixedPointD
 import {LibWillOverflow} from "rain.math.fixedpoint/lib/LibWillOverflow.sol";
 import {LibIntOrAString, IntOrAString} from "rain.intorastring/src/lib/LibIntOrAString.sol";
 import {LibFork} from "test/fork/LibFork.sol";
+import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 
 contract LibOpFtsoCurrentPriceUsdTest is Test {
     struct PriceDetails {
@@ -130,31 +131,31 @@ contract LibOpFtsoCurrentPriceUsdTest is Test {
     }
 
     function testRunForkHappy() external {
-        vm.createSelectFork(LibFork.rpcUrlFlare(vm), 18262564);
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         uint256[] memory inputs = new uint256[](2);
         inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("ETH"));
         inputs[1] = 3600;
         uint256[] memory outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 2524344570000000000000);
+        assertEq(outputs[0], 2470929440000000000000);
 
         inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("BTC"));
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 42748391660000000000000);
+        assertEq(outputs[0], 41595071770000000000000);
 
         inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("XRP"));
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 575700000000000000);
+        assertEq(outputs[0], 549420000000000000);
 
         // USDT is interesting as it probably has different decimals to the
         // others, but should still get normalized to 18 decimals.
         inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("USDT"));
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 998830000000000000);
+        assertEq(outputs[0], 999340000000000000);
     }
 
     function testRunHappy(
