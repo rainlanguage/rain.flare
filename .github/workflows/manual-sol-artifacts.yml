@@ -5,7 +5,9 @@ on:
       network:
         description: 'Network to deploy to'
         required: true
-        type: string
+        type: choice
+        options:
+          - songbird
 
 jobs:
   deploy:
