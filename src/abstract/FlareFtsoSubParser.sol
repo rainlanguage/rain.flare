@@ -8,17 +8,26 @@ import {LibParseOperand} from "rain.interpreter/lib/parse/LibParseOperand.sol";
 import {LibConvert} from "rain.lib.typecast/LibConvert.sol";
 import {AuthoringMetaV2} from "rain.interpreter/interface/IParserV1.sol";
 
+/// @dev Runtime constant form of the parse meta. Used to map stringy words into
+/// indexes in roughly O(1).
 bytes constant SUB_PARSER_PARSE_META =
     hex"01000002000000000000000000000000000000000000080000000000000000000000008057ab015dba81";
 
+/// @dev Runtime constant form of the pointers to the word parsers.
 bytes constant SUB_PARSER_WORD_PARSERS = hex"07a207c6";
 
+/// @dev Runtime constant form of the pointers to the operand handlers.
 bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0c650c65";
 
+/// @dev Index into the function pointers array for the current USD price.
 uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD = 0;
+/// @dev Index into the function pointers array for the current pair price.
 uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR = 1;
+/// @dev The number of function pointers in the array.
 uint256 constant SUB_PARSER_WORD_PARSERS_LENGTH = 2;
 
+/// Builds the authoring meta for the sub parser. This is used both as data for
+/// tooling directly, and to build the runtime parse meta.
 //slither-disable-next-line dead-code
 function authoringMetaV2() pure returns (bytes memory) {
     AuthoringMetaV2[] memory meta = new AuthoringMetaV2[](SUB_PARSER_WORD_PARSERS_LENGTH);
@@ -33,21 +42,33 @@ function authoringMetaV2() pure returns (bytes memory) {
     return abi.encode(meta);
 }
 
+/// @title FlareFtsoSubParser
+/// Implements the sub parser half of FlareFtsoWords. Responsible for parsing
+/// the words and operands that are used by the FlareFtsoWords. Provides the
+/// sugar required to make the externs work like native rain words.
 abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
+    /// Allows the FlareFtsoWords contract to feed the extern address (itself)
+    /// into the sub parser functions by overriding `extern`.
     function extern() internal view virtual returns (address);
 
+    /// @inheritdoc BaseRainterpreterSubParserNPE2
     function subParserParseMeta() internal pure override returns (bytes memory) {
         return SUB_PARSER_PARSE_META;
     }
 
+    /// @inheritdoc BaseRainterpreterSubParserNPE2
     function subParserWordParsers() internal pure override returns (bytes memory) {
         return SUB_PARSER_WORD_PARSERS;
     }
 
+    /// @inheritdoc BaseRainterpreterSubParserNPE2
     function subParserOperandHandlers() internal pure override returns (bytes memory) {
         return SUB_PARSER_OPERAND_HANDLERS;
     }
 
+    /// Create a 16-bit pointer array for the operand handlers. This is
+    /// relatively gas inefficent so it is only called during tests to cross
+    /// reference against the constant values that are used at runtime.
     function buildSubParserOperandHandlers() external pure returns (bytes memory) {
         function(uint256[] memory) internal pure returns (Operand)[] memory fs =
             new function(uint256[] memory) internal pure returns (Operand)[](SUB_PARSER_WORD_PARSERS_LENGTH);
@@ -61,6 +82,9 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
         return LibConvert.unsafeTo16BitBytes(pointers);
     }
 
+    /// Create a 16-bit pointer array for the word parsers. This is relatively
+    /// gas inefficent so it is only called during tests to cross reference
+    /// against the constant values that are used at runtime.
     function buildSubParserWordParsers() external pure returns (bytes memory) {
         function(uint256, uint256, Operand) internal view returns (bool, bytes memory, uint256[] memory)[] memory fs =
         new function(uint256, uint256, Operand) internal view returns (bool, bytes memory, uint256[] memory)[](
@@ -76,6 +100,8 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
         return LibConvert.unsafeTo16BitBytes(pointers);
     }
 
+    /// Thin wrapper around LibSubParse.subParserExtern that provides the extern
+    /// address and index of the current usd price opcode index in the extern.
     //slither-disable-next-line dead-code
     function ftsoCurrentPriceUsdSubParser(uint256 constantsHeight, uint256 inputsByte, Operand operand)
         internal
@@ -94,6 +120,8 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
         );
     }
 
+    /// Thin wrapper around LibSubParse.subParserExtern that provides the extern
+    /// address and index of the current pair price opcode index in the extern.
     //slither-disable-next-line dead-code
     function ftsoCurrentPricePairSubParser(uint256 constantsHeight, uint256 inputsByte, Operand operand)
         internal

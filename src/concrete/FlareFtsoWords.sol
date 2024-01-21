@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity ^0.8.19;
+pragma solidity =0.8.19;
 
 import {
     FlareFtsoExtern,
@@ -17,7 +17,10 @@ import {
     authoringMetaV2
 } from "../abstract/FlareFtsoSubParser.sol";
 
+/// @title FlareFtsoWords
+/// Simply merges the two abstract contracts into a single concrete contract.
 contract FlareFtsoWords is FlareFtsoExtern, FlareFtsoSubParser {
+    /// @inheritdoc FlareFtsoSubParser
     //slither-disable-next-line dead-code
     function extern() internal view override returns (address) {
         return address(this);
