@@ -44,13 +44,17 @@ library LibOpFtsoCurrentPriceUsd {
             timeout := mload(add(inputs, 0x40))
         }
 
+        // Fetch the FTSO from the registry.
         IFtsoRegistry ftsoRegistry = LibFlareContractRegistry.getFtsoRegistry();
         IFtso ftso = ftsoRegistry.getFtsoBySymbol(symbol.toString());
 
+        // FTSO can self report whether it is "active" so we require this.
         if (!ftso.active()) {
             revert InactiveFtso();
         }
 
+        // We need the price finalization type, which we can't get from the
+        // current price otherwise, so that we can avoid low quality prices.
         (
             uint256 price,
             uint256 priceTimestamp,
@@ -60,21 +64,29 @@ library LibOpFtsoCurrentPriceUsd {
         ) = ftso.getCurrentPriceDetails();
         (lastPriceEpochFinalizationTimestamp, lastPriceEpochFinalizationType); // Silence unused variable warning.
 
+        // There are other fallback finalization modes, but weighted median is
+        // the only completion state that involved a sufficient number of
+        // oracles to be considered "trustless".
         if (priceFinalizationType != IFtso.PriceFinalizationType.WEIGHTED_MEDIAN) {
             revert PriceNotFinalized(priceFinalizationType);
         }
 
+        // We need the decimals, which we can't get from the current price
+        // details, so that we can do the price normalization.
         (uint256 price1, uint256 priceTimestamp1, uint256 decimals) = ftso.getCurrentPriceWithDecimals();
 
+        // This should never happen, it indicates a bug in the FTSO.
         if (price != price1 || priceTimestamp != priceTimestamp1) {
             revert InconsistentFtso();
         }
 
+        // Handle stale prices.
         //slither-disable-next-line timestamp
         if (block.timestamp > priceTimestamp + timeout) {
             revert StalePrice(priceTimestamp, timeout);
         }
 
+        // Normalize all prices to fixed point 18 decimals.
         // Flags are 0 i.e. round down and don't saturate (error instead).
         uint256 price18 = LibFixedPointDecimalScale.scale18(price, decimals, 0);
 
