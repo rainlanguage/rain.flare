@@ -74,18 +74,16 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
         vm.assume(!LibWillOverflow.scale18WillOverflow(currentPrice.price, currentPrice.decimals, 0));
 
-        // timeout = bound(timeout, 1, type(uint256).max);
-        currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout);
-        currentTime = bound(currentTime, currentPrice.timestamp, currentPrice.timestamp + timeout);
-        vm.warp(currentTime);
+        currentTime = warpNotStale(currentPrice, timeout, currentTime);
 
         conformPriceDetails(priceDetails, currentPrice);
         finalizePrice(priceDetails);
 
-        mockRegistry(symbol);
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
         activateFtso();
         mockPriceDetails(priceDetails);
-        mockPrice(currentPrice);
+        mockPrice(FTSO, currentPrice);
 
         uint256[] memory inputs = new uint256[](2);
         inputs[0] = intSymbol;
@@ -116,10 +114,11 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         conformPriceDetails(priceDetails, currentPrice);
         finalizePrice(priceDetails);
 
-        mockRegistry(symbol);
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
         activateFtso();
         mockPriceDetails(priceDetails);
-        mockPrice(currentPrice);
+        mockPrice(FTSO, currentPrice);
 
         vm.expectRevert();
         uint256[] memory inputs = new uint256[](2);
@@ -148,10 +147,11 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         conformPriceDetails(priceDetails, currentPrice);
         finalizePrice(priceDetails);
 
-        mockRegistry(symbol);
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
         activateFtso();
         mockPriceDetails(priceDetails);
-        mockPrice(currentPrice);
+        mockPrice(FTSO, currentPrice);
 
         vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, currentPrice.timestamp, timeout));
         uint256[] memory inputs = new uint256[](2);
@@ -175,7 +175,8 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         conformPriceDetails(priceDetails, currentPrice);
         vm.assume(priceDetails.priceFinalizationType != uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN));
 
-        mockRegistry(symbol);
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
         activateFtso();
         mockPriceDetails(priceDetails);
 
@@ -187,11 +188,14 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         this.externalRun(operand, inputs);
     }
 
+    /// An inactive FTSO should revert.
     function testRunFtsoNotActive(Operand operand, string memory symbol, uint256 timeout) external {
-        vm.assume(bytes(symbol).length <= 31);
+        vm.assume(bytes(symbol).length < 0x20);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
 
-        mockRegistry(symbol);
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+
         vm.mockCall(FTSO, abi.encodeWithSelector(IFtso.active.selector), abi.encode(false));
 
         uint256[] memory inputs = new uint256[](2);
