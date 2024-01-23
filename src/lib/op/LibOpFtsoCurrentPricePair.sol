@@ -29,7 +29,7 @@ library LibOpFtsoCurrentPricePair {
     /// values. Notably, and especially if the timeout is long, the two prices
     /// may not be from the same block. This can cause inaccuracies in the
     /// derived price if there has been significant volatility between the two
-    /// individual quotes, so should not be relied upon for high precision
+    /// individual quotes, so SHOULD NOT be relied upon for high precision
     /// calculations.
     /// @param inputs The inputs to the operation.
     ///   0. The symbol of the first asset to fetch the price of, encoded as an
@@ -43,6 +43,8 @@ library LibOpFtsoCurrentPricePair {
     function run(Operand operand, uint256[] memory inputs) internal view returns (uint256[] memory) {
         uint256 symbolA;
         assembly ("memory-safe") {
+            // Truncating from 3 inputs to 2, so we can forward directly to the
+            // `ftsoCurrentPriceUsd` opcode.
             inputs := add(inputs, 0x20)
             symbolA := mload(inputs)
             mstore(inputs, 2)
@@ -62,6 +64,8 @@ library LibOpFtsoCurrentPricePair {
 
         uint256 pricePair18 =
             LibFixedPointDecimalArithmeticOpenZeppelin.fixedPointDiv(priceA18, priceB18, Math.Rounding.Down);
+
+        // Repurpose one of the inner outputs arrays to return the derived price.
         assembly ("memory-safe") {
             mstore(add(outputsA, 0x20), pricePair18)
         }

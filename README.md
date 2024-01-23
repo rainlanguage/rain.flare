@@ -9,17 +9,18 @@ is available to rainlang authors.
 
 Accepts 2 inputs, the symbol string used by the FTSO and the timeout in seconds.
 
-Attempts to be as conservative as possible and only provide a price if everything
-is obviously correct. Fallback/default values never allowed and the word will
-revert if there is ever doubt.
+Attempts to be as simple to author as possible and only provide a price if
+everything is obviously correct. Fallback/default values never allowed and the
+word will revert if there is ever doubt.
 
 For example the word will error if (non exhaustive list):
 
 - The FTSO registry does not exist on the current chain
 - An FTSO for the given symbol cannot be found in the registry
 - The FTSO is not self reporting as "active"
-- The price finalization type is not "weighted median"
-  - E.g. the finalization type might be "trusted fallback" which is disallowed
+- The price finalization type is not "weighted median" or "trusted"
+  - E.g. the finalization type might indicate that prices were copied from older
+    epochs or suffered internal exceptions, etc. which is all disallowed
   - E.g. the finalization type might be unknown if the ftso code returns
     something outside the current `IFtso` interface
 - The finalisation timestamp of the current price is older than the timeout

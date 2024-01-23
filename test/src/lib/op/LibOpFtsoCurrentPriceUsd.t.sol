@@ -160,8 +160,8 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         this.externalRun(operand, inputs);
     }
 
-    /// Anything other than WEIGHTED_MEDIAN should revert as it means the price
-    /// is either not final or oracle participation was too low.
+    /// Anything other than WEIGHTED_MEDIAN or TRUSTED_ADDRESSES should revert
+    /// as it means the price is not final.
     function testRunFtsoNotFinal(
         Operand operand,
         string memory symbol,
@@ -173,7 +173,14 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
 
         conformPriceDetails(priceDetails, currentPrice);
-        vm.assume(priceDetails.priceFinalizationType != uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN));
+        vm.assume(
+            !(
+                (
+                    priceDetails.priceFinalizationType == uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN)
+                        || (priceDetails.priceFinalizationType == uint8(IFtso.PriceFinalizationType.TRUSTED_ADDRESSES))
+                )
+            )
+        );
 
         mockRegistry();
         mockFtsoRegistry(FTSO, symbol);

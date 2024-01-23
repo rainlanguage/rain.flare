@@ -17,7 +17,7 @@ bytes constant SUB_PARSER_PARSE_META =
 bytes constant SUB_PARSER_WORD_PARSERS = hex"07a207c6";
 
 /// @dev Runtime constant form of the pointers to the operand handlers.
-bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0c650c65";
+bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0c810c81";
 
 /// @dev Index into the function pointers array for the current USD price.
 uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD = 0;
