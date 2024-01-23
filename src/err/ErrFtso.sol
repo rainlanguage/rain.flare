@@ -10,8 +10,7 @@ contract ErrFtso {}
 error InactiveFtso();
 
 /// Thrown when an FTSO that we are reading a price from has not finalized the
-/// price, or the price is not finalized in a way that we can use
-/// (e.g. it is falling back to "trusted" price providers).
+/// price.
 /// @param priceFinalizationType The price finalization that the FTSO reported.
 error PriceNotFinalized(IFtso.PriceFinalizationType priceFinalizationType);
 

@@ -27,8 +27,8 @@ library LibOpFtsoCurrentPriceUsd {
     /// and then the price is fetched from the FTSO. As the price has its own
     /// decimals, it is converted to 18 decimals to be compatible with general
     /// DeFi conventions including those used by rain. The overall process aims
-    /// to be as conservative as possible, reverting if there is any doubt about
-    /// the validity of the price.
+    /// to be safe and simple, handling as many of the internal implementation
+    /// details of FTSOs for the rainlang author as possible.
     /// @param inputs The inputs to the operation. Always 2 items.
     ///   0. The symbol of the asset to fetch the price of, encoded as an
     ///      unwrapped `IntOrAString` (i.e. a `uint256`).
@@ -64,10 +64,15 @@ library LibOpFtsoCurrentPriceUsd {
         ) = ftso.getCurrentPriceDetails();
         (lastPriceEpochFinalizationTimestamp, lastPriceEpochFinalizationType); // Silence unused variable warning.
 
-        // There are other fallback finalization modes, but weighted median is
-        // the only completion state that involved a sufficient number of
-        // oracles to be considered "trustless".
-        if (priceFinalizationType != IFtso.PriceFinalizationType.WEIGHTED_MEDIAN) {
+        // There are other fallback finalization modes, but weighted median and
+        // trusted addresses are the only ones that don't imply the price was
+        // simply copied from an earlier epoch.
+        if (
+            !(
+                priceFinalizationType == IFtso.PriceFinalizationType.WEIGHTED_MEDIAN
+                    || priceFinalizationType == IFtso.PriceFinalizationType.TRUSTED_ADDRESSES
+            )
+        ) {
             revert PriceNotFinalized(priceFinalizationType);
         }
 
