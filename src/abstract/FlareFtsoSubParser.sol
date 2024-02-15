@@ -110,11 +110,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
     {
         //slither-disable-next-line unused-return
         return LibSubParse.subParserExtern(
-            IInterpreterExternV3(extern()),
-            constantsHeight,
-            ioByte,
-            operand,
-            OPCODE_FTSO_CURRENT_PRICE_USD
+            IInterpreterExternV3(extern()), constantsHeight, ioByte, operand, OPCODE_FTSO_CURRENT_PRICE_USD
         );
     }
 
@@ -128,11 +124,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
     {
         //slither-disable-next-line unused-return
         return LibSubParse.subParserExtern(
-            IInterpreterExternV3(extern()),
-            constantsHeight,
-            ioByte,
-            operand,
-            OPCODE_FTSO_CURRENT_PRICE_PAIR
+            IInterpreterExternV3(extern()), constantsHeight, ioByte, operand, OPCODE_FTSO_CURRENT_PRICE_PAIR
         );
     }
 }
