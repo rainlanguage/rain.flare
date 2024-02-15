@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: CAL
 pragma solidity =0.8.19;
 
-import {OpTest} from "rain.interpreter/../test/util/abstract/OpTest.sol";
+import {OpTest} from "rain.interpreter/../test/abstract/OpTest.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
 import {EXPRESSION_DEPLOYER_NP_META_PATH} from
-    "rain.interpreter/../test/util/lib/constants/ExpressionDeployerNPConstants.sol";
+    "rain.interpreter/../test/lib/constants/ExpressionDeployerNPConstants.sol";
 import {BLOCK_NUMBER} from "../lib/registry/LibFlareContractRegistry.t.sol";
 
 contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {

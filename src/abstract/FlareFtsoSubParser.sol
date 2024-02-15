@@ -14,10 +14,10 @@ bytes constant SUB_PARSER_PARSE_META =
     hex"01000002000000000000000000000000000000000000080000000000000000000000008057ab015dba81";
 
 /// @dev Runtime constant form of the pointers to the word parsers.
-bytes constant SUB_PARSER_WORD_PARSERS = hex"07a207c6";
+bytes constant SUB_PARSER_WORD_PARSERS = hex"07a207c4";
 
 /// @dev Runtime constant form of the pointers to the operand handlers.
-bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0c810c81";
+bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0c7d0c7d";
 
 /// @dev Index into the function pointers array for the current USD price.
 uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD = 0;
@@ -103,7 +103,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
     /// Thin wrapper around LibSubParse.subParserExtern that provides the extern
     /// address and index of the current usd price opcode index in the extern.
     //slither-disable-next-line dead-code
-    function ftsoCurrentPriceUsdSubParser(uint256 constantsHeight, uint256 inputsByte, Operand operand)
+    function ftsoCurrentPriceUsdSubParser(uint256 constantsHeight, uint256 ioByte, Operand operand)
         internal
         view
         returns (bool, bytes memory, uint256[] memory)
@@ -112,9 +112,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
         return LibSubParse.subParserExtern(
             IInterpreterExternV3(extern()),
             constantsHeight,
-            inputsByte,
-            // 1 output for the price.
-            1,
+            ioByte,
             operand,
             OPCODE_FTSO_CURRENT_PRICE_USD
         );
@@ -123,7 +121,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
     /// Thin wrapper around LibSubParse.subParserExtern that provides the extern
     /// address and index of the current pair price opcode index in the extern.
     //slither-disable-next-line dead-code
-    function ftsoCurrentPricePairSubParser(uint256 constantsHeight, uint256 inputsByte, Operand operand)
+    function ftsoCurrentPricePairSubParser(uint256 constantsHeight, uint256 ioByte, Operand operand)
         internal
         view
         returns (bool, bytes memory, uint256[] memory)
@@ -132,9 +130,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
         return LibSubParse.subParserExtern(
             IInterpreterExternV3(extern()),
             constantsHeight,
-            inputsByte,
-            // 1 output for the price.
-            1,
+            ioByte,
             operand,
             OPCODE_FTSO_CURRENT_PRICE_PAIR
         );
