@@ -38,4 +38,19 @@ contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
             "ftso-current-price-usd(\"ETH\" 3600)"
         );
     }
+
+    function testFlareFtsoWordsFtsoCurrentPriceUnhappyZeroFork() external {
+        FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
+
+        checkUnhappy(
+            bytes(
+                string.concat(
+                    "using-words-from ",
+                    address(flareFtsoWords).toHexString(),
+                    " _: ftso-current-price-usd(0 3600);"
+                )
+            ),
+            "FTSO index not supported"
+        );
+    }
 }
