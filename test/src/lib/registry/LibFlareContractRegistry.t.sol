@@ -5,7 +5,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {LibFlareContractRegistry, IFtsoRegistry} from "src/lib/registry/LibFlareContractRegistry.sol";
 
-uint256 constant BLOCK_NUMBER = 18464583;
+uint256 constant BLOCK_NUMBER = 21862503;
 
 contract LibFlareContractRegistryTest is Test {
     constructor() {

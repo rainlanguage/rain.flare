@@ -24,7 +24,7 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 59404379770348933;
+        expectedStack[0] = 51003953997244396;
 
         checkHappy(
             bytes(
@@ -36,6 +36,38 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
             ),
             expectedStack,
             "ftso-current-price-pair(\"ETH\" \"BTC\" 3600)"
+        );
+    }
+
+    function testFlareFtsoWordsFtsoCurrentPricePairHappyPrecisionFork() external {
+        FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
+
+        uint256[] memory expectedStack = new uint256[](1);
+        expectedStack[0] = 10997318029418;
+
+        checkHappy(
+            bytes(
+                string.concat(
+                    "using-words-from ",
+                    address(flareFtsoWords).toHexString(),
+                    " _: ftso-current-price-pair(\"FLR\" \"ETH\" 3600);"
+                )
+            ),
+            expectedStack,
+            "ftso-current-price-pair(\"FLR\" \"ETH\" 3600)"
+        );
+
+        expectedStack[0] = 90931261360718870346598;
+        checkHappy(
+            bytes(
+                string.concat(
+                    "using-words-from ",
+                    address(flareFtsoWords).toHexString(),
+                    " _: ftso-current-price-pair(\"ETH\" \"FLR\" 3600);"
+                )
+            ),
+            expectedStack,
+            "ftso-current-price-pair(\"ETH\" \"FLR\" 3600)"
         );
     }
 }

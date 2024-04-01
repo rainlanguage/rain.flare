@@ -42,24 +42,24 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         inputs[1] = 3600;
         uint256[] memory outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 2470929440000000000000);
+        assertEq(outputs[0], 3541772630000000000000);
 
         inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("BTC"));
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 41595071770000000000000);
+        assertEq(outputs[0], 69441138430000000000000);
 
         inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("XRP"));
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 549420000000000000);
+        assertEq(outputs[0], 609340000000000000);
 
         // USDT is interesting as it probably has different decimals to the
         // others, but should still get normalized to 18 decimals.
         inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("USDT"));
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 999340000000000000);
+        assertEq(outputs[0], 1000610000000000000);
     }
 
     function testRunHappy(

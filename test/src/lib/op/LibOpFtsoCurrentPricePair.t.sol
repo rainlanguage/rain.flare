@@ -30,14 +30,13 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         inputs[2] = 3600;
         uint256[] memory outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        // ~5.94e16 BTC/ETH
-        assertEq(outputs[0], 59404379770348933);
+        assertEq(outputs[0], 51003953997244396);
 
         inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("BTC"));
         inputs[1] = IntOrAString.unwrap(LibIntOrAString.fromString("ETH"));
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 16833775621694806469);
+        assertEq(outputs[0], 19606323071619648266);
     }
 
     /// An inactive FTSO should revert. Tests the first symbol being inactive.
