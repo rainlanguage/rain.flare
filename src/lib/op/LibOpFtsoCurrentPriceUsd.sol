@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: CAL
 pragma solidity ^0.8.19;
 
-import {Operand} from "rain.interpreter/interface/unstable/IInterpreterV2.sol";
+import {Operand} from "rain.interpreter.interface/interface/IInterpreterV2.sol";
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
 import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
 import {LibIntOrAString, IntOrAString} from "rain.intorastring/src/lib/LibIntOrAString.sol";

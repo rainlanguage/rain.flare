@@ -4,8 +4,8 @@ pragma solidity =0.8.19;
 import {Test} from "forge-std/Test.sol";
 
 import {IERC165} from "openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
-import {IInterpreterExternV3} from "rain.interpreter/interface/unstable/IInterpreterExternV3.sol";
-import {ISubParserV2} from "rain.interpreter/interface/unstable/ISubParserV2.sol";
+import {IInterpreterExternV3} from "rain.interpreter.interface/interface/IInterpreterExternV3.sol";
+import {ISubParserV2} from "rain.interpreter.interface/interface/ISubParserV2.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 
 contract FlareFtsoWordsIERC165Test is Test {

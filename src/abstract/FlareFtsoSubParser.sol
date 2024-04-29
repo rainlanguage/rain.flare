@@ -6,7 +6,7 @@ import {OPCODE_FTSO_CURRENT_PRICE_USD, OPCODE_FTSO_CURRENT_PRICE_PAIR} from "./F
 import {LibSubParse, IInterpreterExternV3} from "rain.interpreter/lib/parse/LibSubParse.sol";
 import {LibParseOperand} from "rain.interpreter/lib/parse/LibParseOperand.sol";
 import {LibConvert} from "rain.lib.typecast/LibConvert.sol";
-import {AuthoringMetaV2} from "rain.interpreter/interface/IParserV1.sol";
+import {AuthoringMetaV2} from "rain.interpreter.interface/interface/IParserV1.sol";
 
 /// @dev Runtime constant form of the parse meta. Used to map stringy words into
 /// indexes in roughly O(1).
