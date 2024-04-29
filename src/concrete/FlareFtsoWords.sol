@@ -13,13 +13,18 @@ import {
     SUB_PARSER_OPERAND_HANDLERS,
     SUB_PARSER_PARSE_META,
     BaseRainterpreterSubParserNPE2,
-    AuthoringMetaV2,
-    authoringMetaV2
+    AuthoringMetaV2
 } from "../abstract/FlareFtsoSubParser.sol";
+
+bytes32 constant DESCRIBED_BY_META_HASH = bytes32(0x24ede5b126d4acfe8f5ba9975cb027f07568798a6ddd681f0e2f23be5b5bd7bc);
 
 /// @title FlareFtsoWords
 /// Simply merges the two abstract contracts into a single concrete contract.
 contract FlareFtsoWords is FlareFtsoExtern, FlareFtsoSubParser {
+    function describedByMetaV1() external pure returns (bytes32) {
+        return DESCRIBED_BY_META_HASH;
+    }
+
     /// @inheritdoc FlareFtsoSubParser
     //slither-disable-next-line dead-code
     function extern() internal view override returns (address) {

@@ -45,9 +45,7 @@ contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
         checkUnhappy(
             bytes(
                 string.concat(
-                    "using-words-from ",
-                    address(flareFtsoWords).toHexString(),
-                    " _: ftso-current-price-usd(0 3600);"
+                    "using-words-from ", address(flareFtsoWords).toHexString(), " _: ftso-current-price-usd(0 3600);"
                 )
             ),
             "FTSO index not supported"

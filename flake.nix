@@ -8,9 +8,37 @@
 
   outputs = { self, flake-utils, rainix, ... }:
     flake-utils.lib.eachDefaultSystem (system:
-      {
-        packages = rainix.packages.${system};
-        devShells = rainix.devShells.${system};
-      }
+      let
+        pkgs = rainix.pkgs.${system};
+      in rec {
+        packages = {
+          rain-flare-prelude = rainix.mkTask.${system} {
+            name = "rain-flare-prelude";
+            body = ''
+              set -euxo pipefail
+
+              mkdir -p meta;
+              forge script --silent ./script/BuildAuthoringMeta.sol;
+              rain meta build \
+                -i <(cat ./meta/FlareFtsoSubParserAuthoringMeta.rain.meta) \
+                -m authoring-meta-v2 \
+                -t cbor \
+                -e deflate \
+                -l none \
+                -o meta/FlareFtsoSubParserDescribedByMetaV1.rain.meta \
+                ;
+            '';
+          };
+        } // rainix.packages.${system};
+
+        devShells.default = pkgs.mkShell {
+          packages = [
+            packages.rain-flare-prelude
+          ];
+
+          shellHook = rainix.devShells.${system}.default.shellHook;
+          buildInputs = rainix.devShells.${system}.default.buildInputs;
+          nativeBuildInputs = rainix.devShells.${system}.default.nativeBuildInputs;
+        };      }
     );
 }
