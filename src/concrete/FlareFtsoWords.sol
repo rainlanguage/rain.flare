@@ -17,9 +17,15 @@ import {
     authoringMetaV2
 } from "../abstract/FlareFtsoSubParser.sol";
 
+bytes32 constant DESCRIBED_BY_META_HASH = bytes32(0);
+
 /// @title FlareFtsoWords
 /// Simply merges the two abstract contracts into a single concrete contract.
 contract FlareFtsoWords is FlareFtsoExtern, FlareFtsoSubParser {
+    function describedByMetaV1() external pure returns (bytes32) {
+        return DESCRIBED_BY_META_HASH;
+    }
+
     /// @inheritdoc FlareFtsoSubParser
     //slither-disable-next-line dead-code
     function extern() internal view override returns (address) {

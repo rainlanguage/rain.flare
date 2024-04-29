@@ -9,9 +9,10 @@ solc = "0.8.19"
 
 remappings = [
     "rain.interpreter/=lib/rain.interpreter/src/",
-    "@openzeppelin/=lib/openzeppelin-contracts/",
+    "@openzeppelin/=lib/rain.interpreter/lib/openzeppelin-contracts/",
     "rain.intorastring/=lib/rain.interpreter/lib/rain.intorastring/",
     "rain.metadata/=lib/rain.interpreter/lib/rain.metadata/src/",
+    "rain.interpreter.interface/=lib/rain.interpreter/lib/rain.interpreter.interface/src/",
 ]
 
 fs_permissions = [
