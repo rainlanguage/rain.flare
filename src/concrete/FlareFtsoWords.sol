@@ -13,8 +13,7 @@ import {
     SUB_PARSER_OPERAND_HANDLERS,
     SUB_PARSER_PARSE_META,
     BaseRainterpreterSubParserNPE2,
-    AuthoringMetaV2,
-    authoringMetaV2
+    AuthoringMetaV2
 } from "../abstract/FlareFtsoSubParser.sol";
 
 bytes32 constant DESCRIBED_BY_META_HASH = bytes32(0);

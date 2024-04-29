@@ -7,6 +7,11 @@ import {LibSubParse, IInterpreterExternV3} from "rain.interpreter/lib/parse/LibS
 import {LibParseOperand} from "rain.interpreter/lib/parse/LibParseOperand.sol";
 import {LibConvert} from "rain.lib.typecast/LibConvert.sol";
 import {AuthoringMetaV2} from "rain.interpreter.interface/interface/IParserV1.sol";
+import {
+    SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD,
+    SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR,
+    SUB_PARSER_WORD_PARSERS_LENGTH
+} from "../lib/parse/LibFlareFtsoSubParser.sol";
 
 /// @dev Runtime constant form of the parse meta. Used to map stringy words into
 /// indexes in roughly O(1).
@@ -14,33 +19,10 @@ bytes constant SUB_PARSER_PARSE_META =
     hex"01000002000000000000000000000000000000000000080000000000000000000000008057ab015dba81";
 
 /// @dev Runtime constant form of the pointers to the word parsers.
-bytes constant SUB_PARSER_WORD_PARSERS = hex"07a207c4";
+bytes constant SUB_PARSER_WORD_PARSERS = hex"07cc07ee";
 
 /// @dev Runtime constant form of the pointers to the operand handlers.
-bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0c7d0c7d";
-
-/// @dev Index into the function pointers array for the current USD price.
-uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD = 0;
-/// @dev Index into the function pointers array for the current pair price.
-uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR = 1;
-/// @dev The number of function pointers in the array.
-uint256 constant SUB_PARSER_WORD_PARSERS_LENGTH = 2;
-
-/// Builds the authoring meta for the sub parser. This is used both as data for
-/// tooling directly, and to build the runtime parse meta.
-//slither-disable-next-line dead-code
-function authoringMetaV2() pure returns (bytes memory) {
-    AuthoringMetaV2[] memory meta = new AuthoringMetaV2[](SUB_PARSER_WORD_PARSERS_LENGTH);
-    meta[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD] = AuthoringMetaV2(
-        "ftso-current-price-usd",
-        "Returns the current USD price of the given token according to the FTSO. Accepts 2 inputs, the symbol string used by the FTSO and the timeout in seconds. The price is returned as 18 decimal fixed point number, rounding down if this results in any precision loss. The timeout will be used to determine if the price is stale and revert if it is."
-    );
-    meta[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR] = AuthoringMetaV2(
-        "ftso-current-price-pair",
-        "Returns the current price of the given token pair according to the FTSO. Accepts 3 inputs, the symbol string used by the FTSO for the base token, the symbol string used by the FTSO for the quote token and the timeout in seconds. The price is returned as 18 decimal fixed point number, rounding down if this results in any precision loss. The timeout will be used to determine if the price is stale and revert if it is. Note that the pair price is derived from two separate FTSO prices mechanically and is not provided directly by the FTSO."
-    );
-    return abi.encode(meta);
-}
+bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0ca70ca7";
 
 /// @title FlareFtsoSubParser
 /// Implements the sub parser half of FlareFtsoWords. Responsible for parsing

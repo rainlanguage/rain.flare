@@ -9,10 +9,10 @@ import {
     OPCODE_FUNCTION_POINTERS,
     SUB_PARSER_WORD_PARSERS,
     SUB_PARSER_PARSE_META,
-    AuthoringMetaV2,
-    authoringMetaV2
+    AuthoringMetaV2
 } from "src/concrete/FlareFtsoWords.sol";
 import {LibParseMeta} from "rain.interpreter/lib/parse/LibParseMeta.sol";
+import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
 
 contract FlareFtsoWordsPointersTest is Test {
     function testIntegrityPointers() external {
@@ -36,7 +36,7 @@ contract FlareFtsoWordsPointersTest is Test {
     }
 
     function testSubParserParseMeta() external {
-        bytes memory authoringMetaBytes = authoringMetaV2();
+        bytes memory authoringMetaBytes = LibFlareFtsoSubParser.authoringMetaV2();
         AuthoringMetaV2[] memory authoringMeta = abi.decode(authoringMetaBytes, (AuthoringMetaV2[]));
         bytes memory expected = LibParseMeta.buildParseMetaV2(authoringMeta, 2);
         assertEq(SUB_PARSER_PARSE_META, expected);

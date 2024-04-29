@@ -7,9 +7,9 @@ import {LibOpFtsoCurrentPriceUsd} from "../lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {LibOpFtsoCurrentPricePair} from "../lib/op/LibOpFtsoCurrentPricePair.sol";
 
 /// @dev Runtime constant form of the pointers to the integrity functions.
-bytes constant INTEGRITY_FUNCTION_POINTERS = hex"0cc20cce";
+bytes constant INTEGRITY_FUNCTION_POINTERS = hex"0cec0cf8";
 /// @dev Runtime constant form of the pointers to the opcode functions.
-bytes constant OPCODE_FUNCTION_POINTERS = hex"08680c24";
+bytes constant OPCODE_FUNCTION_POINTERS = hex"08920c4e";
 
 /// @dev Index into the function pointers array for the current USD price.
 uint256 constant OPCODE_FTSO_CURRENT_PRICE_USD = 0;

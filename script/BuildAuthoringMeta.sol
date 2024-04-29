@@ -1,0 +1,14 @@
+// SPDX-License-Identifier: CAL
+pragma solidity =0.8.19;
+
+import {Script} from "forge-std/Script.sol";
+import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
+
+/// @title FlareFtso subparser Authoring Meta
+/// @notice A script that writes the raw authoring meta out to file so it can be
+/// wrapped in CBOR and emitted on metaboard.
+contract BuildAuthoringMeta is Script {
+    function run() external {
+        vm.writeFileBinary("meta/FlareFtsoSubParserAuthoringMeta.rain.meta", LibFlareFtsoSubParser.authoringMetaV2());
+    }
+}
