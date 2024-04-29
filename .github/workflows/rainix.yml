@@ -20,15 +20,16 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@v4
       - uses: DeterminateSystems/magic-nix-cache-action@v2
 
-      - run: nix run .#rainix-sol-prelude
+      - run: nix develop -c rainix-sol-prelude
         working-directory: ./lib/rain.interpreter
-      - run: nix run .#i9r-prelude
+      - run: nix develop -c i9r-prelude
         working-directory: ./lib/rain.interpreter
 
-      - run: nix run .#rainix-sol-prelude
+      - run: nix develop -c rainix-sol-prelude
+      - run: nix develop -c rain-flare-prelude
       - name: Run ${{ matrix.task }}
         env:
           ETH_RPC_URL: ${{ secrets.CI_DEPLOY_RPC_URL }}
           ETHERSCAN_API_KEY: ${{ secrets.EXPLORER_VERIFICATION_KEY }}
           RPC_URL_FLARE_FORK: ${{ secrets.RPC_URL_FLARE_FORK }}
-        run: nix run .#${{ matrix.task }}
+        run: nix develop -c ${{ matrix.task }}
