@@ -16,7 +16,7 @@ import {
     AuthoringMetaV2
 } from "../abstract/FlareFtsoSubParser.sol";
 
-bytes32 constant DESCRIBED_BY_META_HASH = bytes32(0);
+bytes32 constant DESCRIBED_BY_META_HASH = bytes32(0x24ede5b126d4acfe8f5ba9975cb027f07568798a6ddd681f0e2f23be5b5bd7bc);
 
 /// @title FlareFtsoWords
 /// Simply merges the two abstract contracts into a single concrete contract.

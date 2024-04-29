@@ -6,8 +6,9 @@ import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 
 contract FlareFtsoWordsDescribedByMetaTest is Test {
     function testFlareFtsoWordsDescribedByMeta() external {
+        bytes memory describedByMeta = vm.readFileBinary("meta/FlareFtsoSubParserDescribedByMetaV1.rain.meta");
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
-        assertEq(flareFtsoWords.describedByMetaV1(), bytes32(0), "describedByMetaV1");
+        assertEq(keccak256(describedByMeta), flareFtsoWords.describedByMetaV1(), "describedByMetaV1");
     }
 }

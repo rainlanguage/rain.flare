@@ -19,10 +19,10 @@ bytes constant SUB_PARSER_PARSE_META =
     hex"01000002000000000000000000000000000000000000080000000000000000000000008057ab015dba81";
 
 /// @dev Runtime constant form of the pointers to the word parsers.
-bytes constant SUB_PARSER_WORD_PARSERS = hex"07cc07ee";
+bytes constant SUB_PARSER_WORD_PARSERS = hex"07eb080d";
 
 /// @dev Runtime constant form of the pointers to the operand handlers.
-bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0ca70ca7";
+bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0cc60cc6";
 
 /// @title FlareFtsoSubParser
 /// Implements the sub parser half of FlareFtsoWords. Responsible for parsing
