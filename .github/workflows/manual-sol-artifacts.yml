@@ -40,7 +40,7 @@ jobs:
       - run: nix develop -c rainix-sol-prelude
       - run: nix develop -c rain-flare-prelude
 
-      - run: nix run .#rainix-sol-artifacts
+      - run: nix develop -c rainix-sol-artifacts
         env:
           DEPLOY_BROADCAST: '1'
           DEPLOYMENT_KEY: ${{ github.ref == 'refs/heads/main' && secrets.PRIVATE_KEY || secrets.PRIVATE_KEY_DEV }}
