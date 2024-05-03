@@ -30,14 +30,16 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@v4
       - uses: DeterminateSystems/magic-nix-cache-action@v2
 
-      - run: nix run .#rainix-sol-prelude
+      - run: nix develop -c rainix-sol-prelude
         working-directory: ./lib/rain.interpreter
-      - run: nix run .#rainix-rs-prelude
+      - run: nix develop -c rainix-rs-prelude
         working-directory: ./lib/rain.interpreter
-      - run: nix run .#i9r-prelude
+      - run: nix develop -c i9r-prelude
         working-directory: ./lib/rain.interpreter
 
-      - run: nix run .#rainix-sol-prelude
+      - run: nix develop -c rainix-sol-prelude
+      - run: nix develop -c rain-flare-prelude
+
       - run: nix run .#rainix-sol-artifacts
         env:
           DEPLOY_BROADCAST: '1'
