@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity =0.8.19;
+pragma solidity =0.8.25;
 
 import {FtsoTest, Operand, IFtso} from "../../../abstract/FtsoTest.sol";
 import {LibOpFtsoCurrentPricePair} from "src/lib/op/LibOpFtsoCurrentPricePair.sol";
@@ -25,18 +25,18 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         uint256[] memory inputs = new uint256[](3);
-        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("ETH"));
-        inputs[1] = IntOrAString.unwrap(LibIntOrAString.fromString("BTC"));
+        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString2("ETH"));
+        inputs[1] = IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"));
         inputs[2] = 3600;
         uint256[] memory outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 51003953997244396);
+        assertEq(outputs[0], 0.051003953997244396e18);
 
-        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("BTC"));
-        inputs[1] = IntOrAString.unwrap(LibIntOrAString.fromString("ETH"));
+        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"));
+        inputs[1] = IntOrAString.unwrap(LibIntOrAString.fromString2("ETH"));
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 19606323071619648266);
+        assertEq(outputs[0], 19.606323071619648266e18);
     }
 
     /// An inactive FTSO should revert. Tests the first symbol being inactive.
@@ -56,8 +56,8 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
 
         warpNotStale(currentPriceB, timeout, currentTime);
 
-        uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromString(symbolA));
-        uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromString(symbolB));
+        uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromString2(symbolA));
+        uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromString2(symbolB));
 
         mockRegistry(2);
         mockFtsoRegistry(FTSO_A, symbolA);
@@ -87,8 +87,8 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         vm.assume(bytes(symbolB).length < 0x20);
         vm.assume(keccak256(bytes(symbolA)) != keccak256(bytes(symbolB)));
 
-        uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromString(symbolA));
-        uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromString(symbolB));
+        uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromString2(symbolA));
+        uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromString2(symbolB));
 
         mockRegistry(1);
         mockFtsoRegistry(FTSO_B, symbolB);

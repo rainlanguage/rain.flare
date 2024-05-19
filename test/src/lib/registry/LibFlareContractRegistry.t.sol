@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity =0.8.19;
+pragma solidity =0.8.25;
 
 import {Test, console2} from "forge-std/Test.sol";
 import {LibFork} from "test/fork/LibFork.sol";
