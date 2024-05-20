@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity =0.8.19;
+pragma solidity =0.8.25;
 
 import {BaseRainterpreterSubParserNPE2, Operand} from "rain.interpreter/abstract/BaseRainterpreterSubParserNPE2.sol";
 import {OPCODE_FTSO_CURRENT_PRICE_USD, OPCODE_FTSO_CURRENT_PRICE_PAIR} from "./FlareFtsoExtern.sol";

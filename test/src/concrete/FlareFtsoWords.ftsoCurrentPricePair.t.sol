@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity =0.8.19;
+pragma solidity =0.8.25;
 
 import {OpTest} from "rain.interpreter/../test/abstract/OpTest.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
@@ -16,15 +16,11 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
     }
 
-    function constructionMetaPath() internal pure override returns (string memory) {
-        return string.concat("lib/rain.interpreter/", EXPRESSION_DEPLOYER_NP_META_PATH);
-    }
-
     function testFlareFtsoWordsFtsoCurrentPricePairHappyFork() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 51003953997244396;
+        expectedStack[0] = 0.051003953997244396e18;
 
         checkHappy(
             bytes(
@@ -43,7 +39,7 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 10997318029418;
+        expectedStack[0] = 0.000010997318029418e18;
 
         checkHappy(
             bytes(
@@ -57,7 +53,7 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
             "ftso-current-price-pair(\"FLR\" \"ETH\" 3600)"
         );
 
-        expectedStack[0] = 90931261360718870346598;
+        expectedStack[0] = 90931.261360718870346598e18;
         checkHappy(
             bytes(
                 string.concat(

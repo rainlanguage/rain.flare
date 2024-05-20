@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity =0.8.19;
+pragma solidity =0.8.25;
 
 import {OpTest} from "rain.interpreter/../test/abstract/OpTest.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
@@ -16,15 +16,11 @@ contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
     }
 
-    function constructionMetaPath() internal pure override returns (string memory) {
-        return string.concat("lib/rain.interpreter/", EXPRESSION_DEPLOYER_NP_META_PATH);
-    }
-
     function testFlareFtsoWordsFtsoCurrentPriceUsdHappyFork() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 3541772630000000000000;
+        expectedStack[0] = 3541.77263e18;
 
         checkHappy(
             bytes(

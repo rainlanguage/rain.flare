@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: CAL
-pragma solidity =0.8.19;
+pragma solidity =0.8.25;
 
 import {FtsoTest, Operand} from "../../../abstract/FtsoTest.sol";
 import {
@@ -38,28 +38,28 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         uint256[] memory inputs = new uint256[](2);
-        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("ETH"));
+        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString2("ETH"));
         inputs[1] = 3600;
         uint256[] memory outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 3541772630000000000000);
+        assertEq(outputs[0], 3541.77263e18);
 
-        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("BTC"));
+        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"));
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 69441138430000000000000);
+        assertEq(outputs[0], 69441.13843e18);
 
-        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("XRP"));
+        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString2("XRP"));
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 609340000000000000);
+        assertEq(outputs[0], 0.60934e18);
 
         // USDT is interesting as it probably has different decimals to the
         // others, but should still get normalized to 18 decimals.
-        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString("USDT"));
+        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString2("USDT"));
         outputs = this.externalRun(Operand.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 1000610000000000000);
+        assertEq(outputs[0], 1.00061e18);
     }
 
     function testRunHappy(
@@ -71,7 +71,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         CurrentPrice memory currentPrice
     ) external {
         vm.assume(bytes(symbol).length <= 31);
-        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
         vm.assume(!LibWillOverflow.scale18WillOverflow(currentPrice.price, currentPrice.decimals, 0));
 
         currentTime = warpNotStale(currentPrice, timeout, currentTime);
@@ -103,7 +103,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         CurrentPrice memory currentPrice
     ) external {
         vm.assume(bytes(symbol).length <= 31);
-        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
         vm.assume(LibWillOverflow.scale18WillOverflow(currentPrice.price, currentPrice.decimals, 0));
 
         // timeout = bound(timeout, 1, type(uint256).max);
@@ -137,7 +137,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         CurrentPrice memory currentPrice
     ) external {
         vm.assume(bytes(symbol).length <= 31);
-        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
 
         timeout = bound(timeout, 0, type(uint256).max - 2);
         currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout - 1);
@@ -170,7 +170,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         CurrentPrice memory currentPrice
     ) external {
         vm.assume(bytes(symbol).length <= 31);
-        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
 
         conformPriceDetails(priceDetails, currentPrice);
         vm.assume(
@@ -198,7 +198,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     /// An inactive FTSO should revert.
     function testRunFtsoNotActive(Operand operand, string memory symbol, uint256 timeout) external {
         vm.assume(bytes(symbol).length < 0x20);
-        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString(symbol));
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
 
         mockRegistry();
         mockFtsoRegistry(FTSO, symbol);
