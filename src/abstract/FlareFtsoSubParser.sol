@@ -12,17 +12,9 @@ import {
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR,
     SUB_PARSER_WORD_PARSERS_LENGTH
 } from "../lib/parse/LibFlareFtsoSubParser.sol";
+import {OPERAND_HANDLER_FUNCTION_POINTERS as SUB_PARSER_OPERAND_HANDLERS, SUB_PARSER_WORD_PARSERS, PARSE_META as SUB_PARSER_PARSE_META} from "../generated/FlareFtsoWords.pointers.sol";
 
-/// @dev Runtime constant form of the parse meta. Used to map stringy words into
-/// indexes in roughly O(1).
-bytes constant SUB_PARSER_PARSE_META =
-    hex"01000002000000000000000000000000000000000000080000000000000000000000008057ab015dba81";
-
-/// @dev Runtime constant form of the pointers to the word parsers.
-bytes constant SUB_PARSER_WORD_PARSERS = hex"07eb080d";
-
-/// @dev Runtime constant form of the pointers to the operand handlers.
-bytes constant SUB_PARSER_OPERAND_HANDLERS = hex"0cc60cc6";
+uint8 constant PARSE_META_BUILD_DEPTH = 1;
 
 /// @title FlareFtsoSubParser
 /// Implements the sub parser half of FlareFtsoWords. Responsible for parsing

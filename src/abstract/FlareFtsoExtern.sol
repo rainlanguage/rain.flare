@@ -6,10 +6,7 @@ import {LibConvert} from "rain.lib.typecast/LibConvert.sol";
 import {LibOpFtsoCurrentPriceUsd} from "../lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {LibOpFtsoCurrentPricePair} from "../lib/op/LibOpFtsoCurrentPricePair.sol";
 
-/// @dev Runtime constant form of the pointers to the integrity functions.
-bytes constant INTEGRITY_FUNCTION_POINTERS = hex"0d0b0d17";
-/// @dev Runtime constant form of the pointers to the opcode functions.
-bytes constant OPCODE_FUNCTION_POINTERS = hex"08b10c6d";
+import {INTEGRITY_FUNCTION_POINTERS, OPCODE_FUNCTION_POINTERS} from "../generated/FlareFtsoWords.pointers.sol";
 
 /// @dev Index into the function pointers array for the current USD price.
 uint256 constant OPCODE_FTSO_CURRENT_PRICE_USD = 0;
