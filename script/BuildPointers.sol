@@ -10,7 +10,6 @@ import {PARSE_META_BUILD_DEPTH} from "src/abstract/FlareFtsoSubParser.sol";
 import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
 
 contract BuildPointers is Script {
-
     function buildFlareFtsoWordsPointers() internal {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
@@ -22,9 +21,7 @@ contract BuildPointers is Script {
             name,
             string.concat(
                 LibCodeGen.describedByMetaHashConstantString(vm, name),
-                LibCodeGen.parseMetaConstantString(
-                    vm, LibFlareFtsoSubParser.authoringMetaV2(), PARSE_META_BUILD_DEPTH
-                ),
+                LibCodeGen.parseMetaConstantString(vm, LibFlareFtsoSubParser.authoringMetaV2(), PARSE_META_BUILD_DEPTH),
                 LibCodeGen.subParserWordParsersConstantString(vm, flareFtsoWords),
                 LibCodeGen.operandHandlerFunctionPointersConstantString(vm, flareFtsoWords),
                 LibCodeGen.integrityFunctionPointersConstantString(vm, flareFtsoWords),
@@ -36,5 +33,4 @@ contract BuildPointers is Script {
     function run() external {
         buildFlareFtsoWordsPointers();
     }
-
 }
