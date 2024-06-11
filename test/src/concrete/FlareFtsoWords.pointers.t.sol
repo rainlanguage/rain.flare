@@ -11,7 +11,7 @@ import {
     SUB_PARSER_PARSE_META,
     AuthoringMetaV2
 } from "src/concrete/FlareFtsoWords.sol";
-import {LibParseMeta} from "rain.interpreter/lib/parse/LibParseMeta.sol";
+import {LibGenParseMeta} from "rain.sol.codegen/lib/LibGenParseMeta.sol";
 import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
 
 contract FlareFtsoWordsPointersTest is Test {
@@ -32,13 +32,13 @@ contract FlareFtsoWordsPointersTest is Test {
 
     function testSubParserOperandHandlers() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
-        assertEq(SUB_PARSER_OPERAND_HANDLERS, flareFtsoWords.buildSubParserOperandHandlers());
+        assertEq(SUB_PARSER_OPERAND_HANDLERS, flareFtsoWords.buildOperandHandlerFunctionPointers());
     }
 
     function testSubParserParseMeta() external {
         bytes memory authoringMetaBytes = LibFlareFtsoSubParser.authoringMetaV2();
         AuthoringMetaV2[] memory authoringMeta = abi.decode(authoringMetaBytes, (AuthoringMetaV2[]));
-        bytes memory expected = LibParseMeta.buildParseMetaV2(authoringMeta, 2);
+        bytes memory expected = LibGenParseMeta.buildParseMetaV2(authoringMeta, 2);
         assertEq(SUB_PARSER_PARSE_META, expected);
     }
 }
