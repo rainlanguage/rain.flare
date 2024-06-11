@@ -15,8 +15,7 @@ import {
     BaseRainterpreterSubParserNPE2,
     AuthoringMetaV2
 } from "../abstract/FlareFtsoSubParser.sol";
-
-bytes32 constant DESCRIBED_BY_META_HASH = bytes32(0xa4af808141f37a5104a59093b82aa818b3182917dd682bb0174705adc283f89a);
+import {DESCRIBED_BY_META_HASH} from "../generated/FlareFtsoWords.pointers.sol";
 
 /// @title FlareFtsoWords
 /// Simply merges the two abstract contracts into a single concrete contract.

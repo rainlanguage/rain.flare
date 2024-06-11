@@ -26,7 +26,7 @@
                 -t cbor \
                 -e deflate \
                 -l none \
-                -o meta/FlareFtsoSubParserDescribedByMetaV1.rain.meta \
+                -o meta/FlareFtsoWords.rain.meta \
                 ;
             '';
           };

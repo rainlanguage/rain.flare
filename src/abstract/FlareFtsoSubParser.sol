@@ -51,7 +51,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
     /// Create a 16-bit pointer array for the operand handlers. This is
     /// relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
-    function buildSubParserOperandHandlers() external pure returns (bytes memory) {
+    function buildOperandHandlerFunctionPointers() external pure returns (bytes memory) {
         function(uint256[] memory) internal pure returns (Operand)[] memory fs =
             new function(uint256[] memory) internal pure returns (Operand)[](SUB_PARSER_WORD_PARSERS_LENGTH);
         fs[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD] = LibParseOperand.handleOperandDisallowed;
@@ -62,6 +62,10 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
             pointers := fs
         }
         return LibConvert.unsafeTo16BitBytes(pointers);
+    }
+
+    function buildLiteralParserFunctionPointers() external pure returns (bytes memory) {
+        return "";
     }
 
     /// Create a 16-bit pointer array for the word parsers. This is relatively

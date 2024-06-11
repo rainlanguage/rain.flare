@@ -2,15 +2,9 @@
 pragma solidity =0.8.25;
 
 import {FtsoTest, Operand} from "../../../abstract/FtsoTest.sol";
+import {LibOpFtsoCurrentPriceUsd} from "src/lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {
-    LibOpFtsoCurrentPriceUsd,
-    IFtso,
     IFtsoRegistry,
-    InactiveFtso,
-    PriceNotFinalized,
-    StalePrice
-} from "src/lib/op/LibOpFtsoCurrentPriceUsd.sol";
-import {
     LibFlareContractRegistry,
     FLARE_CONTRACT_REGISTRY,
     FTSO_REGISTRY_NAME,
@@ -21,6 +15,8 @@ import {LibWillOverflow} from "rain.math.fixedpoint/lib/LibWillOverflow.sol";
 import {LibIntOrAString, IntOrAString} from "rain.intorastring/src/lib/LibIntOrAString.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
+import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
+import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "src/err/ErrFtso.sol";
 
 contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     function externalRun(Operand operand, uint256[] memory inputs) external view override returns (uint256[] memory) {
