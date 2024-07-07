@@ -16,10 +16,12 @@ import {
     AuthoringMetaV2
 } from "../abstract/FlareFtsoSubParser.sol";
 import {DESCRIBED_BY_META_HASH} from "../generated/FlareFtsoWords.pointers.sol";
+import {IDescribedByMetaV1} from "rain.metadata/interface/unstable/IDescribedByMetaV1.sol";
 
 /// @title FlareFtsoWords
 /// Simply merges the two abstract contracts into a single concrete contract.
 contract FlareFtsoWords is FlareFtsoExtern, FlareFtsoSubParser {
+    /// @inheritdoc IDescribedByMetaV1
     function describedByMetaV1() external pure returns (bytes32) {
         return DESCRIBED_BY_META_HASH;
     }
