@@ -8,6 +8,7 @@ libs = ["lib"]
 solc = "0.8.25"
 
 remappings = [
+    "forge-std/=lib/rain.interpreter/lib/forge-std/src/",
     "rain.interpreter/=lib/rain.interpreter/src/",
     "@openzeppelin/=lib/rain.interpreter/lib/openzeppelin-contracts/",
     "rain.intorastring/=lib/rain.interpreter/lib/rain.intorastring/",

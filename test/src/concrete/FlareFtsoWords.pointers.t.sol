@@ -35,7 +35,7 @@ contract FlareFtsoWordsPointersTest is Test {
         assertEq(SUB_PARSER_OPERAND_HANDLERS, flareFtsoWords.buildOperandHandlerFunctionPointers());
     }
 
-    function testSubParserParseMeta() external pure {
+    function testSubParserParseMeta() external {
         bytes memory authoringMetaBytes = LibFlareFtsoSubParser.authoringMetaV2();
         AuthoringMetaV2[] memory authoringMeta = abi.decode(authoringMetaBytes, (AuthoringMetaV2[]));
         bytes memory expected = LibGenParseMeta.buildParseMetaV2(authoringMeta, 2);

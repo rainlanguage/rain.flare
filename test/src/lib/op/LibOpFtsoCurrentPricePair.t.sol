@@ -14,7 +14,7 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         return LibOpFtsoCurrentPricePair.run(operand, inputs);
     }
 
-    function testIntegrity(Operand operand, uint256 inputs, uint256 outputs) external pure {
+    function testIntegrity(Operand operand, uint256 inputs, uint256 outputs) external {
         (uint256 calculatedInputs, uint256 calculatedOutputs) =
             LibOpFtsoCurrentPricePair.integrity(operand, inputs, outputs);
         assertEq(calculatedInputs, 3);

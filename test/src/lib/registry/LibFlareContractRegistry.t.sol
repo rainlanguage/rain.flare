@@ -12,7 +12,7 @@ contract LibFlareContractRegistryTest is Test {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
     }
 
-    function testGetFtsoRegistry() external view {
+    function testGetFtsoRegistry() external {
         IFtsoRegistry ftsoRegistry = LibFlareContractRegistry.getFtsoRegistry();
         assertEq(address(ftsoRegistry), address(0x13DC2b5053857AE17a4f95aFF55530b267F3E040));
     }
