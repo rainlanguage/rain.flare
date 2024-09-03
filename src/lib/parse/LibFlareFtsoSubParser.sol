@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: CAL
 pragma solidity ^0.8.19;
 
-import {AuthoringMetaV2} from "rain.interpreter.interface/interface/IParserV1.sol";
+import {AuthoringMetaV2} from "rain.interpreter.interface/interface/deprecated/IParserV1.sol";
 
 /// @dev Index into the function pointers array for the current USD price.
 uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD = 0;

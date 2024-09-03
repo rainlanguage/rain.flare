@@ -14,6 +14,7 @@ remappings = [
     "rain.intorastring/=lib/rain.interpreter/lib/rain.intorastring/",
     "rain.metadata/=lib/rain.interpreter/lib/rain.metadata/src/",
     "rain.interpreter.interface/=lib/rain.interpreter/lib/rain.interpreter.interface/src/",
+    "rain.sol.codegen/=lib/rain.interpreter/lib/rain.sol.codegen/src/",
 ]
 
 fs_permissions = [

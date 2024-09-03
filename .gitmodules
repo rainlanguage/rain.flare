@@ -4,6 +4,3 @@
 [submodule "lib/flare-smart-contracts"]
 	path = lib/flare-smart-contracts
 	url = https://gitlab.com/flarenetwork/flare-smart-contracts
-[submodule "lib/rain.sol.codegen"]
-	path = lib/rain.sol.codegen
-	url = https://github.com/rainlanguage/rain.sol.codegen
