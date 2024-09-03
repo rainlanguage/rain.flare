@@ -10,7 +10,7 @@ import {
     FTSO_REGISTRY_NAME,
     IFlareContractRegistry
 } from "src/lib/registry/LibFlareContractRegistry.sol";
-import {Operand} from "rain.interpreter.interface/interface/IInterpreterV2.sol";
+import {Operand} from "rain.interpreter.interface/interface/deprecated/IInterpreterV2.sol";
 
 abstract contract FtsoTest is Test {
     address constant FTSO = address(0x1000000);

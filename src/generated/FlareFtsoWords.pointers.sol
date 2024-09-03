@@ -9,13 +9,13 @@
 pragma solidity =0.8.25;
 
 /// @dev Hash of the known bytecode.
-bytes32 constant BYTECODE_HASH = bytes32(0x33816d7a2a18c8a02ba4f57626458a49efcaaf7a6453fbfb9b72975a934cad9a);
+bytes32 constant BYTECODE_HASH = bytes32(0xb69e5629bd8ebcb45bfdf15fc4e4353a7660cba965760c486feedf1a18763e23);
 
 /// @dev The hash of the meta that describes the contract.
 bytes32 constant DESCRIBED_BY_META_HASH = bytes32(0xa4af808141f37a5104a59093b82aa818b3182917dd682bb0174705adc283f89a);
 
-/// @dev Encodes the parser meta that is used to lookup word definitions.
-/// The structure of the parser meta is:
+/// @dev The parse meta that is used to lookup word definitions.
+/// The structure of the parse meta is:
 /// - 1 byte: The depth of the bloom filters
 /// - 1 byte: The hashing seed
 /// - The bloom filters, each is 32 bytes long, one for each build depth.
@@ -33,9 +33,10 @@ bytes32 constant DESCRIBED_BY_META_HASH = bytes32(0xa4af808141f37a5104a59093b82a
 bytes constant PARSE_META = hex"01000002000000000000000000000000000000000000080000000000000000000000008057ab015dba81";
 
 /// @dev The build depth of the parser meta.
+
 uint8 constant PARSE_META_BUILD_DEPTH = 1;
 
-/// @dev Real function pointers to the sub parser functions that produce the
+/// @dev The function pointers for the sub parser functions that produce the
 /// bytecode that this contract knows about. This is both constructing the subParser
 /// bytecode that dials back into this contract at eval time, and mapping
 /// to things that happen entirely on the interpreter such as well known

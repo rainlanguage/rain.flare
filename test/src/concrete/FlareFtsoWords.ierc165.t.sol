@@ -5,9 +5,9 @@ import {Test} from "forge-std/Test.sol";
 
 import {IERC165} from "openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
 import {IInterpreterExternV3} from "rain.interpreter.interface/interface/IInterpreterExternV3.sol";
-import {ISubParserV2} from "rain.interpreter.interface/interface/ISubParserV2.sol";
+import {ISubParserV2} from "rain.interpreter.interface/interface/deprecated/ISubParserV2.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
-import {IDescribedByMetaV1} from "rain.metadata/interface/unstable/IDescribedByMetaV1.sol";
+import {IDescribedByMetaV1} from "rain.metadata/interface/IDescribedByMetaV1.sol";
 
 contract FlareFtsoWordsIERC165Test is Test {
     /// Test that ERC165 is implemented for the FlareFtsoWords contract.
