@@ -23,48 +23,10 @@ contract FlareSflrCurrentExchangeRateTest is OpTest {
 
         checkHappy(
             bytes(
-                string.concat(
-                    "using-words-from ",
-                    address(flareFtsoWords).toHexString(),
-                    " _: sflr-exchange-rate();"
-                )
+                string.concat("using-words-from ", address(flareFtsoWords).toHexString(), " _: sflr-exchange-rate();")
             ),
             expectedStack,
             "sflr-exchange-rate()"
         );
     }
-
-    // function testFlareFtsoWordsFtsoCurrentPricePairHappyPrecisionFork()
-    //     external
-    // {
-    //     FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
-
-    //     uint256[] memory expectedStack = new uint256[](1);
-    //     expectedStack[0] = 0.000010997318029418e18;
-
-    //     checkHappy(
-    //         bytes(
-    //             string.concat(
-    //                 "using-words-from ",
-    //                 address(flareFtsoWords).toHexString(),
-    //                 ' _: ftso-current-price-pair("FLR" "ETH" 3600);'
-    //             )
-    //         ),
-    //         expectedStack,
-    //         'ftso-current-price-pair("FLR" "ETH" 3600)'
-    //     );
-
-    //     expectedStack[0] = 90931.261360718870346598e18;
-    //     checkHappy(
-    //         bytes(
-    //             string.concat(
-    //                 "using-words-from ",
-    //                 address(flareFtsoWords).toHexString(),
-    //                 ' _: ftso-current-price-pair("ETH" "FLR" 3600);'
-    //             )
-    //         ),
-    //         expectedStack,
-    //         'ftso-current-price-pair("ETH" "FLR" 3600)'
-    //     );
-    // }
 }

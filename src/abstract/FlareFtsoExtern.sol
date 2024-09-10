@@ -36,45 +36,29 @@ uint256 constant OPCODE_FUNCTION_POINTERS_LENGTH = 3;
 /// appropriate sugar to make the externs work like native rain words.
 abstract contract FlareFtsoExtern is BaseRainterpreterExternNPE2 {
     /// @inheritdoc BaseRainterpreterExternNPE2
-    function opcodeFunctionPointers()
-        internal
-        pure
-        override
-        returns (bytes memory)
-    {
+    function opcodeFunctionPointers() internal pure override returns (bytes memory) {
         return OPCODE_FUNCTION_POINTERS;
     }
 
     /// @inheritdoc BaseRainterpreterExternNPE2
-    function integrityFunctionPointers()
-        internal
-        pure
-        override
-        returns (bytes memory)
-    {
+    function integrityFunctionPointers() internal pure override returns (bytes memory) {
         return INTEGRITY_FUNCTION_POINTERS;
     }
 
     /// Create a 16-bit pointer array for the opcode function pointers. This is
     /// relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
-    function buildOpcodeFunctionPointers()
-        external
-        pure
-        returns (bytes memory)
-    {
+    function buildOpcodeFunctionPointers() external pure returns (bytes memory) {
         function(Operand, uint256[] memory)
             internal
             view
-            returns (uint256[] memory)[]
-            memory fs = new function(Operand, uint256[] memory)
+            returns (uint256[] memory)[] memory fs = new function(Operand, uint256[] memory)
                 internal
                 view
                 returns (uint256[] memory)[](OPCODE_FUNCTION_POINTERS_LENGTH);
         fs[OPCODE_FTSO_CURRENT_PRICE_USD] = LibOpFtsoCurrentPriceUsd.run;
         fs[OPCODE_FTSO_CURRENT_PRICE_PAIR] = LibOpFtsoCurrentPricePair.run;
-        fs[OPCODE_SLFR_CURRENT_EXCHANGE_RATE] = LibOpSLFRCurrentExchangeRate
-            .run;
+        fs[OPCODE_SLFR_CURRENT_EXCHANGE_RATE] = LibOpSLFRCurrentExchangeRate.run;
 
         uint256[] memory pointers;
         assembly ("memory-safe") {
@@ -86,24 +70,17 @@ abstract contract FlareFtsoExtern is BaseRainterpreterExternNPE2 {
     /// Create a 16-bit pointer array for the integrity function pointers. This
     /// is relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
-    function buildIntegrityFunctionPointers()
-        external
-        pure
-        returns (bytes memory)
-    {
+    function buildIntegrityFunctionPointers() external pure returns (bytes memory) {
         function(Operand, uint256, uint256)
             internal
             pure
-            returns (uint256, uint256)[]
-            memory fs = new function(Operand, uint256, uint256)
+            returns (uint256, uint256)[] memory fs = new function(Operand, uint256, uint256)
                 internal
                 pure
                 returns (uint256, uint256)[](OPCODE_FUNCTION_POINTERS_LENGTH);
         fs[OPCODE_FTSO_CURRENT_PRICE_USD] = LibOpFtsoCurrentPriceUsd.integrity;
-        fs[OPCODE_FTSO_CURRENT_PRICE_PAIR] = LibOpFtsoCurrentPricePair
-            .integrity;
-        fs[OPCODE_SLFR_CURRENT_EXCHANGE_RATE] = LibOpSLFRCurrentExchangeRate
-            .integrity;
+        fs[OPCODE_FTSO_CURRENT_PRICE_PAIR] = LibOpFtsoCurrentPricePair.integrity;
+        fs[OPCODE_SLFR_CURRENT_EXCHANGE_RATE] = LibOpSLFRCurrentExchangeRate.integrity;
 
         uint256[] memory pointers;
         assembly ("memory-safe") {

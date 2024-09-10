@@ -2,22 +2,19 @@
 pragma solidity ^0.8.19;
 
 import {Operand} from "rain.interpreter.interface/interface/deprecated/IInterpreterV2.sol";
-import {LibFixedPointDecimalArithmeticOpenZeppelin, Math} from "rain.math.fixedpoint/lib/LibFixedPointDecimalArithmeticOpenZeppelin.sol";
+import {
+    LibFixedPointDecimalArithmeticOpenZeppelin,
+    Math
+} from "rain.math.fixedpoint/lib/LibFixedPointDecimalArithmeticOpenZeppelin.sol";
 import {IStakedFlr} from "../../interface/IStakedFlr.sol";
 
-IStakedFlr constant iStakedFlr = IStakedFlr(
-    address(0x12e605bc104e93B45e1aD99F9e555f659051c2BB)
-);
+IStakedFlr constant iStakedFlr = IStakedFlr(address(0x12e605bc104e93B45e1aD99F9e555f659051c2BB));
 
 /// @title LibOpSLFRCurrentExchangeRate
 /// Implements the `sflrCurrentExchangeRate` externed opcode.
 library LibOpSLFRCurrentExchangeRate {
     /// Extern integrity for getting the current exchange rate of FLR to SFLR.
-    function integrity(
-        Operand,
-        uint256,
-        uint256
-    ) internal pure returns (uint256, uint256) {
+    function integrity(Operand, uint256, uint256) internal pure returns (uint256, uint256) {
         return (0, 1);
     }
 
@@ -43,10 +40,7 @@ library LibOpSLFRCurrentExchangeRate {
     ///      updating for some time.
     /// @return outputs The outputs of the operation.
     ///   0. The derived price of the two assets, normalized to 18 decimals.
-    function run(
-        Operand operand,
-        uint256[] memory inputs
-    ) internal view returns (uint256[] memory) {
+    function run(Operand operand, uint256[] memory inputs) internal view returns (uint256[] memory) {
         uint256 rate = iStakedFlr.getSharesByPooledFlr(1e18);
         uint256[] memory outputs = new uint256[](1);
         outputs[0] = rate;
