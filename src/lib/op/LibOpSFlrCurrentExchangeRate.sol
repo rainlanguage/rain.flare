@@ -8,7 +8,7 @@ import {
 } from "rain.math.fixedpoint/lib/LibFixedPointDecimalArithmeticOpenZeppelin.sol";
 import {IStakedFlr} from "../../interface/IStakedFlr.sol";
 
-/// Immutable upgradeable proxy contract to the sFLR contract.
+/// @dev Immutable upgradeable proxy contract to the sFLR contract.
 IStakedFlr constant SFLR_CONTRACT = IStakedFlr(address(0x12e605bc104e93B45e1aD99F9e555f659051c2BB));
 
 /// @title LibOpSLFRCurrentExchangeRate
