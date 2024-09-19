@@ -22,9 +22,15 @@ library LibOpSLFRCurrentExchangeRate {
     /// Extern implementation for reading the current exchange rate of FLR to sFLR
     /// based on directly reading the underlying assets self-reported by the sFLR contract.
     function run(Operand, uint256[] memory) internal view returns (uint256[] memory) {
-        uint256 rate = SFLR_CONTRACT.getSharesByPooledFlr(1e18);
-        uint256[] memory outputs = new uint256[](1);
-        outputs[0] = rate;
+        uint256 rate18 = SFLR_CONTRACT.getSharesByPooledFlr(1e18);
+        uint256[] memory outputs;
+        assembly ("memory-safe") {
+            outputs := mload(0x40)
+            mstore(0x40, add(outputs, 0x40))
+
+            mstore(outputs, 1)
+            mstore(add(outputs, 0x20), rate18)
+        }
         return outputs;
     }
 }
