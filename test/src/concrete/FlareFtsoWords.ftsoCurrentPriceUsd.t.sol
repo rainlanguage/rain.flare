@@ -18,7 +18,7 @@ contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 3541.77263e18;
+        expectedStack[0] = 2551.33082e18;
 
         checkHappy(
             bytes(
