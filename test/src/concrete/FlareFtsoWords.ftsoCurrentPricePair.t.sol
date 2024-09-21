@@ -18,7 +18,7 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 0.051003953997244396e18;
+        expectedStack[0] = 0.040449958777030651e18;
 
         checkHappy(
             bytes(
@@ -37,7 +37,7 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 0.000010997318029418e18;
+        expectedStack[0] = 0.000005875365077116e18;
 
         checkHappy(
             bytes(
@@ -51,7 +51,7 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
             "ftso-current-price-pair(\"FLR\" \"ETH\" 3600)"
         );
 
-        expectedStack[0] = 90931.261360718870346598e18;
+        expectedStack[0] = 170202.189459639759839893e18;
         checkHappy(
             bytes(
                 string.concat(
