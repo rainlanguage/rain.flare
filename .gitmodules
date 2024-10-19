@@ -4,9 +4,9 @@
 [submodule "lib/flare-smart-contracts-v2"]
 	path = lib/flare-smart-contracts-v2
 	url = https://github.com/flare-foundation/flare-smart-contracts-v2
-[submodule "lib/rain.interpreter.interface"]
-	path = lib/rain.interpreter.interface
-	url = https://github.com/rainlanguage/rain.interpreter.interface
 [submodule "lib/rain.math.fixedpoint"]
 	path = lib/rain.math.fixedpoint
 	url = https://github.com/rainlanguage/rain.math.fixedpoint
+[submodule "lib/rain.interpreter.interface"]
+	path = lib/rain.interpreter.interface
+	url = https://github.com/rainlanguage/rain.interpreter.interface

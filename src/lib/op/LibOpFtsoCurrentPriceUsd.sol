@@ -2,7 +2,7 @@
 pragma solidity ^0.8.19;
 
 import {Operand} from "rain.interpreter.interface/interface/deprecated/IInterpreterV2.sol";
-import {LibIntOrAString, IntOrAString} from "rain.intorastring/src/lib/LibIntOrAString.sol";
+import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
 import {LibFtsoCurrentPriceUsd} from "../price/LibFtsoCurrentPriceUsd.sol";
 
 /// @title LibOpFtsoCurrentPriceUsd

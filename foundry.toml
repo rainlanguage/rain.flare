@@ -10,6 +10,7 @@ solc = "0.8.25"
 remappings = [
     "forge-std/=lib/rain.interpreter.interface/lib/forge-std/src/",
     "rain.sol.codegen/=lib/rain.interpreter.interface/lib/rain.sol.codegen/src/",
+    "rain.intorastring/=lib/rain.interpreter.interface/lib/rain.intorastring/src/",
 ]
 
 fs_permissions = [
