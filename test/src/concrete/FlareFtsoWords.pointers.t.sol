@@ -11,7 +11,7 @@ import {
     SUB_PARSER_PARSE_META,
     AuthoringMetaV2
 } from "src/concrete/FlareFtsoWords.sol";
-import {LibGenParseMeta} from "rain.sol.codegen/lib/LibGenParseMeta.sol";
+import {LibGenParseMeta} from "rain.interpreter.interface/lib/codegen/LibGenParseMeta.sol";
 import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
 
 contract FlareFtsoWordsPointersTest is Test {
