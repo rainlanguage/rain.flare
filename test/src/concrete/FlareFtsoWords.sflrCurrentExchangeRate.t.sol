@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: CAL
 pragma solidity =0.8.25;
 
-import {OpTest} from "rain.interpreter/../test/abstract/OpTest.sol";
+import {OpTest} from "rain.interpreter.interface/../test/abstract/OpTest.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
