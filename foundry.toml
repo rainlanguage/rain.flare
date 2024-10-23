@@ -9,13 +9,11 @@ solc = "0.8.25"
 
 remappings = [
     "forge-std/=lib/rain.interpreter/lib/rain.interpreter.interface/lib/forge-std/src/",
-    "rain.interpreter/=lib/rain.interpreter/src/",
-    "@openzeppelin/=lib/rain.interpreter/lib/rain.interpreter.interface/lib/openzeppelin-contracts/",
-    "openzeppelin-contracts/=lib/rain.interpreter/lib/rain.interpreter.interface/lib/openzeppelin-contracts/",
-    "rain.intorastring/=lib/rain.interpreter/lib/rain.intorastring/",
+    "rain.sol.codegen/=lib/rain.interpreter/lib/rain.interpreter.interface/lib/rain.sol.codegen/src/",
+    "rain.intorastring/=lib/rain.interpreter/lib/rain.interpreter.interface/lib/rain.intorastring/src/",
     "rain.metadata/=lib/rain.interpreter/lib/rain.metadata/src/",
-    "rain.interpreter.interface/=lib/rain.interpreter/lib/rain.interpreter.interface/src/",
-    "rain.sol.codegen/=lib/rain.interpreter/lib/rain.sol.codegen/src/",
+    "rain.interpreter/=lib/rain.interpreter/src/",
+    "@openzeppelin/contracts/token/ERC20/=lib/rain.interpreter/lib/rain.interpreter.interface/lib/forge-std/src/interfaces/",
 ]
 
 fs_permissions = [
