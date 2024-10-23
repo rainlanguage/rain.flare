@@ -8,6 +8,7 @@ import {LibCodeGen} from "rain.sol.codegen/lib/LibCodeGen.sol";
 import {LibFs} from "rain.sol.codegen/lib/LibFs.sol";
 import {PARSE_META_BUILD_DEPTH} from "src/abstract/FlareFtsoSubParser.sol";
 import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
+import {LibGenParseMeta} from "rain.interpreter.interface/lib/codegen/LibGenParseMeta.sol";
 
 contract BuildPointers is Script {
     function buildFlareFtsoWordsPointers() internal {
@@ -21,7 +22,9 @@ contract BuildPointers is Script {
             name,
             string.concat(
                 LibCodeGen.describedByMetaHashConstantString(vm, name),
-                LibCodeGen.parseMetaConstantString(vm, LibFlareFtsoSubParser.authoringMetaV2(), PARSE_META_BUILD_DEPTH),
+                LibGenParseMeta.parseMetaConstantString(
+                    vm, LibFlareFtsoSubParser.authoringMetaV2(), PARSE_META_BUILD_DEPTH
+                ),
                 LibCodeGen.subParserWordParsersConstantString(vm, flareFtsoWords),
                 LibCodeGen.operandHandlerFunctionPointersConstantString(vm, flareFtsoWords),
                 LibCodeGen.integrityFunctionPointersConstantString(vm, flareFtsoWords),

@@ -8,7 +8,7 @@ import {
     OPCODE_SLFR_CURRENT_EXCHANGE_RATE
 } from "./FlareFtsoExtern.sol";
 import {LibSubParse, IInterpreterExternV3} from "rain.interpreter/lib/parse/LibSubParse.sol";
-import {LibHandleOperand} from "rain.interpreter.interface/lib/parse/LibHandleOperand.sol";
+import {LibParseOperand} from "rain.interpreter/lib/parse/LibParseOperand.sol";
 import {LibConvert} from "rain.lib.typecast/LibConvert.sol";
 import {AuthoringMetaV2} from "rain.interpreter.interface/interface/deprecated/IParserV1.sol";
 import {
