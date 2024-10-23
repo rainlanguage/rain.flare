@@ -1,4 +1,4 @@
-FlareFtsoWordsDescribedByMetaTest:testFlareFtsoWordsDescribedByMeta() (gas: 1770184)
+FlareFtsoWordsDescribedByMetaTest:testFlareFtsoWordsDescribedByMeta() (gas: 1770269)
 FlareFtsoWordsFtsoCurrentPricePairTest:testFlareFtsoWordsFtsoCurrentPricePairHappyFork() (gas: 1935329)
 FlareFtsoWordsFtsoCurrentPricePairTest:testFlareFtsoWordsFtsoCurrentPricePairHappyPrecisionFork() (gas: 2050553)
 FlareFtsoWordsFtsoCurrentPriceUsdTest:testFlareFtsoWordsFtsoCurrentPriceUnhappyZeroFork() (gas: 1884473)
