@@ -7,6 +7,9 @@ import {FtsoV2Interface} from "flare-smart-contracts-v2/userInterfaces/LTS/FtsoV
 import {StalePrice} from "../../err/ErrFtso.sol";
 import {IFeeCalculator} from "flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
 
+/// @dev FTSO feed IDs.
+/// https://dev.flare.network/ftso/feeds
+
 /// @dev FLR/USD feed ID.
 bytes21 constant FLR_USD_FEED_ID = 0x01464c522f55534400000000000000000000000000;
 
@@ -36,6 +39,36 @@ bytes21 constant ALGO_USD_FEED_ID = 0x01414c474f2f555344000000000000000000000000
 
 /// @dev ETH/USD feed ID.
 bytes21 constant ETH_USD_FEED_ID = 0x014554482f55534400000000000000000000000000;
+
+/// @dev FIL/USD feed ID.
+bytes21 constant FIL_USD_FEED_ID = 0x0146494c2f55534400000000000000000000000000;
+
+/// @dev ARB/USD feed ID.
+bytes21 constant ARB_USD_FEED_ID = 0x014152422f55534400000000000000000000000000;
+
+/// @dev AVAX/USD feed ID.
+bytes21 constant AVAX_USD_FEED_ID = 0x01415641582f555344000000000000000000000000;
+
+/// @dev BNB/USD feed ID.
+bytes21 constant BNB_USD_FEED_ID = 0x01424e422f55534400000000000000000000000000;
+
+/// @dev POL/USD feed ID.
+bytes21 constant POL_USD_FEED_ID = 0x01504f4c2f55534400000000000000000000000000;
+
+/// @dev SOL/USD feed ID.
+bytes21 constant SOL_USD_FEED_ID = 0x01534f4c2f55534400000000000000000000000000;
+
+/// @dev USDC/USD feed ID.
+bytes21 constant USDC_USD_FEED_ID = 0x01555344432f555344000000000000000000000000;
+
+/// @dev USDT/USD feed ID.
+bytes21 constant USDT_USD_FEED_ID = 0x01555344542f555344000000000000000000000000;
+
+/// @dev XDC/USD feed ID.
+bytes21 constant XDC_USD_FEED_ID = 0x015844432f55534400000000000000000000000000;
+
+/// @dev TRX/USD feed ID.
+bytes21 constant TRX_USD_FEED_ID = 0x015452582f55534400000000000000000000000000;
 
 library LibFtsoV2LTS {
     function ftsoV2LTSGetFeed(bytes21 feedId, uint256 timeout) internal returns (uint256) {

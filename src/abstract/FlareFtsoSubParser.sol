@@ -2,7 +2,12 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 thedavidmeister
 pragma solidity ^0.8.25;
 
-import {BaseRainterpreterSubParserNPE2, Operand, IParserToolingV1, ISubParserToolingV1} from "rain.interpreter/abstract/BaseRainterpreterSubParserNPE2.sol";
+import {
+    BaseRainterpreterSubParserNPE2,
+    Operand,
+    IParserToolingV1,
+    ISubParserToolingV1
+} from "rain.interpreter/abstract/BaseRainterpreterSubParserNPE2.sol";
 import {
     OPCODE_FTSO_CURRENT_PRICE_USD,
     OPCODE_FTSO_CURRENT_PRICE_PAIR,
