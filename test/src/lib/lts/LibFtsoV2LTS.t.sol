@@ -11,6 +11,7 @@ import {LibFlareContractRegistry} from "src/lib/registry/LibFlareContractRegistr
 import {IFeeCalculator} from "flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
 import {IGoverned, IGovernanceSettings} from "src/interface/IGoverned.sol";
 import {IGovernedFeeCalculator} from "src/interface/IGovernedFeeCalculator.sol";
+import {StalePrice} from "src/err/ErrFtso.sol";
 
 contract FeedConsumer {
     function getFeedValue(bytes21 feedId, uint256 timeout) external payable returns (uint256) {
@@ -24,6 +25,15 @@ contract LibFtsoV2LTSTest is Test {
 
         uint256 feedValue = LibFtsoV2LTS.ftsoV2LTSGetFeed(ETH_USD_FEED_ID, 3600);
         assertEq(feedValue, 2522.575e18);
+    }
+
+    function testFtsoV2LTSGetFeedStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(block.timestamp + 3601);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1729795768, 3600));
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
     }
 
     /// forge-config: default.fuzz.runs = 1
