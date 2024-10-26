@@ -7,7 +7,7 @@ import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
 
-uint256 constant BLOCK_NUMBER = 29599077;
+uint256 constant BLOCK_NUMBER = 31843105;
 
 contract FlareSflrCurrentExchangeRateTest is OpTest {
     using Strings for address;
@@ -20,7 +20,7 @@ contract FlareSflrCurrentExchangeRateTest is OpTest {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 0.910960240479513941e18;
+        expectedStack[0] = 0.877817288626455057e18;
 
         checkHappy(
             bytes(
