@@ -16,7 +16,7 @@ contract FlareSflrCurrentExchangeRateTest is OpTest {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
     }
 
-    function testFlareFtsoWordsFtsoCurrentPricePairHappyFork() external {
+    function testFlareFtsoWordsFtsoCurrentExchangeRateHappyFork() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         uint256[] memory expectedStack = new uint256[](1);
