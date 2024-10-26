@@ -33,7 +33,6 @@ contract LibFtsoV2LTSTest is Test {
 
         FeedConsumer feedConsumer = new FeedConsumer();
 
-        // FtsoV2Interface ftsoRegistry = LibFlareContractRegistry.getFtsoV2LTS();
         IFeeCalculator feeCalculator = LibFlareContractRegistry.getFeeCalculator();
 
         address gov = IGoverned(address(feeCalculator)).governance();
