@@ -6,6 +6,8 @@ import {IGovernanceSettings} from "flare-smart-contracts/userInterfaces/IGoverna
 
 interface IGoverned {
     function governance() external view returns (address);
+
     function governanceSettings() external returns (IGovernanceSettings);
+
     function executeGovernanceCall(bytes4 selector) external;
 }
