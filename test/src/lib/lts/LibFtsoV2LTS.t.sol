@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 thedavidmeister
 pragma solidity =0.8.25;
 
-import {Test, console2} from "forge-std/Test.sol";
+import {Test} from "forge-std/Test.sol";
 import {LibFtsoV2LTS, ETH_USD_FEED_ID} from "src/lib/lts/LibFtsoV2LTS.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {LibFork} from "test/fork/LibFork.sol";
