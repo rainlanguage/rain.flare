@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 thedavidmeister
 pragma solidity ^0.8.25;
 
-import {BaseRainterpreterSubParserNPE2, Operand} from "rain.interpreter/abstract/BaseRainterpreterSubParserNPE2.sol";
+import {BaseRainterpreterSubParserNPE2, Operand, IParserToolingV1, ISubParserToolingV1} from "rain.interpreter/abstract/BaseRainterpreterSubParserNPE2.sol";
 import {
     OPCODE_FTSO_CURRENT_PRICE_USD,
     OPCODE_FTSO_CURRENT_PRICE_PAIR,
@@ -53,6 +53,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
     /// Create a 16-bit pointer array for the operand handlers. This is
     /// relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
+    /// @inheritdoc IParserToolingV1
     function buildOperandHandlerFunctionPointers() external pure returns (bytes memory) {
         function(uint256[] memory) internal pure returns (Operand)[] memory fs = new function(uint256[] memory)
                 internal
@@ -69,6 +70,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
         return LibConvert.unsafeTo16BitBytes(pointers);
     }
 
+    /// @inheritdoc IParserToolingV1
     function buildLiteralParserFunctionPointers() external pure returns (bytes memory) {
         return "";
     }
@@ -76,6 +78,7 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
     /// Create a 16-bit pointer array for the word parsers. This is relatively
     /// gas inefficent so it is only called during tests to cross reference
     /// against the constant values that are used at runtime.
+    /// @inheritdoc ISubParserToolingV1
     function buildSubParserWordParsers() external pure returns (bytes memory) {
         function(uint256, uint256, Operand)
             internal
