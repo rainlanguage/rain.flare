@@ -3,6 +3,7 @@
 pragma solidity ^0.8.25;
 
 interface IDineroFlrEth {
+    //slither-disable-next-line naming-convention
     function LSTPerToken() external view returns (uint256 ethAmount);
 
     function tokensPerLST() external view returns (uint256 tokenAmount);
