@@ -8,7 +8,7 @@ import {LibSceptreStakedFlare} from "src/lib/sflr/LibSceptreStakedFlare.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
 
-contract LibFlareContractRegistryTest is Test {
+contract LibSceptreStakedFlareTest is Test {
     constructor() {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
     }
