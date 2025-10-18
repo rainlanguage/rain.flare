@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.19;
 
-import {Operand} from "rain.interpreter.interface/interface/deprecated/IInterpreterV2.sol";
+import {OperandV2, StackItem} from "rain.interpreter.interface/interface/unstable/IInterpreterV4.sol";
 import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
 import {LibFtsoCurrentPriceUsd} from "../price/LibFtsoCurrentPriceUsd.sol";
 
@@ -13,7 +13,7 @@ library LibOpFtsoCurrentPriceUsd {
 
     /// Extern integrity for the process of converting a symbol to a USD price
     /// via an FTSO. Always requires 2 inputs and produces 1 output.
-    function integrity(Operand, uint256, uint256) internal pure returns (uint256, uint256) {
+    function integrity(OperandV2, uint256, uint256) internal pure returns (uint256, uint256) {
         return (2, 1);
     }
 
@@ -33,7 +33,7 @@ library LibOpFtsoCurrentPriceUsd {
     ///      updating for some time.
     /// @return outputs The outputs of the operation. Always 1 item.
     ///   0. The price of the asset in USD, normalized to 18 decimals.
-    function run(Operand, uint256[] memory inputs) internal view returns (uint256[] memory) {
+    function run(OperandV2, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         IntOrAString symbol;
         uint256 timeout;
         assembly ("memory-safe") {
@@ -43,7 +43,7 @@ library LibOpFtsoCurrentPriceUsd {
 
         uint256 price18 = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(symbol.toString(), timeout);
 
-        uint256[] memory outputs;
+        StackItem[] memory outputs;
         assembly ("memory-safe") {
             outputs := mload(0x40)
             mstore(0x40, add(outputs, 0x40))

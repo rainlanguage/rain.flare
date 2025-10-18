@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.19;
 
-import {Operand} from "rain.interpreter.interface/interface/deprecated/IInterpreterV2.sol";
+import {OperandV2, StackItem} from "rain.interpreter.interface/interface/unstable/IInterpreterV4.sol";
 import {
     LibFixedPointDecimalArithmeticOpenZeppelin,
     Math
@@ -15,7 +15,7 @@ library LibOpFtsoCurrentPricePair {
     /// Extern integrity for the process of converting two symbols to a derived
     /// price via their respective FTSOs. Always requires 3 inputs and produces
     /// 1 output.
-    function integrity(Operand, uint256, uint256) internal pure returns (uint256, uint256) {
+    function integrity(OperandV2, uint256, uint256) internal pure returns (uint256, uint256) {
         return (3, 1);
     }
 
@@ -41,7 +41,7 @@ library LibOpFtsoCurrentPricePair {
     ///      updating for some time.
     /// @return outputs The outputs of the operation.
     ///   0. The derived price of the two assets, normalized to 18 decimals.
-    function run(Operand operand, uint256[] memory inputs) internal view returns (uint256[] memory) {
+    function run(OperandV2 operand, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         uint256 symbolA;
         assembly ("memory-safe") {
             // Truncating from 3 inputs to 2, so we can forward directly to the
@@ -50,11 +50,11 @@ library LibOpFtsoCurrentPricePair {
             symbolA := mload(inputs)
             mstore(inputs, 2)
         }
-        uint256[] memory outputsB = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
+        StackItem[] memory outputsB = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
         assembly ("memory-safe") {
             mstore(add(inputs, 0x20), symbolA)
         }
-        uint256[] memory outputsA = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
+        StackItem[] memory outputsA = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
 
         uint256 priceA18;
         uint256 priceB18;

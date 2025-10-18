@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {OpTest} from "rain.interpreter/../test/abstract/OpTest.sol";
+import {OpTest, StackItem} from "rain.interpreter/../test/abstract/OpTest.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
@@ -19,8 +19,8 @@ contract FlareSflrCurrentExchangeRateTest is OpTest {
     function testFlareFtsoWordsFtsoCurrentExchangeRateHappyFork() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
-        uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 0.877817288626455057e18;
+        StackItem[] memory expectedStack = new StackItem[](1);
+        expectedStack[0] = StackItem.wrap(bytes32(uint256(0.877817288626455057e18)));
 
         checkHappy(
             bytes(

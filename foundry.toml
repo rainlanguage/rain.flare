@@ -11,6 +11,7 @@ remappings = [
     "rain.metadata/=lib/rain.interpreter/lib/rain.metadata/src/",
     "rain.interpreter/=lib/rain.interpreter/src/",
     "@openzeppelin/contracts/token/ERC20/=lib/rain.interpreter/lib/rain.interpreter.interface/lib/forge-std/src/interfaces/",
+    "rain.math.float/=lib/rain.interpreter/lib/rain.interpreter.interface/lib/rain.math.float/src/",
 ]
 
 fs_permissions = [

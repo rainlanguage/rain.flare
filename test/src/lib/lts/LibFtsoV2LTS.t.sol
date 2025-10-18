@@ -6,7 +6,6 @@ import {Test} from "forge-std/Test.sol";
 import {LibFtsoV2LTS, ETH_USD_FEED_ID} from "src/lib/lts/LibFtsoV2LTS.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {LibFork} from "test/fork/LibFork.sol";
-import {FtsoV2Interface} from "flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
 import {LibFlareContractRegistry} from "src/lib/registry/LibFlareContractRegistry.sol";
 import {IFeeCalculator} from "flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
 import {IGoverned, IGovernanceSettings} from "src/interface/IGoverned.sol";
