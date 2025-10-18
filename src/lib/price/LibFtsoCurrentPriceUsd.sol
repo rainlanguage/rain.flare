@@ -3,9 +3,8 @@
 pragma solidity ^0.8.19;
 
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
-import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
 import {LibFixedPointDecimalScale} from "rain.math.fixedpoint/lib/LibFixedPointDecimalScale.sol";
-import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "../../err/ErrFtso.sol";
+import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso, IFtso} from "../../err/ErrFtso.sol";
 
 library LibFtsoCurrentPriceUsd {
     function ftsoCurrentPriceUsd(string memory symbol, uint256 timeout) internal view returns (uint256) {

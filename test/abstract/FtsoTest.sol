@@ -3,8 +3,8 @@
 pragma solidity =0.8.25;
 
 import {Test} from "forge-std/Test.sol";
-import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
 import {
+    IFtso,
     IFtsoRegistry,
     LibFlareContractRegistry,
     FLARE_CONTRACT_REGISTRY,
