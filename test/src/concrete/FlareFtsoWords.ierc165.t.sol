@@ -12,6 +12,7 @@ import {IDescribedByMetaV1} from "rain.metadata/interface/IDescribedByMetaV1.sol
 import {IIntegrityToolingV1} from "rain.sol.codegen/interface/IIntegrityToolingV1.sol";
 import {IOpcodeToolingV1} from "rain.sol.codegen/interface/IOpcodeToolingV1.sol";
 import {IParserToolingV1} from "rain.sol.codegen/interface/IParserToolingV1.sol";
+import {ISubParserToolingV1} from "rain.sol.codegen/interface/ISubParserToolingV1.sol";
 
 contract FlareFtsoWordsIERC165Test is Test {
     /// Test that ERC165 is implemented for the FlareFtsoWords contract.
@@ -24,6 +25,7 @@ contract FlareFtsoWordsIERC165Test is Test {
         vm.assume(badInterfaceId != type(IIntegrityToolingV1).interfaceId);
         vm.assume(badInterfaceId != type(IOpcodeToolingV1).interfaceId);
         vm.assume(badInterfaceId != type(IParserToolingV1).interfaceId);
+        vm.assume(badInterfaceId != type(ISubParserToolingV1).interfaceId);
 
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
         assertTrue(flareFtsoWords.supportsInterface(type(IERC165).interfaceId));
@@ -33,6 +35,7 @@ contract FlareFtsoWordsIERC165Test is Test {
         assertTrue(flareFtsoWords.supportsInterface(type(IIntegrityToolingV1).interfaceId));
         assertTrue(flareFtsoWords.supportsInterface(type(IOpcodeToolingV1).interfaceId));
         assertTrue(flareFtsoWords.supportsInterface(type(IParserToolingV1).interfaceId));
+        assertTrue(flareFtsoWords.supportsInterface(type(ISubParserToolingV1).interfaceId));
         assertFalse(flareFtsoWords.supportsInterface(badInterfaceId));
     }
 }

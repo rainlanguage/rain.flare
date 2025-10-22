@@ -9,6 +9,7 @@ import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {InactiveFtso} from "src/err/ErrFtso.sol";
 import {LibWillOverflow} from "rain.math.fixedpoint/lib/LibWillOverflow.sol";
+import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
 
 contract LibOpFtsoCurrentPricePairTest is FtsoTest {
     function externalRun(OperandV2 operand, StackItem[] memory inputs)
@@ -36,13 +37,27 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         inputs[2] = StackItem.wrap(bytes32(uint256(3600)));
         StackItem[] memory outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(StackItem.unwrap(outputs[0]), bytes32(uint256(0.037311198493953294e18)));
+        assertEq(
+            StackItem.unwrap(outputs[0]),
+            Float.unwrap(
+                LibDecimalFloat.packLossless(
+                    0.03731119849395329429139187416029293517999955454915312408433138156716e68, -68
+                )
+            )
+        );
 
         inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"))));
         inputs[1] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("ETH"))));
         outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(StackItem.unwrap(outputs[0]), bytes32(uint256(26.801604889804368446e18)));
+        assertEq(
+            StackItem.unwrap(outputs[0]),
+            Float.unwrap(
+                LibDecimalFloat.packLossless(
+                    26.80160488980436844683612975257089038188438152842367927140678999277e65, -65
+                )
+            )
+        );
     }
 
     /// An inactive FTSO should revert. Tests the first symbol being inactive.
@@ -58,7 +73,8 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         vm.assume(bytes(symbolA).length < 0x20);
         vm.assume(bytes(symbolB).length < 0x20);
         vm.assume(keccak256(bytes(symbolA)) != keccak256(bytes(symbolB)));
-        vm.assume(!LibWillOverflow.scale18WillOverflow(currentPriceB.price, currentPriceB.decimals, 0));
+        currentPriceB.price = bound(currentPriceB.price, 0, uint256(int256(type(int224).max)));
+        currentPriceB.decimals = bound(currentPriceB.decimals, 0, type(uint8).max);
 
         warpNotStale(currentPriceB, timeout, currentTime);
 

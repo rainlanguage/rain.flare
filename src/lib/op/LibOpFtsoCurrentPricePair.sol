@@ -8,10 +8,13 @@ import {
     Math
 } from "rain.math.fixedpoint/lib/LibFixedPointDecimalArithmeticOpenZeppelin.sol";
 import {LibOpFtsoCurrentPriceUsd} from "./LibOpFtsoCurrentPriceUsd.sol";
+import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
 
 /// @title LibOpFtsoCurrentPricePair
 /// Implements the `ftsoCurrentPricePair` externed opcode.
 library LibOpFtsoCurrentPricePair {
+    using LibDecimalFloat for Float;
+
     /// Extern integrity for the process of converting two symbols to a derived
     /// price via their respective FTSOs. Always requires 3 inputs and produces
     /// 1 output.
@@ -56,19 +59,18 @@ library LibOpFtsoCurrentPricePair {
         }
         StackItem[] memory outputsA = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
 
-        uint256 priceA18;
-        uint256 priceB18;
+        Float priceA;
+        Float priceB;
         assembly ("memory-safe") {
-            priceA18 := mload(add(outputsA, 0x20))
-            priceB18 := mload(add(outputsB, 0x20))
+            priceA := mload(add(outputsA, 0x20))
+            priceB := mload(add(outputsB, 0x20))
         }
 
-        uint256 pricePair18 =
-            LibFixedPointDecimalArithmeticOpenZeppelin.fixedPointDiv(priceA18, priceB18, Math.Rounding.Down);
+        Float pricePair = priceA.div(priceB);
 
         // Repurpose one of the inner outputs arrays to return the derived price.
         assembly ("memory-safe") {
-            mstore(add(outputsA, 0x20), pricePair18)
+            mstore(add(outputsA, 0x20), pricePair)
         }
         return outputsA;
     }

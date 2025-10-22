@@ -5,6 +5,9 @@ pragma solidity ^0.8.19;
 import {OperandV2, StackItem} from "rain.interpreter.interface/interface/unstable/IInterpreterV4.sol";
 import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
 import {LibFtsoCurrentPriceUsd} from "../price/LibFtsoCurrentPriceUsd.sol";
+import {DecimalsTooLarge} from "../../err/ErrFtso.sol";
+
+import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
 
 /// @title LibOpFtsoCurrentPriceUsd
 /// Implements the `ftsoCurrentPriceUsd` externed opcode.
@@ -41,7 +44,11 @@ library LibOpFtsoCurrentPriceUsd {
             timeout := mload(add(inputs, 0x40))
         }
 
-        uint256 price18 = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(symbol.toString(), timeout);
+        (uint256 price, uint256 decimals) = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(symbol.toString(), timeout);
+        if (decimals > type(uint8).max) {
+            revert DecimalsTooLarge(decimals);
+        }
+        Float priceFloat = LibDecimalFloat.fromFixedDecimalLosslessPacked(price, uint8(decimals));
 
         StackItem[] memory outputs;
         assembly ("memory-safe") {
@@ -49,7 +56,7 @@ library LibOpFtsoCurrentPriceUsd {
             mstore(0x40, add(outputs, 0x40))
 
             mstore(outputs, 1)
-            mstore(add(outputs, 0x20), price18)
+            mstore(add(outputs, 0x20), priceFloat)
         }
         return outputs;
     }

@@ -10,7 +10,8 @@ import {LibWillOverflow} from "rain.math.fixedpoint/lib/LibWillOverflow.sol";
 import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
-import {InactiveFtso, PriceNotFinalized, StalePrice} from "src/err/ErrFtso.sol";
+import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge} from "src/err/ErrFtso.sol";
+import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
 
 contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     function externalRun(OperandV2 operand, StackItem[] memory inputs)
@@ -37,24 +38,24 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         inputs[1] = StackItem.wrap(bytes32(uint256(3600)));
         StackItem[] memory outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(StackItem.unwrap(outputs[0]), bytes32(uint256(2525.74849e18)));
+        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(2525.74849e5, -5)));
 
         inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"))));
         outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(StackItem.unwrap(outputs[0]), bytes32(uint256(67694.11308e18)));
+        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(67694.11308e5, -5)));
 
         inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("XRP"))));
         outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(StackItem.unwrap(outputs[0]), bytes32(uint256(0.53163e18)));
+        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(0.53163e5, -5)));
 
         // USDT is interesting as it probably has different decimals to the
         // others, but should still get normalized to 18 decimals.
         inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("USDT"))));
         outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(StackItem.unwrap(outputs[0]), bytes32(uint256(0.99919e18)));
+        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(0.99919e5, -5)));
     }
 
     function testRunHappy(
@@ -65,9 +66,10 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         PriceDetails memory priceDetails,
         CurrentPrice memory currentPrice
     ) external {
+        currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
+        currentPrice.decimals = bound(currentPrice.decimals, 0, type(uint8).max);
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
-        vm.assume(!LibWillOverflow.scale18WillOverflow(currentPrice.price, currentPrice.decimals, 0));
 
         currentTime = warpNotStale(currentPrice, timeout, currentTime);
 
@@ -87,7 +89,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         assertEq(outputs.length, 1);
         assertEq(
             StackItem.unwrap(outputs[0]),
-            bytes32(LibFixedPointDecimalScale.scale18(currentPrice.price, currentPrice.decimals, 0))
+            Float.unwrap(LibDecimalFloat.packLossless(int256(currentPrice.price), -int256(currentPrice.decimals)))
         );
     }
 
@@ -102,7 +104,8 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     ) external {
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
-        vm.assume(LibWillOverflow.scale18WillOverflow(currentPrice.price, currentPrice.decimals, 0));
+        currentPrice.decimals = bound(currentPrice.decimals, uint256(type(uint8).max) + 1, uint256(int256(type(int32).max)));
+        currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
 
         // timeout = bound(timeout, 1, type(uint256).max);
         currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout);
@@ -118,7 +121,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         mockPriceDetails(priceDetails);
         mockPrice(FTSO, currentPrice);
 
-        vm.expectRevert();
+        vm.expectRevert(abi.encodeWithSelector(DecimalsTooLarge.selector, currentPrice.decimals));
         StackItem[] memory inputs = new StackItem[](2);
         inputs[0] = StackItem.wrap(bytes32(intSymbol));
         inputs[1] = StackItem.wrap(bytes32(timeout));

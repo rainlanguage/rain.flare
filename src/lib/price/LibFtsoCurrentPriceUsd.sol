@@ -4,10 +4,11 @@ pragma solidity ^0.8.19;
 
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
 import {LibFixedPointDecimalScale} from "rain.math.fixedpoint/lib/LibFixedPointDecimalScale.sol";
-import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso, IFtso} from "../../err/ErrFtso.sol";
+import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "../../err/ErrFtso.sol";
+import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
 
 library LibFtsoCurrentPriceUsd {
-    function ftsoCurrentPriceUsd(string memory symbol, uint256 timeout) internal view returns (uint256) {
+    function ftsoCurrentPriceUsd(string memory symbol, uint256 timeout) internal view returns (uint256, uint256) {
         // Fetch the FTSO from the registry.
         IFtsoRegistry ftsoRegistry = LibFlareContractRegistry.getFtsoRegistry();
         IFtso ftso = ftsoRegistry.getFtsoBySymbol(symbol);
@@ -55,8 +56,6 @@ library LibFtsoCurrentPriceUsd {
             revert StalePrice(priceTimestamp, timeout);
         }
 
-        // Normalize all prices to fixed point 18 decimals.
-        // Flags are 0 i.e. round down and don't saturate (error instead).
-        return LibFixedPointDecimalScale.scale18(price, decimals, 0);
+        return (price, decimals);
     }
 }

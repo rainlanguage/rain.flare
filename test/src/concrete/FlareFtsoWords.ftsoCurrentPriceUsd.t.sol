@@ -7,6 +7,7 @@ import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
 import {BLOCK_NUMBER} from "../lib/registry/LibFlareContractRegistry.t.sol";
+import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
 
 contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
     using Strings for address;
@@ -19,7 +20,7 @@ contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         StackItem[] memory expectedStack = new StackItem[](1);
-        expectedStack[0] = StackItem.wrap(bytes32(uint256(2525.74849e18)));
+        expectedStack[0] = StackItem.wrap(Float.unwrap(LibDecimalFloat.packLossless(2525.74849e5, -5)));
 
         checkHappy(
             bytes(
