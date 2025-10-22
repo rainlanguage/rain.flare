@@ -15,7 +15,7 @@ import {IParserToolingV1} from "rain.sol.codegen/interface/IParserToolingV1.sol"
 
 contract FlareFtsoWordsIERC165Test is Test {
     /// Test that ERC165 is implemented for the FlareFtsoWords contract.
-    /// Need to check both `IInterpreterExternV3` and `ISubParserV2`.
+    /// Need to check both `IInterpreterExternV4` and `ISubParserV4`.
     function testRainterpreterReferenceExternNPE2IERC165(bytes4 badInterfaceId) external {
         vm.assume(badInterfaceId != type(IERC165).interfaceId);
         vm.assume(badInterfaceId != type(IInterpreterExternV4).interfaceId);
