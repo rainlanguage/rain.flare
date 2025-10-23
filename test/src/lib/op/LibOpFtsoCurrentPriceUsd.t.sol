@@ -5,8 +5,6 @@ pragma solidity =0.8.25;
 import {FtsoTest, OperandV2, StackItem} from "../../../abstract/FtsoTest.sol";
 import {LibOpFtsoCurrentPriceUsd} from "src/lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {IFtso} from "src/lib/registry/LibFlareContractRegistry.sol";
-import {LibFixedPointDecimalScale} from "rain.math.fixedpoint/lib/LibFixedPointDecimalScale.sol";
-import {LibWillOverflow} from "rain.math.fixedpoint/lib/LibWillOverflow.sol";
 import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";

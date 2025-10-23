@@ -48,6 +48,8 @@ library LibOpFtsoCurrentPriceUsd {
         if (decimals > type(uint8).max) {
             revert DecimalsTooLarge(decimals);
         }
+        // Check above ensures safe downcast.
+        //forge-lint: disable-next-line(unsafe-typecast)
         Float priceFloat = LibDecimalFloat.fromFixedDecimalLosslessPacked(price, uint8(decimals));
 
         StackItem[] memory outputs;

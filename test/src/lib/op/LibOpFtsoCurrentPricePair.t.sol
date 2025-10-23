@@ -8,7 +8,6 @@ import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAStri
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {InactiveFtso} from "src/err/ErrFtso.sol";
-import {LibWillOverflow} from "rain.math.fixedpoint/lib/LibWillOverflow.sol";
 import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
 
 contract LibOpFtsoCurrentPricePairTest is FtsoTest {
