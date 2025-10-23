@@ -38,13 +38,15 @@ library LibOpFtsoCurrentPriceUsd {
     ///   0. The price of the asset in USD, normalized to 18 decimals.
     function run(OperandV2, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         IntOrAString symbol;
-        uint256 timeout;
+        Float timeout;
         assembly ("memory-safe") {
             symbol := mload(add(inputs, 0x20))
             timeout := mload(add(inputs, 0x40))
         }
 
-        (uint256 price, uint256 decimals) = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(symbol.toString(), timeout);
+        (uint256 price, uint256 decimals) = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(
+            symbol.toString(), LibDecimalFloat.toFixedDecimalLossless(timeout, 0)
+        );
         if (decimals > type(uint8).max) {
             revert DecimalsTooLarge(decimals);
         }

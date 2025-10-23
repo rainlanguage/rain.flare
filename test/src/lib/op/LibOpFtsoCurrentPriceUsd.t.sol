@@ -69,6 +69,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
 
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
         currentTime = warpNotStale(currentPrice, timeout, currentTime);
 
         conformPriceDetails(priceDetails, currentPrice);
@@ -82,7 +83,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
 
         StackItem[] memory inputs = new StackItem[](2);
         inputs[0] = StackItem.wrap(bytes32(intSymbol));
-        inputs[1] = StackItem.wrap(bytes32(timeout));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
         StackItem[] memory outputs = this.externalRun(operand, inputs);
         assertEq(outputs.length, 1);
         assertEq(
@@ -106,7 +107,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
             bound(currentPrice.decimals, uint256(type(uint8).max) + 1, uint256(int256(type(int32).max)));
         currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
 
-        // timeout = bound(timeout, 1, type(uint256).max);
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
         currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout);
         currentTime = bound(currentTime, currentPrice.timestamp, currentPrice.timestamp + timeout);
         vm.warp(currentTime);
@@ -120,10 +121,10 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         mockPriceDetails(priceDetails);
         mockPrice(FTSO, currentPrice);
 
-        vm.expectRevert(abi.encodeWithSelector(DecimalsTooLarge.selector, currentPrice.decimals));
         StackItem[] memory inputs = new StackItem[](2);
         inputs[0] = StackItem.wrap(bytes32(intSymbol));
-        inputs[1] = StackItem.wrap(bytes32(timeout));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+        vm.expectRevert(abi.encodeWithSelector(DecimalsTooLarge.selector, currentPrice.decimals));
         this.externalRun(operand, inputs);
     }
 
@@ -139,7 +140,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
 
-        timeout = bound(timeout, 0, type(uint256).max - 2);
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
         currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout - 1);
         currentTime = bound(currentTime, currentPrice.timestamp + timeout + 1, type(uint256).max);
         vm.warp(currentTime);
@@ -156,7 +157,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, currentPrice.timestamp, timeout));
         StackItem[] memory inputs = new StackItem[](2);
         inputs[0] = StackItem.wrap(bytes32(intSymbol));
-        inputs[1] = StackItem.wrap(bytes32(timeout));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
         this.externalRun(operand, inputs);
     }
 
@@ -171,6 +172,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     ) external {
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
 
         conformPriceDetails(priceDetails, currentPrice);
         vm.assume(
@@ -189,7 +191,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
 
         StackItem[] memory inputs = new StackItem[](2);
         inputs[0] = StackItem.wrap(bytes32(intSymbol));
-        inputs[1] = StackItem.wrap(bytes32(timeout));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
 
         vm.expectRevert(abi.encodeWithSelector(PriceNotFinalized.selector, priceDetails.priceFinalizationType));
         this.externalRun(operand, inputs);
@@ -199,6 +201,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     function testRunFtsoNotActive(OperandV2 operand, string memory symbol, uint256 timeout) external {
         vm.assume(bytes(symbol).length < 0x20);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
 
         mockRegistry();
         mockFtsoRegistry(FTSO, symbol);
@@ -207,7 +210,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
 
         StackItem[] memory inputs = new StackItem[](2);
         inputs[0] = StackItem.wrap(bytes32(intSymbol));
-        inputs[1] = StackItem.wrap(bytes32(timeout));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
         vm.expectRevert(abi.encodeWithSelector(InactiveFtso.selector));
         this.externalRun(operand, inputs);
     }
