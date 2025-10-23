@@ -6,6 +6,7 @@ import {OpTest, StackItem} from "rain.interpreter/../test/abstract/OpTest.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
+import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
 
@@ -20,7 +21,7 @@ contract FlareSflrCurrentExchangeRateTest is OpTest {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         StackItem[] memory expectedStack = new StackItem[](1);
-        expectedStack[0] = StackItem.wrap(bytes32(uint256(0.877817288626455057e18)));
+        expectedStack[0] = StackItem.wrap(Float.unwrap(LibDecimalFloat.packLossless(0.877817288626455057e18, -18)));
 
         checkHappy(
             bytes(
