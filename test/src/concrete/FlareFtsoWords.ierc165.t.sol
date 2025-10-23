@@ -37,5 +37,6 @@ contract FlareFtsoWordsIERC165Test is Test {
         assertTrue(flareFtsoWords.supportsInterface(type(IParserToolingV1).interfaceId));
         assertTrue(flareFtsoWords.supportsInterface(type(ISubParserToolingV1).interfaceId));
         assertFalse(flareFtsoWords.supportsInterface(badInterfaceId));
+        assertFalse(flareFtsoWords.supportsInterface(bytes4(0xffffffff)));
     }
 }
