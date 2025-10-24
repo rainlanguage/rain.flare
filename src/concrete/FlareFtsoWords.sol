@@ -4,16 +4,22 @@ pragma solidity =0.8.25;
 
 import {
     FlareFtsoExtern,
+    //forge-lint: disable-next-line(unused-import)
     OPCODE_FUNCTION_POINTERS,
+    //forge-lint: disable-next-line(unused-import)
     INTEGRITY_FUNCTION_POINTERS,
     BaseRainterpreterExternNPE2
 } from "../abstract/FlareFtsoExtern.sol";
 import {
     FlareFtsoSubParser,
+    //forge-lint: disable-next-line(unused-import)
     SUB_PARSER_WORD_PARSERS,
+    //forge-lint: disable-next-line(unused-import)
     SUB_PARSER_OPERAND_HANDLERS,
+    //forge-lint: disable-next-line(unused-import)
     SUB_PARSER_PARSE_META,
     BaseRainterpreterSubParserNPE2,
+    //forge-lint: disable-next-line(unused-import)
     AuthoringMetaV2
 } from "../abstract/FlareFtsoSubParser.sol";
 import {DESCRIBED_BY_META_HASH} from "../generated/FlareFtsoWords.pointers.sol";

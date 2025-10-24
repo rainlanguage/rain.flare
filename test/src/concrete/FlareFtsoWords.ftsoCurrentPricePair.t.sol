@@ -2,11 +2,12 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {OpTest} from "rain.interpreter/../test/abstract/OpTest.sol";
+import {OpTest, StackItem} from "rain.interpreter/../test/abstract/OpTest.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
 import {BLOCK_NUMBER} from "../lib/registry/LibFlareContractRegistry.t.sol";
+import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
 
 contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
     using Strings for address;
@@ -18,8 +19,14 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
     function testFlareFtsoWordsFtsoCurrentPricePairHappyFork() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
-        uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 0.037311198493953294e18;
+        StackItem[] memory expectedStack = new StackItem[](1);
+        expectedStack[0] = StackItem.wrap(
+            Float.unwrap(
+                LibDecimalFloat.packLossless(
+                    0.03731119849395329429139187416029293517999955454915312408433138156716e68, -68
+                )
+            )
+        );
 
         checkHappy(
             bytes(
@@ -37,8 +44,14 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
     function testFlareFtsoWordsFtsoCurrentPricePairHappyPrecisionFork() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
-        uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 0.000005630014253715e18;
+        StackItem[] memory expectedStack = new StackItem[](1);
+        expectedStack[0] = StackItem.wrap(
+            Float.unwrap(
+                LibDecimalFloat.packLossless(
+                    0.000005630014253715341229403249093895330805483328231149412663808026269472e72, -72
+                )
+            )
+        );
 
         checkHappy(
             bytes(
@@ -52,7 +65,13 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
             "ftso-current-price-pair(\"FLR\" \"ETH\" 3600)"
         );
 
-        expectedStack[0] = 177619.443741209563994374e18;
+        expectedStack[0] = StackItem.wrap(
+            Float.unwrap(
+                LibDecimalFloat.packLossless(
+                    177619.4437412095639943741209563994374120956399437412095639943741209e61, -61
+                )
+            )
+        );
         checkHappy(
             bytes(
                 string.concat(

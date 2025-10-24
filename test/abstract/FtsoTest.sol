@@ -3,15 +3,16 @@
 pragma solidity =0.8.25;
 
 import {Test} from "forge-std/Test.sol";
-import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
 import {
+    IFtso,
     IFtsoRegistry,
+    //forge-lint: disable-next-line(unused-import)
     LibFlareContractRegistry,
     FLARE_CONTRACT_REGISTRY,
     FTSO_REGISTRY_NAME,
     IFlareContractRegistry
 } from "src/lib/registry/LibFlareContractRegistry.sol";
-import {Operand} from "rain.interpreter.interface/interface/deprecated/IInterpreterV2.sol";
+import {OperandV2, StackItem} from "rain.interpreter.interface/interface/unstable/IInterpreterV4.sol";
 
 abstract contract FtsoTest is Test {
     address constant FTSO = address(0x1000000);
@@ -33,7 +34,7 @@ abstract contract FtsoTest is Test {
         uint256 decimals;
     }
 
-    function externalRun(Operand, uint256[] memory) external view virtual returns (uint256[] memory);
+    function externalRun(OperandV2, StackItem[] memory) external view virtual returns (StackItem[] memory);
 
     function warpNotStale(CurrentPrice memory currentPrice, uint256 timeout, uint256 currentTime)
         internal
@@ -136,13 +137,13 @@ abstract contract FtsoTest is Test {
         );
     }
 
-    function testRunNoRegistry(Operand operand, uint256[] memory inputs) external {
+    function testRunNoRegistry(OperandV2 operand, StackItem[] memory inputs) external {
         // This is going to revert because we haven't set up a registry.
         vm.expectRevert();
         this.externalRun(operand, inputs);
     }
 
-    function testRunRegistryNoFtsoRegistry(Operand operand, uint256[] memory inputs) external {
+    function testRunRegistryNoFtsoRegistry(OperandV2 operand, StackItem[] memory inputs) external {
         vm.etch(address(FLARE_CONTRACT_REGISTRY), hex"fe");
         vm.mockCall(
             address(FLARE_CONTRACT_REGISTRY),
@@ -153,7 +154,7 @@ abstract contract FtsoTest is Test {
         this.externalRun(operand, inputs);
     }
 
-    function testRunInvalidFtso(Operand operand, uint256[] memory inputs) external {
+    function testRunInvalidFtso(OperandV2 operand, StackItem[] memory inputs) external {
         vm.etch(address(FLARE_CONTRACT_REGISTRY), hex"fe");
         vm.mockCall(
             address(FLARE_CONTRACT_REGISTRY),

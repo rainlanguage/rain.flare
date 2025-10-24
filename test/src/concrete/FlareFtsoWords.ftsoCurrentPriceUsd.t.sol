@@ -2,11 +2,12 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {OpTest} from "rain.interpreter/../test/abstract/OpTest.sol";
+import {OpTest, StackItem} from "rain.interpreter/../test/abstract/OpTest.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
 import {BLOCK_NUMBER} from "../lib/registry/LibFlareContractRegistry.t.sol";
+import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
 
 contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
     using Strings for address;
@@ -18,8 +19,8 @@ contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
     function testFlareFtsoWordsFtsoCurrentPriceUsdHappyFork() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
-        uint256[] memory expectedStack = new uint256[](1);
-        expectedStack[0] = 2525.74849e18;
+        StackItem[] memory expectedStack = new StackItem[](1);
+        expectedStack[0] = StackItem.wrap(Float.unwrap(LibDecimalFloat.packLossless(2525.74849e5, -5)));
 
         checkHappy(
             bytes(

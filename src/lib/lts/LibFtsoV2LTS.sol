@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.19;
 
+//forge-lint: disable-next-line(unused-import)
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
 import {FtsoV2Interface} from "flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
 import {StalePrice} from "../../err/ErrFtso.sol";
@@ -74,6 +75,7 @@ library LibFtsoV2LTS {
     /// @dev Fetches the value of a feed from the FTSO using V2 LTS.
     /// Note that this is NOT a view function and will cost gas if the FTSO has
     /// a fee set.
+    //forge-lint: disable-next-line(mixed-case-function)
     function ftsoV2LTSGetFeed(bytes21 feedId, uint256 timeout) internal returns (uint256) {
         // Fetch the FTSO from the registry.
         FtsoV2Interface ftsoRegistry = LibFlareContractRegistry.getFtsoV2LTS();

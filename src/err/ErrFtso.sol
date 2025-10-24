@@ -24,3 +24,7 @@ error StalePrice(uint256 timestamp, uint256 timeout);
 /// Thrown when an FTSO reports values from different methods that MUST agree
 /// with each other, but do not.
 error InconsistentFtso();
+
+/// Thrown when decimals are too large to handle safely.
+/// @param decimals The decimals that were too large.
+error DecimalsTooLarge(uint256 decimals);

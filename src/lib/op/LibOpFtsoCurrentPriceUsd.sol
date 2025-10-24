@@ -2,9 +2,12 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.19;
 
-import {Operand} from "rain.interpreter.interface/interface/deprecated/IInterpreterV2.sol";
+import {OperandV2, StackItem} from "rain.interpreter.interface/interface/unstable/IInterpreterV4.sol";
 import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
 import {LibFtsoCurrentPriceUsd} from "../price/LibFtsoCurrentPriceUsd.sol";
+import {DecimalsTooLarge} from "../../err/ErrFtso.sol";
+
+import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
 
 /// @title LibOpFtsoCurrentPriceUsd
 /// Implements the `ftsoCurrentPriceUsd` externed opcode.
@@ -13,7 +16,7 @@ library LibOpFtsoCurrentPriceUsd {
 
     /// Extern integrity for the process of converting a symbol to a USD price
     /// via an FTSO. Always requires 2 inputs and produces 1 output.
-    function integrity(Operand, uint256, uint256) internal pure returns (uint256, uint256) {
+    function integrity(OperandV2, uint256, uint256) internal pure returns (uint256, uint256) {
         return (2, 1);
     }
 
@@ -33,23 +36,31 @@ library LibOpFtsoCurrentPriceUsd {
     ///      updating for some time.
     /// @return outputs The outputs of the operation. Always 1 item.
     ///   0. The price of the asset in USD, normalized to 18 decimals.
-    function run(Operand, uint256[] memory inputs) internal view returns (uint256[] memory) {
+    function run(OperandV2, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         IntOrAString symbol;
-        uint256 timeout;
+        Float timeout;
         assembly ("memory-safe") {
             symbol := mload(add(inputs, 0x20))
             timeout := mload(add(inputs, 0x40))
         }
 
-        uint256 price18 = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(symbol.toString(), timeout);
+        (uint256 price, uint256 decimals) = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(
+            symbol.toString(), LibDecimalFloat.toFixedDecimalLossless(timeout, 0)
+        );
+        if (decimals > type(uint8).max) {
+            revert DecimalsTooLarge(decimals);
+        }
+        // Check above ensures safe downcast.
+        //forge-lint: disable-next-line(unsafe-typecast)
+        Float priceFloat = LibDecimalFloat.fromFixedDecimalLosslessPacked(price, uint8(decimals));
 
-        uint256[] memory outputs;
+        StackItem[] memory outputs;
         assembly ("memory-safe") {
             outputs := mload(0x40)
             mstore(0x40, add(outputs, 0x40))
 
             mstore(outputs, 1)
-            mstore(add(outputs, 0x20), price18)
+            mstore(add(outputs, 0x20), priceFloat)
         }
         return outputs;
     }

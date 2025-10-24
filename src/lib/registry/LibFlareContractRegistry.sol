@@ -2,10 +2,12 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.19;
 
-import {IFlareContractRegistry} from "flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
-import {IFtsoRegistry} from "flare-smart-contracts/userInterfaces/IFtsoRegistry.sol";
 import {FtsoV2Interface} from "flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
 import {IFeeCalculator} from "flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
+import {IFtsoRegistry} from "flare-smart-contracts/userInterfaces/IFtsoRegistry.sol";
+import {IFlareContractRegistry} from "flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
+//forge-lint: disable-next-line(unused-import)
+import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
 
 // The address of the Flare contract registry.
 // This is the same and immutable across all Flare networks
@@ -35,6 +37,7 @@ library LibFlareContractRegistry {
 
     /// Sugar for getting the FTSO V2 LTS contract address from the Flare
     /// contract registry.
+    //forge-lint: disable-next-line(mixed-case-function)
     function getFtsoV2LTS() internal view returns (FtsoV2Interface) {
         return FtsoV2Interface(FLARE_CONTRACT_REGISTRY.getContractAddressByName(FTSO_V2_LTS_NAME));
     }

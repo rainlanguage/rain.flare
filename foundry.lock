@@ -1,0 +1,11 @@
+{
+  "lib/flare-smart-contracts": {
+    "rev": "03ae9c741e364bb5582afdb0dc49726b149c18f7"
+  },
+  "lib/flare-smart-contracts-v2": {
+    "rev": "ecfefacd5677836974bbc193d60031796fb0bd18"
+  },
+  "lib/rain.interpreter": {
+    "rev": "4e4cae4a2fd60cffb74914103154a4690c25171c"
+  }
+}

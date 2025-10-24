@@ -2,20 +2,25 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {FtsoTest, Operand, IFtso} from "../../../abstract/FtsoTest.sol";
+import {FtsoTest, OperandV2, StackItem, IFtso} from "../../../abstract/FtsoTest.sol";
 import {LibOpFtsoCurrentPricePair} from "src/lib/op/LibOpFtsoCurrentPricePair.sol";
 import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {InactiveFtso} from "src/err/ErrFtso.sol";
-import {LibWillOverflow} from "rain.math.fixedpoint/lib/LibWillOverflow.sol";
+import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
 
 contract LibOpFtsoCurrentPricePairTest is FtsoTest {
-    function externalRun(Operand operand, uint256[] memory inputs) external view override returns (uint256[] memory) {
+    function externalRun(OperandV2 operand, StackItem[] memory inputs)
+        external
+        view
+        override
+        returns (StackItem[] memory)
+    {
         return LibOpFtsoCurrentPricePair.run(operand, inputs);
     }
 
-    function testIntegrity(Operand operand, uint256 inputs, uint256 outputs) external pure {
+    function testIntegrity(OperandV2 operand, uint256 inputs, uint256 outputs) external pure {
         (uint256 calculatedInputs, uint256 calculatedOutputs) =
             LibOpFtsoCurrentPricePair.integrity(operand, inputs, outputs);
         assertEq(calculatedInputs, 3);
@@ -25,24 +30,38 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
     function testRunCurrentPricePairForkHappy() external {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
-        uint256[] memory inputs = new uint256[](3);
-        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString2("ETH"));
-        inputs[1] = IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"));
-        inputs[2] = 3600;
-        uint256[] memory outputs = this.externalRun(Operand.wrap(0), inputs);
+        StackItem[] memory inputs = new StackItem[](3);
+        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("ETH"))));
+        inputs[1] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"))));
+        inputs[2] = StackItem.wrap(bytes32(uint256(3600)));
+        StackItem[] memory outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 0.037311198493953294e18);
+        assertEq(
+            StackItem.unwrap(outputs[0]),
+            Float.unwrap(
+                LibDecimalFloat.packLossless(
+                    0.03731119849395329429139187416029293517999955454915312408433138156716e68, -68
+                )
+            )
+        );
 
-        inputs[0] = IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"));
-        inputs[1] = IntOrAString.unwrap(LibIntOrAString.fromString2("ETH"));
-        outputs = this.externalRun(Operand.wrap(0), inputs);
+        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"))));
+        inputs[1] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("ETH"))));
+        outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(outputs[0], 26.801604889804368446e18);
+        assertEq(
+            StackItem.unwrap(outputs[0]),
+            Float.unwrap(
+                LibDecimalFloat.packLossless(
+                    26.80160488980436844683612975257089038188438152842367927140678999277e65, -65
+                )
+            )
+        );
     }
 
     /// An inactive FTSO should revert. Tests the first symbol being inactive.
     function testRunFtsoNotActiveA(
-        Operand operand,
+        OperandV2 operand,
         string memory symbolA,
         string memory symbolB,
         uint256 timeout,
@@ -53,8 +72,10 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         vm.assume(bytes(symbolA).length < 0x20);
         vm.assume(bytes(symbolB).length < 0x20);
         vm.assume(keccak256(bytes(symbolA)) != keccak256(bytes(symbolB)));
-        vm.assume(!LibWillOverflow.scale18WillOverflow(currentPriceB.price, currentPriceB.decimals, 0));
+        currentPriceB.price = bound(currentPriceB.price, 0, uint256(int256(type(int224).max)));
+        currentPriceB.decimals = bound(currentPriceB.decimals, 0, type(uint8).max);
 
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
         warpNotStale(currentPriceB, timeout, currentTime);
 
         uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromString2(symbolA));
@@ -72,21 +93,23 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
 
         vm.mockCall(FTSO_A, abi.encodeWithSelector(IFtso.active.selector), abi.encode(false));
 
-        uint256[] memory inputs = new uint256[](3);
-        inputs[0] = intSymbolA;
-        inputs[1] = intSymbolB;
-        inputs[2] = timeout;
+        StackItem[] memory inputs = new StackItem[](3);
+        inputs[0] = StackItem.wrap(bytes32(intSymbolA));
+        inputs[1] = StackItem.wrap(bytes32(intSymbolB));
+        inputs[2] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
         vm.expectRevert(abi.encodeWithSelector(InactiveFtso.selector));
         this.externalRun(operand, inputs);
     }
 
     /// An inactive FTSO should revert. Tests the second symbol.
-    function testRunFtsoNotActiveB(Operand operand, string memory symbolA, string memory symbolB, uint256 timeout)
+    function testRunFtsoNotActiveB(OperandV2 operand, string memory symbolA, string memory symbolB, uint256 timeout)
         external
     {
         vm.assume(bytes(symbolA).length < 0x20);
         vm.assume(bytes(symbolB).length < 0x20);
         vm.assume(keccak256(bytes(symbolA)) != keccak256(bytes(symbolB)));
+
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
 
         uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromString2(symbolA));
         uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromString2(symbolB));
@@ -96,10 +119,10 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
 
         vm.mockCall(FTSO_B, abi.encodeWithSelector(IFtso.active.selector), abi.encode(false));
 
-        uint256[] memory inputs = new uint256[](3);
-        inputs[0] = intSymbolA;
-        inputs[1] = intSymbolB;
-        inputs[2] = timeout;
+        StackItem[] memory inputs = new StackItem[](3);
+        inputs[0] = StackItem.wrap(bytes32(intSymbolA));
+        inputs[1] = StackItem.wrap(bytes32(intSymbolB));
+        inputs[2] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
         vm.expectRevert(abi.encodeWithSelector(InactiveFtso.selector));
         this.externalRun(operand, inputs);
     }
