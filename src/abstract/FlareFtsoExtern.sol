@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import {BaseRainlangExtern, OperandV2, StackItem} from "rainlang-0.1.1/src/abstract/BaseRainlangExtern.sol";
+import {BaseRainlangExtern, OperandV2, StackItem} from "rainlang-0.1.2/src/abstract/BaseRainlangExtern.sol";
 import {LibConvert} from "rain-lib-typecast-0.1.0/src/LibConvert.sol";
 import {LibOpFtsoCurrentPriceUsd} from "../lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {LibOpFtsoCurrentPricePair} from "../lib/op/LibOpFtsoCurrentPricePair.sol";

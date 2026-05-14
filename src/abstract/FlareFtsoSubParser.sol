@@ -7,14 +7,14 @@ import {
     OperandV2,
     IParserToolingV1,
     ISubParserToolingV1
-} from "rainlang-0.1.1/src/abstract/BaseRainlangSubParser.sol";
+} from "rainlang-0.1.2/src/abstract/BaseRainlangSubParser.sol";
 import {
     OPCODE_FTSO_CURRENT_PRICE_USD,
     OPCODE_FTSO_CURRENT_PRICE_PAIR,
     OPCODE_SLFR_CURRENT_EXCHANGE_RATE
 } from "./FlareFtsoExtern.sol";
-import {LibSubParse, IInterpreterExternV4} from "rainlang-0.1.1/src/lib/parse/LibSubParse.sol";
-import {LibParseOperand} from "rainlang-0.1.1/src/lib/parse/LibParseOperand.sol";
+import {LibSubParse, IInterpreterExternV4} from "rainlang-0.1.2/src/lib/parse/LibSubParse.sol";
+import {LibParseOperand} from "rainlang-0.1.2/src/lib/parse/LibParseOperand.sol";
 import {LibConvert} from "rain-lib-typecast-0.1.0/src/LibConvert.sol";
 //Export this for convenience.
 //forge-lint: disable-next-line(mixed-case-function,unused-import)
