@@ -7,7 +7,7 @@ import {LibFtsoV2LTS, ETH_USD_FEED_ID} from "src/lib/lts/LibFtsoV2LTS.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {LibFlareContractRegistry} from "src/lib/registry/LibFlareContractRegistry.sol";
-import {IFeeCalculator} from "flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
+import {IFeeCalculator} from "../../../../src/vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
 import {IGoverned, IGovernanceSettings} from "src/interface/IGoverned.sol";
 import {IGovernedFeeCalculator} from "src/interface/IGovernedFeeCalculator.sol";
 import {StalePrice} from "src/err/ErrFtso.sol";

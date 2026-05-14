@@ -10,15 +10,6 @@ evm_version = "cancun"
 bytecode_hash = "none"
 cbor_metadata = false
 
-# Vendored Flare interface files (MIT-licensed, under src/vendor/).
-# Neither flare-smart-contracts repo is on soldeer; only these specific
-# interfaces are needed, so they're checked in rather than pulled as
-# submodules.
-remappings = [
-  "flare-smart-contracts/=src/vendor/flare-smart-contracts/",
-  "flare-smart-contracts-v2/=src/vendor/flare-smart-contracts-v2/",
-]
-
 fs_permissions = [
   { access = "read-write", path = "src/generated" },
   { access = "read-write", path = "meta" },

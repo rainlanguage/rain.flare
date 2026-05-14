@@ -2,12 +2,12 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.19;
 
-import {FtsoV2Interface} from "flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
-import {IFeeCalculator} from "flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
-import {IFtsoRegistry} from "flare-smart-contracts/userInterfaces/IFtsoRegistry.sol";
-import {IFlareContractRegistry} from "flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
+import {FtsoV2Interface} from "../../vendor/flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
+import {IFeeCalculator} from "../../vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
+import {IFtsoRegistry} from "../../vendor/flare-smart-contracts/userInterfaces/IFtsoRegistry.sol";
+import {IFlareContractRegistry} from "../../vendor/flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
 //forge-lint: disable-next-line(unused-import)
-import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
+import {IFtso} from "../../vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
 
 // The address of the Flare contract registry.
 // This is the same and immutable across all Flare networks
