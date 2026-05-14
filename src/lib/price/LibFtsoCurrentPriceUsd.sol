@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
 import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "../../err/ErrFtso.sol";
-import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
+import {IFtso} from "../../vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
 
 library LibFtsoCurrentPriceUsd {
     function ftsoCurrentPriceUsd(string memory symbol, uint256 timeout) internal view returns (uint256, uint256) {

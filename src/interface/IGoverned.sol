@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import {IGovernanceSettings} from "flare-smart-contracts/userInterfaces/IGovernanceSettings.sol";
+import {IGovernanceSettings} from "../vendor/flare-smart-contracts/userInterfaces/IGovernanceSettings.sol";
 
 interface IGoverned {
     function governance() external view returns (address);

@@ -6,11 +6,11 @@ import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {LibFork} from "../fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../src/lib/registry/LibFlareContractRegistry.t.sol";
 
-import {IFlareContractRegistry} from "flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
-import {IFtsoRegistry} from "flare-smart-contracts/userInterfaces/IFtsoRegistry.sol";
-import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
-import {FtsoV2Interface} from "flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
-import {IFeeCalculator} from "flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
+import {IFlareContractRegistry} from "../../src/vendor/flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
+import {IFtsoRegistry} from "../../src/vendor/flare-smart-contracts/userInterfaces/IFtsoRegistry.sol";
+import {IFtso} from "../../src/vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
+import {FtsoV2Interface} from "../../src/vendor/flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
+import {IFeeCalculator} from "../../src/vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
 
 import {
     FLARE_CONTRACT_REGISTRY,

@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.19;
 
-import {IFtso} from "flare-smart-contracts/userInterfaces/IFtso.sol";
+import {IFtso} from "../vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
 
 /// Workaround for https://github.com/foundry-rs/foundry/issues/6572
 contract ErrFtso {}
