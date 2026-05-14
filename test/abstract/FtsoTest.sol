@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {Test} from "forge-std/Test.sol";
+import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {
     IFtso,
     IFtsoRegistry,
@@ -12,7 +12,7 @@ import {
     FTSO_REGISTRY_NAME,
     IFlareContractRegistry
 } from "src/lib/registry/LibFlareContractRegistry.sol";
-import {OperandV2, StackItem} from "rain.interpreter.interface/interface/unstable/IInterpreterV4.sol";
+import {OperandV2, StackItem} from "rain-interpreter-interface-0.1.0/src/interface/IInterpreterV4.sol";
 
 abstract contract FtsoTest is Test {
     address constant FTSO = address(0x1000000);

@@ -3,11 +3,11 @@
 pragma solidity ^0.8.25;
 
 import {
-    BaseRainterpreterExternNPE2,
+    BaseRainlangExtern,
     OperandV2,
     StackItem
-} from "rain.interpreter/abstract/BaseRainterpreterExternNPE2.sol";
-import {LibConvert} from "rain.lib.typecast/LibConvert.sol";
+} from "rainlang-0.1.1/src/abstract/BaseRainlangExtern.sol";
+import {LibConvert} from "rain-lib-typecast-0.1.0/src/LibConvert.sol";
 import {LibOpFtsoCurrentPriceUsd} from "../lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {LibOpFtsoCurrentPricePair} from "../lib/op/LibOpFtsoCurrentPricePair.sol";
 import {LibOpSLFRCurrentExchangeRate} from "../lib/op/LibOpSFlrCurrentExchangeRate.sol";
@@ -39,13 +39,13 @@ uint256 constant OPCODE_FUNCTION_POINTERS_LENGTH = 3;
 /// Authoring rainlang against raw extern implementations is not a good UX so
 /// this is intended to be used with FlareFtsoSubParser which provides all the
 /// appropriate sugar to make the externs work like native rain words.
-abstract contract FlareFtsoExtern is BaseRainterpreterExternNPE2 {
-    /// @inheritdoc BaseRainterpreterExternNPE2
+abstract contract FlareFtsoExtern is BaseRainlangExtern {
+    /// @inheritdoc BaseRainlangExtern
     function opcodeFunctionPointers() internal pure override returns (bytes memory) {
         return OPCODE_FUNCTION_POINTERS;
     }
 
-    /// @inheritdoc BaseRainterpreterExternNPE2
+    /// @inheritdoc BaseRainlangExtern
     function integrityFunctionPointers() internal pure override returns (bytes memory) {
         return INTEGRITY_FUNCTION_POINTERS;
     }

@@ -2,11 +2,11 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {OpTest, StackItem} from "rain.interpreter/../test/abstract/OpTest.sol";
+import {OpTest, StackItem} from "rainlang-0.1.1/src/../test/abstract/OpTest.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 import {LibFork} from "test/fork/LibFork.sol";
-import {Strings} from "openzeppelin-contracts/contracts/utils/Strings.sol";
-import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
+import {Strings} from "@openzeppelin-contracts-5.6.1/utils/Strings.sol";
+import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
 

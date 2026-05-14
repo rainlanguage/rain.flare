@@ -2,12 +2,12 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.19;
 
-import {OperandV2, StackItem} from "rain.interpreter.interface/interface/unstable/IInterpreterV4.sol";
-import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
+import {OperandV2, StackItem} from "rain-interpreter-interface-0.1.0/src/interface/IInterpreterV4.sol";
+import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.0/src/lib/LibIntOrAString.sol";
 import {LibFtsoCurrentPriceUsd} from "../price/LibFtsoCurrentPriceUsd.sol";
 import {DecimalsTooLarge} from "../../err/ErrFtso.sol";
 
-import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
+import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
 /// @title LibOpFtsoCurrentPriceUsd
 /// Implements the `ftsoCurrentPriceUsd` externed opcode.
@@ -45,7 +45,7 @@ library LibOpFtsoCurrentPriceUsd {
         }
 
         (uint256 price, uint256 decimals) = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(
-            symbol.toString(), LibDecimalFloat.toFixedDecimalLossless(timeout, 0)
+            symbol.toStringV3(), LibDecimalFloat.toFixedDecimalLossless(timeout, 0)
         );
         if (decimals > type(uint8).max) {
             revert DecimalsTooLarge(decimals);
