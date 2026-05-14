@@ -3,15 +3,23 @@
 
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    rainix.url = "github:rainprotocol/rainix";
+    rainix.url = "github:rainlanguage/rainix";
     rain.url = "github:rainlanguage/rain.cli";
   };
 
-  outputs = { self, flake-utils, rainix, rain }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      flake-utils,
+      rainix,
+      rain,
+      ...
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         pkgs = rainix.pkgs.${system};
-      in rec {
+      in
+      rec {
         packages = {
           rain-flare-prelude = rainix.mkTask.${system} {
             name = "rain-flare-prelude";
@@ -29,8 +37,10 @@
                 -o meta/FlareFtsoWords.rain.meta \
                 ;
             '';
+            additionalBuildInputs = rainix.sol-build-inputs.${system} ++ [ rain.defaultPackage.${system} ];
           };
-        } // rainix.packages.${system};
+        }
+        // rainix.packages.${system};
 
         devShells.default = pkgs.mkShell {
           packages = [
@@ -38,9 +48,8 @@
             rain.defaultPackage.${system}
           ];
 
-          shellHook = rainix.devShells.${system}.default.shellHook;
-          buildInputs = rainix.devShells.${system}.default.buildInputs;
-          nativeBuildInputs = rainix.devShells.${system}.default.nativeBuildInputs;
-        };      }
+          inherit (rainix.devShells.${system}.default) shellHook buildInputs nativeBuildInputs;
+        };
+      }
     );
 }

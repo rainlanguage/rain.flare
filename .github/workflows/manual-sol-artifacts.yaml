@@ -1,0 +1,16 @@
+name: Manual sol artifacts
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "The suite to deploy"
+        required: true
+        type: choice
+        options:
+          - flare-ftso-words
+jobs:
+  deploy:
+    uses: rainlanguage/rainix/.github/workflows/rainix-manual-sol-artifacts.yaml@main
+    with:
+      suite: ${{ inputs.suite }}
+    secrets: inherit

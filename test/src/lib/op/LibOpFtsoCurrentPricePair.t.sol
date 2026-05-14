@@ -4,11 +4,11 @@ pragma solidity =0.8.25;
 
 import {FtsoTest, OperandV2, StackItem, IFtso} from "../../../abstract/FtsoTest.sol";
 import {LibOpFtsoCurrentPricePair} from "src/lib/op/LibOpFtsoCurrentPricePair.sol";
-import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
+import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.0/src/lib/LibIntOrAString.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {InactiveFtso} from "src/err/ErrFtso.sol";
-import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
+import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
 contract LibOpFtsoCurrentPricePairTest is FtsoTest {
     function externalRun(OperandV2 operand, StackItem[] memory inputs)
@@ -31,8 +31,8 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         StackItem[] memory inputs = new StackItem[](3);
-        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("ETH"))));
-        inputs[1] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"))));
+        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("ETH"))));
+        inputs[1] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("BTC"))));
         inputs[2] = StackItem.wrap(bytes32(uint256(3600)));
         StackItem[] memory outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
@@ -45,8 +45,8 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
             )
         );
 
-        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"))));
-        inputs[1] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("ETH"))));
+        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("BTC"))));
+        inputs[1] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("ETH"))));
         outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
         assertEq(
@@ -78,8 +78,8 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
         warpNotStale(currentPriceB, timeout, currentTime);
 
-        uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromString2(symbolA));
-        uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromString2(symbolB));
+        uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbolA));
+        uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbolB));
 
         mockRegistry(2);
         mockFtsoRegistry(FTSO_A, symbolA);
@@ -111,8 +111,8 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
 
         timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
 
-        uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromString2(symbolA));
-        uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromString2(symbolB));
+        uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbolA));
+        uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbolB));
 
         mockRegistry(1);
         mockFtsoRegistry(FTSO_B, symbolB);

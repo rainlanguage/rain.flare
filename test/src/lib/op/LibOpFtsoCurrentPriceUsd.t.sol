@@ -5,11 +5,11 @@ pragma solidity =0.8.25;
 import {FtsoTest, OperandV2, StackItem} from "../../../abstract/FtsoTest.sol";
 import {LibOpFtsoCurrentPriceUsd} from "src/lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {IFtso} from "src/lib/registry/LibFlareContractRegistry.sol";
-import {LibIntOrAString, IntOrAString} from "rain.intorastring/lib/LibIntOrAString.sol";
+import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.0/src/lib/LibIntOrAString.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge} from "src/err/ErrFtso.sol";
-import {LibDecimalFloat, Float} from "rain.math.float/lib/LibDecimalFloat.sol";
+import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
 contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     function externalRun(OperandV2 operand, StackItem[] memory inputs)
@@ -32,25 +32,25 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         StackItem[] memory inputs = new StackItem[](2);
-        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("ETH"))));
+        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("ETH"))));
         inputs[1] = StackItem.wrap(bytes32(uint256(3600)));
         StackItem[] memory outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
         assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(2525.74849e5, -5)));
 
-        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("BTC"))));
+        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("BTC"))));
         outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
         assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(67694.11308e5, -5)));
 
-        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("XRP"))));
+        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("XRP"))));
         outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
         assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(0.53163e5, -5)));
 
         // USDT is interesting as it probably has different decimals to the
         // others, but should still get normalized to 18 decimals.
-        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromString2("USDT"))));
+        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("USDT"))));
         outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
         assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(0.99919e5, -5)));
@@ -67,7 +67,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
         currentPrice.decimals = bound(currentPrice.decimals, 0, type(uint8).max);
         vm.assume(bytes(symbol).length <= 31);
-        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
 
         timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
         currentTime = warpNotStale(currentPrice, timeout, currentTime);
@@ -102,7 +102,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         CurrentPrice memory currentPrice
     ) external {
         vm.assume(bytes(symbol).length <= 31);
-        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
         currentPrice.decimals =
             bound(currentPrice.decimals, uint256(type(uint8).max) + 1, uint256(int256(type(int32).max)));
         currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
@@ -138,7 +138,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         CurrentPrice memory currentPrice
     ) external {
         vm.assume(bytes(symbol).length <= 31);
-        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
 
         timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
         currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout - 1);
@@ -171,17 +171,14 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         CurrentPrice memory currentPrice
     ) external {
         vm.assume(bytes(symbol).length <= 31);
-        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
         timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
 
         conformPriceDetails(priceDetails, currentPrice);
         vm.assume(
-            !(
-                (
-                    priceDetails.priceFinalizationType == uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN)
-                        || (priceDetails.priceFinalizationType == uint8(IFtso.PriceFinalizationType.TRUSTED_ADDRESSES))
-                )
-            )
+            !((priceDetails.priceFinalizationType == uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN)
+                        || (priceDetails.priceFinalizationType
+                                == uint8(IFtso.PriceFinalizationType.TRUSTED_ADDRESSES))))
         );
 
         mockRegistry();
@@ -200,7 +197,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     /// An inactive FTSO should revert.
     function testRunFtsoNotActive(OperandV2 operand, string memory symbol, uint256 timeout) external {
         vm.assume(bytes(symbol).length < 0x20);
-        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromString2(symbol));
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
         timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
 
         mockRegistry();

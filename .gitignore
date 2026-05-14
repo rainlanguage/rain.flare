@@ -1,6 +1,7 @@
 # Compiler files
 cache/
 out/
+dependencies/
 
 # Ignores development broadcast logs
 !/broadcast
@@ -13,4 +14,5 @@ docs/
 # Dotenv file
 .env
 
-meta
+.direnv
+.pre-commit-config.yaml

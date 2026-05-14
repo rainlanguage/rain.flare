@@ -3,22 +3,22 @@
 pragma solidity ^0.8.25;
 
 import {
-    BaseRainterpreterSubParserNPE2,
+    BaseRainlangSubParser,
     OperandV2,
     IParserToolingV1,
     ISubParserToolingV1
-} from "rain.interpreter/abstract/BaseRainterpreterSubParserNPE2.sol";
+} from "rainlang-0.1.1/src/abstract/BaseRainlangSubParser.sol";
 import {
     OPCODE_FTSO_CURRENT_PRICE_USD,
     OPCODE_FTSO_CURRENT_PRICE_PAIR,
     OPCODE_SLFR_CURRENT_EXCHANGE_RATE
 } from "./FlareFtsoExtern.sol";
-import {LibSubParse, IInterpreterExternV4} from "rain.interpreter/lib/parse/LibSubParse.sol";
-import {LibParseOperand} from "rain.interpreter/lib/parse/LibParseOperand.sol";
-import {LibConvert} from "rain.lib.typecast/LibConvert.sol";
+import {LibSubParse, IInterpreterExternV4} from "rainlang-0.1.1/src/lib/parse/LibSubParse.sol";
+import {LibParseOperand} from "rainlang-0.1.1/src/lib/parse/LibParseOperand.sol";
+import {LibConvert} from "rain-lib-typecast-0.1.0/src/LibConvert.sol";
 //Export this for convenience.
 //forge-lint: disable-next-line(mixed-case-function,unused-import)
-import {AuthoringMetaV2} from "rain.interpreter.interface/interface/deprecated/IParserV1.sol";
+import {AuthoringMetaV2} from "rain-interpreter-interface-0.1.0/src/interface/deprecated/v1/IParserV1.sol";
 import {
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD,
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR,
@@ -37,22 +37,22 @@ uint8 constant PARSE_META_BUILD_DEPTH = 1;
 /// Implements the sub parser half of FlareFtsoWords. Responsible for parsing
 /// the words and operands that are used by the FlareFtsoWords. Provides the
 /// sugar required to make the externs work like native rain words.
-abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
+abstract contract FlareFtsoSubParser is BaseRainlangSubParser {
     /// Allows the FlareFtsoWords contract to feed the extern address (itself)
     /// into the sub parser functions by overriding `extern`.
     function extern() internal view virtual returns (address);
 
-    /// @inheritdoc BaseRainterpreterSubParserNPE2
+    /// @inheritdoc BaseRainlangSubParser
     function subParserParseMeta() internal pure override returns (bytes memory) {
         return SUB_PARSER_PARSE_META;
     }
 
-    /// @inheritdoc BaseRainterpreterSubParserNPE2
+    /// @inheritdoc BaseRainlangSubParser
     function subParserWordParsers() internal pure override returns (bytes memory) {
         return SUB_PARSER_WORD_PARSERS;
     }
 
-    /// @inheritdoc BaseRainterpreterSubParserNPE2
+    /// @inheritdoc BaseRainlangSubParser
     function subParserOperandHandlers() internal pure override returns (bytes memory) {
         return SUB_PARSER_OPERAND_HANDLERS;
     }
@@ -62,10 +62,8 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
     /// reference against the constant values that are used at runtime.
     /// @inheritdoc IParserToolingV1
     function buildOperandHandlerFunctionPointers() external pure returns (bytes memory) {
-        function(bytes32[] memory) internal pure returns (OperandV2)[] memory fs = new function(bytes32[] memory)
-                internal
-                pure
-                returns (OperandV2)[](SUB_PARSER_WORD_PARSERS_LENGTH);
+        function(bytes32[] memory) internal pure returns (OperandV2)[] memory fs =
+            new function(bytes32[] memory) internal pure returns (OperandV2)[](SUB_PARSER_WORD_PARSERS_LENGTH);
         fs[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD] = LibParseOperand.handleOperandDisallowed;
         fs[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR] = LibParseOperand.handleOperandDisallowed;
         fs[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE] = LibParseOperand.handleOperandDisallowed;
@@ -87,13 +85,9 @@ abstract contract FlareFtsoSubParser is BaseRainterpreterSubParserNPE2 {
     /// against the constant values that are used at runtime.
     /// @inheritdoc ISubParserToolingV1
     function buildSubParserWordParsers() external pure returns (bytes memory) {
-        function(uint256, uint256, OperandV2)
-            internal
-            view
-            returns (bool, bytes memory, bytes32[] memory)[] memory fs = new function(uint256, uint256, OperandV2)
-                internal
-                view
-                returns (bool, bytes memory, bytes32[] memory)[](SUB_PARSER_WORD_PARSERS_LENGTH);
+        function(uint256, uint256, OperandV2) internal view returns (bool, bytes memory, bytes32[] memory)[] memory fs = new function(uint256, uint256, OperandV2)
+        internal
+        view returns (bool, bytes memory, bytes32[] memory)[](SUB_PARSER_WORD_PARSERS_LENGTH);
         fs[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD] = ftsoCurrentPriceUsdSubParser;
         fs[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR] = ftsoCurrentPricePairSubParser;
         fs[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE] = sFlrCurrentExchangeRateSubParser;
