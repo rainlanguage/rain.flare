@@ -19,7 +19,17 @@ import {
     FEE_CALCULATOR_NAME,
     LibFlareContractRegistry
 } from "../../src/lib/registry/LibFlareContractRegistry.sol";
-import {FLR_USD_FEED_ID, BTC_USD_FEED_ID} from "../../src/lib/lts/LibFtsoV2LTS.sol";
+import {
+    FLR_USD_FEED_ID,
+    SGB_USD_FEED_ID,
+    BTC_USD_FEED_ID,
+    XRP_USD_FEED_ID,
+    LTC_USD_FEED_ID,
+    XLM_USD_FEED_ID,
+    DOGE_USD_FEED_ID,
+    ADA_USD_FEED_ID,
+    ETH_USD_FEED_ID
+} from "../../src/lib/lts/LibFtsoV2LTS.sol";
 
 /// @title FlareInterfacesProdTest
 /// @notice Exercises every method this repo calls on a vendored Flare
@@ -102,5 +112,63 @@ contract FlareInterfacesProdTest is Test {
         (uint256 value, uint64 timestamp) = ftsoV2.getFeedByIdInWei{value: fee}(BTC_USD_FEED_ID);
         assertTrue(value > 0, "BTC feed value is zero");
         assertTrue(timestamp > 0, "BTC feed timestamp is zero");
+    }
+
+    /// IFtsoRegistry.getFtsoBySymbol resolves the canonical major symbols.
+    function testFtsoRegistryGetFtsoBySymbolMajors() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+        IFtsoRegistry registry = LibFlareContractRegistry.getFtsoRegistry();
+        string[7] memory symbols = ["FLR", "BTC", "ETH", "XRP", "LTC", "ADA", "DOGE"];
+        for (uint256 i = 0; i < symbols.length; i++) {
+            IFtso ftso = registry.getFtsoBySymbol(symbols[i]);
+            assertTrue(address(ftso) != address(0), string.concat(symbols[i], " FTSO not found"));
+            assertTrue(ftso.active(), string.concat(symbols[i], " FTSO not active"));
+            (uint256 price, uint256 timestamp, uint256 decimals) = ftso.getCurrentPriceWithDecimals();
+            assertTrue(price > 0, string.concat(symbols[i], " price is zero"));
+            assertTrue(timestamp > 0, string.concat(symbols[i], " timestamp is zero"));
+            assertTrue(decimals > 0 && decimals < 30, string.concat(symbols[i], " decimals out of range"));
+        }
+    }
+
+    /// IFeeCalculator handles multi-feed batches, which LibFtsoV2LTS may
+    /// invoke for pair lookups.
+    function testFeeCalculatorMultipleFeeds() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+        IFeeCalculator feeCalc = LibFlareContractRegistry.getFeeCalculator();
+        bytes21[] memory feedIds = new bytes21[](3);
+        feedIds[0] = FLR_USD_FEED_ID;
+        feedIds[1] = BTC_USD_FEED_ID;
+        feedIds[2] = ETH_USD_FEED_ID;
+        uint256 fee = feeCalc.calculateFeeByIds(feedIds);
+        assertTrue(fee < 1 ether, "multi-feed fee is implausibly large");
+    }
+
+    /// FtsoV2 LTS feeds resolve and return non-zero values for every feed ID
+    /// defined as a constant in LibFtsoV2LTS that this repo's source might
+    /// reference.
+    function testFtsoV2LTSFeedsAllMajors() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+        FtsoV2Interface ftsoV2 = LibFlareContractRegistry.getFtsoV2LTS();
+        IFeeCalculator feeCalc = LibFlareContractRegistry.getFeeCalculator();
+        bytes21[9] memory feeds = [
+            FLR_USD_FEED_ID,
+            SGB_USD_FEED_ID,
+            BTC_USD_FEED_ID,
+            XRP_USD_FEED_ID,
+            LTC_USD_FEED_ID,
+            XLM_USD_FEED_ID,
+            DOGE_USD_FEED_ID,
+            ADA_USD_FEED_ID,
+            ETH_USD_FEED_ID
+        ];
+        for (uint256 i = 0; i < feeds.length; i++) {
+            bytes21[] memory ids = new bytes21[](1);
+            ids[0] = feeds[i];
+            uint256 fee = feeCalc.calculateFeeByIds(ids);
+            vm.deal(address(this), fee);
+            (uint256 value, uint64 timestamp) = ftsoV2.getFeedByIdInWei{value: fee}(feeds[i]);
+            assertTrue(value > 0, "feed value is zero");
+            assertTrue(timestamp > 0, "feed timestamp is zero");
+        }
     }
 }
