@@ -62,10 +62,8 @@ abstract contract FlareFtsoSubParser is BaseRainlangSubParser {
     /// reference against the constant values that are used at runtime.
     /// @inheritdoc IParserToolingV1
     function buildOperandHandlerFunctionPointers() external pure returns (bytes memory) {
-        function(bytes32[] memory) internal pure returns (OperandV2)[] memory fs = new function(bytes32[] memory)
-                internal
-                pure
-                returns (OperandV2)[](SUB_PARSER_WORD_PARSERS_LENGTH);
+        function(bytes32[] memory) internal pure returns (OperandV2)[] memory fs =
+            new function(bytes32[] memory) internal pure returns (OperandV2)[](SUB_PARSER_WORD_PARSERS_LENGTH);
         fs[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD] = LibParseOperand.handleOperandDisallowed;
         fs[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR] = LibParseOperand.handleOperandDisallowed;
         fs[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE] = LibParseOperand.handleOperandDisallowed;
@@ -87,13 +85,9 @@ abstract contract FlareFtsoSubParser is BaseRainlangSubParser {
     /// against the constant values that are used at runtime.
     /// @inheritdoc ISubParserToolingV1
     function buildSubParserWordParsers() external pure returns (bytes memory) {
-        function(uint256, uint256, OperandV2)
-            internal
-            view
-            returns (bool, bytes memory, bytes32[] memory)[] memory fs = new function(uint256, uint256, OperandV2)
-                internal
-                view
-                returns (bool, bytes memory, bytes32[] memory)[](SUB_PARSER_WORD_PARSERS_LENGTH);
+        function(uint256, uint256, OperandV2) internal view returns (bool, bytes memory, bytes32[] memory)[] memory fs = new function(uint256, uint256, OperandV2)
+        internal
+        view returns (bool, bytes memory, bytes32[] memory)[](SUB_PARSER_WORD_PARSERS_LENGTH);
         fs[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD] = ftsoCurrentPriceUsdSubParser;
         fs[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR] = ftsoCurrentPricePairSubParser;
         fs[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE] = sFlrCurrentExchangeRateSubParser;

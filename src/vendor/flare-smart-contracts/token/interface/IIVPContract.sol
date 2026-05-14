@@ -35,12 +35,7 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @param _bips The percentage of voting power to be delegated expressed in basis points (1/100 of one percent).
      * Not cumulative: every call resets the delegation value (and a value of 0 revokes delegation).
      */
-    function delegate(
-        address _from,
-        address _to,
-        uint256 _balance,
-        uint256 _bips
-    ) external;
+    function delegate(address _from, address _to, uint256 _balance, uint256 _bips) external;
 
     /**
      * Explicitly delegate `_amount` tokens of voting power from a delegator address to a delegatee address.
@@ -50,12 +45,7 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @param _amount An explicit vote power amount to be delegated.
      * Not cumulative: every call resets the delegation value (and a value of 0 undelegates `_to`).
      */
-    function delegateExplicit(
-        address _from,
-        address _to,
-        uint256 _balance,
-        uint _amount
-    ) external;
+    function delegateExplicit(address _from, address _to, uint256 _balance, uint256 _amount) external;
 
     /**
      * Revoke all vote power delegation from a delegator address to a delegatee address at a given block.
@@ -68,12 +58,7 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @param _balance The delegator's current balance.
      * @param _blockNumber The block number at which to revoke delegation. Must be in the past.
      */
-    function revokeDelegationAt(
-        address _from,
-        address _to,
-        uint256 _balance,
-        uint _blockNumber
-    ) external;
+    function revokeDelegationAt(address _from, address _to, uint256 _balance, uint256 _blockNumber) external;
 
     /**
      * Undelegate all voting power for a delegator address.
@@ -82,10 +67,7 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @param _from The address of the delegator.
      * @param _balance The delegator's current balance.
      */
-    function undelegateAll(
-        address _from,
-        uint256 _balance
-    ) external;
+    function undelegateAll(address _from, uint256 _balance) external;
 
     /**
      * Undelegate all explicit vote power by amount for a delegator address.
@@ -96,10 +78,7 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * so the caller must supply them.
      * @return The amount still delegated (in case the list of delegates was incomplete).
      */
-    function undelegateAllExplicit(
-        address _from,
-        address[] memory _delegateAddresses
-    ) external returns (uint256);
+    function undelegateAllExplicit(address _from, address[] memory _delegateAddresses) external returns (uint256);
 
     /**
      * Get the vote power of an address at a given block number.
@@ -108,14 +87,14 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @param _blockNumber The block number being queried.
      * @return Vote power of `_who` at `_blockNumber`, including any delegation received.
      */
-    function votePowerOfAtCached(address _who, uint256 _blockNumber) external returns(uint256);
+    function votePowerOfAtCached(address _who, uint256 _blockNumber) external returns (uint256);
 
     /**
      * Get the current vote power of an address.
      * @param _who The address being queried.
      * @return Current vote power of `_who`, including any delegation received.
      */
-    function votePowerOf(address _who) external view returns(uint256);
+    function votePowerOf(address _who) external view returns (uint256);
 
     /**
      * Get the vote power of an address at a given block number
@@ -123,7 +102,7 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @param _blockNumber The block number being queried.
      * @return Vote power of `_who` at `_blockNumber`, including any delegation received.
      */
-    function votePowerOfAt(address _who, uint256 _blockNumber) external view returns(uint256);
+    function votePowerOfAt(address _who, uint256 _blockNumber) external view returns (uint256);
 
     /**
      * Get the vote power of an address at a given block number, ignoring revocation information and cache.
@@ -132,7 +111,7 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @return Vote power of `_who` at `_blockNumber`, including any delegation received.
      * Result doesn't change if vote power is revoked.
      */
-    function votePowerOfAtIgnoringRevocation(address _who, uint256 _blockNumber) external view returns(uint256);
+    function votePowerOfAtIgnoringRevocation(address _who, uint256 _blockNumber) external view returns (uint256);
 
     /**
      * Get the vote power of a set of addresses at a given block number.
@@ -140,11 +119,7 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @param _blockNumber The block number being queried.
      * @return Vote power of each address at `_blockNumber`, including any delegation received.
      */
-    function batchVotePowerOfAt(
-        address[] memory _owners,
-        uint256 _blockNumber
-    )
-        external view returns(uint256[] memory);
+    function batchVotePowerOfAt(address[] memory _owners, uint256 _blockNumber) external view returns (uint256[] memory);
 
     /**
      * Get current delegated vote power from a delegator to a delegatee.
@@ -153,26 +128,20 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @param _balance The delegator's current balance.
      * @return The delegated vote power.
      */
-    function votePowerFromTo(
-        address _from,
-        address _to,
-        uint256 _balance
-    ) external view returns(uint256);
+    function votePowerFromTo(address _from, address _to, uint256 _balance) external view returns (uint256);
 
     /**
-    * Get delegated the vote power from a delegator to a delegatee at a given block number.
-    * @param _from Address of the delegator.
-    * @param _to Address of the delegatee.
-    * @param _balance The delegator's current balance.
-    * @param _blockNumber The block number being queried.
-    * @return The delegated vote power.
-    */
-    function votePowerFromToAt(
-        address _from,
-        address _to,
-        uint256 _balance,
-        uint _blockNumber
-    ) external view returns(uint256);
+     * Get delegated the vote power from a delegator to a delegatee at a given block number.
+     * @param _from Address of the delegator.
+     * @param _to Address of the delegatee.
+     * @param _balance The delegator's current balance.
+     * @param _blockNumber The block number being queried.
+     * @return The delegated vote power.
+     */
+    function votePowerFromToAt(address _from, address _to, uint256 _balance, uint256 _blockNumber)
+        external
+        view
+        returns (uint256);
 
     /**
      * Compute the current undelegated vote power of an address.
@@ -181,10 +150,7 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @return The unallocated vote power of `_owner`, this is, the amount of vote power
      * currently not being delegated to other addresses.
      */
-    function undelegatedVotePowerOf(
-        address _owner,
-        uint256 _balance
-    ) external view returns(uint256);
+    function undelegatedVotePowerOf(address _owner, uint256 _balance) external view returns (uint256);
 
     /**
      * Compute the undelegated vote power of an address at a given block.
@@ -193,11 +159,10 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @return The unallocated vote power of `_owner`, this is, the amount of vote power
      * that was not being delegated to other addresses at that block number.
      */
-    function undelegatedVotePowerOfAt(
-        address _owner,
-        uint256 _balance,
-        uint256 _blockNumber
-    ) external view returns(uint256);
+    function undelegatedVotePowerOfAt(address _owner, uint256 _balance, uint256 _blockNumber)
+        external
+        view
+        returns (uint256);
 
     /**
      * Get the delegation mode of an address. This mode determines whether vote power is
@@ -217,16 +182,10 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @return _delegationMode The mode of the delegation (NOTSET=0, PERCENTAGE=1, AMOUNT=2).
      * See Delegatable.DelegationMode.
      */
-    function delegatesOf(
-        address _owner
-    )
-        external view
-        returns (
-            address[] memory _delegateAddresses,
-            uint256[] memory _bips,
-            uint256 _count,
-            uint256 _delegationMode
-        );
+    function delegatesOf(address _owner)
+        external
+        view
+        returns (address[] memory _delegateAddresses, uint256[] memory _bips, uint256 _count, uint256 _delegationMode);
 
     /**
      * Get the percentages and addresses being delegated to by a vote power delegator,
@@ -239,17 +198,10 @@ interface IIVPContract is IICleanable, IVPContractEvents {
      * @return _delegationMode The mode of the delegation (NOTSET=0, PERCENTAGE=1, AMOUNT=2).
      * See Delegatable.DelegationMode.
      */
-    function delegatesOfAt(
-        address _owner,
-        uint256 _blockNumber
-    )
-        external view
-        returns (
-            address[] memory _delegateAddresses,
-            uint256[] memory _bips,
-            uint256 _count,
-            uint256 _delegationMode
-        );
+    function delegatesOfAt(address _owner, uint256 _blockNumber)
+        external
+        view
+        returns (address[] memory _delegateAddresses, uint256[] memory _bips, uint256 _count, uint256 _delegationMode);
 
     /**
      * The VPToken (or some other contract) that owns this VPContract.

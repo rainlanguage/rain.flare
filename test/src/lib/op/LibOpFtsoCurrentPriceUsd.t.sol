@@ -176,12 +176,9 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
 
         conformPriceDetails(priceDetails, currentPrice);
         vm.assume(
-            !(
-                (
-                    priceDetails.priceFinalizationType == uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN)
-                        || (priceDetails.priceFinalizationType == uint8(IFtso.PriceFinalizationType.TRUSTED_ADDRESSES))
-                )
-            )
+            !((priceDetails.priceFinalizationType == uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN)
+                        || (priceDetails.priceFinalizationType
+                                == uint8(IFtso.PriceFinalizationType.TRUSTED_ADDRESSES))))
         );
 
         mockRegistry();

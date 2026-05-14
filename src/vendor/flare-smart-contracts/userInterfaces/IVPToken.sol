@@ -33,18 +33,18 @@ interface IVPToken is IERC20 {
      * @param _amount An explicit vote power amount to be delegated.
      *   Not cumulative: every call resets the delegation value (and a value of 0 revokes all previous delegations).
      */
-    function delegateExplicit(address _to, uint _amount) external;
+    function delegateExplicit(address _to, uint256 _amount) external;
 
     /**
-    * Revoke all delegation from sender to `_who` at given block.
-    * Only affects the reads via `votePowerOfAtCached()` in the block `_blockNumber`.
-    * Block `_blockNumber` must be in the past.
-    * This method should be used only to prevent rogue delegate voting in the current voting block.
-    * To stop delegating use delegate / delegateExplicit with value of 0 or undelegateAll / undelegateAllExplicit.
-    * @param _who Address of the delegatee.
-    * @param _blockNumber The block number at which to revoke delegation..
-    */
-    function revokeDelegationAt(address _who, uint _blockNumber) external;
+     * Revoke all delegation from sender to `_who` at given block.
+     * Only affects the reads via `votePowerOfAtCached()` in the block `_blockNumber`.
+     * Block `_blockNumber` must be in the past.
+     * This method should be used only to prevent rogue delegate voting in the current voting block.
+     * To stop delegating use delegate / delegateExplicit with value of 0 or undelegateAll / undelegateAllExplicit.
+     * @param _who Address of the delegatee.
+     * @param _blockNumber The block number at which to revoke delegation..
+     */
+    function revokeDelegationAt(address _who, uint256 _blockNumber) external;
 
     /**
      * Undelegate all voting power of `msg.sender`. This effectively revokes all previous delegations.
@@ -62,7 +62,6 @@ interface IVPToken is IERC20 {
      * @return The amount still delegated (in case the list of delegates was incomplete).
      */
     function undelegateAllExplicit(address[] memory _delegateAddresses) external returns (uint256);
-
 
     /**
      * Returns the name of the token.
@@ -92,13 +91,12 @@ interface IVPToken is IERC20 {
      */
     function decimals() external view returns (uint8);
 
-
     /**
      * Total amount of tokens held by all accounts at a specific block number.
      * @param _blockNumber The block number to query.
      * @return The total amount of tokens at `_blockNumber`.
      */
-    function totalSupplyAt(uint _blockNumber) external view returns(uint256);
+    function totalSupplyAt(uint256 _blockNumber) external view returns (uint256);
 
     /**
      * Queries the token balance of `_owner` at a specific `_blockNumber`.
@@ -106,28 +104,27 @@ interface IVPToken is IERC20 {
      * @param _blockNumber The block number to query.
      * @return The balance at `_blockNumber`.
      */
-    function balanceOfAt(address _owner, uint _blockNumber) external view returns (uint256);
-
+    function balanceOfAt(address _owner, uint256 _blockNumber) external view returns (uint256);
 
     /**
      * Get the current total vote power.
      * @return The current total vote power (sum of all accounts' vote power).
      */
-    function totalVotePower() external view returns(uint256);
+    function totalVotePower() external view returns (uint256);
 
     /**
      * Get the total vote power at block `_blockNumber`.
      * @param _blockNumber The block number to query.
      * @return The total vote power at the queried block (sum of all accounts' vote powers).
      */
-    function totalVotePowerAt(uint _blockNumber) external view returns(uint256);
+    function totalVotePowerAt(uint256 _blockNumber) external view returns (uint256);
 
     /**
      * Get the current vote power of `_owner`.
      * @param _owner The address to query.
      * @return Current vote power of `_owner`.
      */
-    function votePowerOf(address _owner) external view returns(uint256);
+    function votePowerOf(address _owner) external view returns (uint256);
 
     /**
      * Get the vote power of `_owner` at block `_blockNumber`
@@ -135,7 +132,7 @@ interface IVPToken is IERC20 {
      * @param _blockNumber The block number to query.
      * @return Vote power of `_owner` at block number `_blockNumber`.
      */
-    function votePowerOfAt(address _owner, uint256 _blockNumber) external view returns(uint256);
+    function votePowerOfAt(address _owner, uint256 _blockNumber) external view returns (uint256);
 
     /**
      * Get the vote power of `_owner` at block `_blockNumber`, ignoring revocation information (and cache).
@@ -143,7 +140,7 @@ interface IVPToken is IERC20 {
      * @param _blockNumber The block number to query.
      * @return Vote power of `_owner` at block number `_blockNumber`. Result doesn't change if vote power is revoked.
      */
-    function votePowerOfAtIgnoringRevocation(address _owner, uint256 _blockNumber) external view returns(uint256);
+    function votePowerOfAtIgnoringRevocation(address _owner, uint256 _blockNumber) external view returns (uint256);
 
     /**
      * Get the delegation mode for account '_who'. This mode determines whether vote power is
@@ -152,7 +149,7 @@ interface IVPToken is IERC20 {
      * @param _who The address to get delegation mode.
      * @return Delegation mode: 0 = NOT SET, 1 = PERCENTAGE, 2 = AMOUNT (i.e. explicit).
      */
-    function delegationModeOf(address _who) external view returns(uint256);
+    function delegationModeOf(address _who) external view returns (uint256);
 
     /**
      * Get current delegated vote power from delegator `_from` to delegatee `_to`.
@@ -160,7 +157,7 @@ interface IVPToken is IERC20 {
      * @param _to Address of delegatee.
      * @return votePower The delegated vote power.
      */
-    function votePowerFromTo(address _from, address _to) external view returns(uint256);
+    function votePowerFromTo(address _from, address _to) external view returns (uint256);
 
     /**
      * Get delegated vote power from delegator `_from` to delegatee `_to` at `_blockNumber`.
@@ -169,14 +166,14 @@ interface IVPToken is IERC20 {
      * @param _blockNumber The block number to query.
      * @return The delegated vote power.
      */
-    function votePowerFromToAt(address _from, address _to, uint _blockNumber) external view returns(uint256);
+    function votePowerFromToAt(address _from, address _to, uint256 _blockNumber) external view returns (uint256);
 
     /**
      * Compute the current undelegated vote power of the `_owner` account.
      * @param _owner The address to query.
      * @return The unallocated vote power of `_owner`.
      */
-    function undelegatedVotePowerOf(address _owner) external view returns(uint256);
+    function undelegatedVotePowerOf(address _owner) external view returns (uint256);
 
     /**
      * Get the undelegated vote power of the `_owner` account at a given block number.
@@ -184,7 +181,7 @@ interface IVPToken is IERC20 {
      * @param _blockNumber The block number to query.
      * @return The unallocated vote power of `_owner`.
      */
-    function undelegatedVotePowerOfAt(address _owner, uint256 _blockNumber) external view returns(uint256);
+    function undelegatedVotePowerOfAt(address _owner, uint256 _blockNumber) external view returns (uint256);
 
     /**
      * Get the list of addresses to which `_who` is delegating, and their percentages.
@@ -196,13 +193,9 @@ interface IVPToken is IERC20 {
      * @return _delegationMode Delegation mode: 0 = NOT SET, 1 = PERCENTAGE, 2 = AMOUNT (i.e. explicit).
      */
     function delegatesOf(address _who)
-        external view
-        returns (
-            address[] memory _delegateAddresses,
-            uint256[] memory _bips,
-            uint256 _count,
-            uint256 _delegationMode
-        );
+        external
+        view
+        returns (address[] memory _delegateAddresses, uint256[] memory _bips, uint256 _count, uint256 _delegationMode);
 
     /**
      * Get the list of addresses to which `_who` is delegating, and their percentages, at the given block.
@@ -215,13 +208,9 @@ interface IVPToken is IERC20 {
      * @return _delegationMode Delegation mode: 0 = NOT SET, 1 = PERCENTAGE, 2 = AMOUNT (i.e. explicit).
      */
     function delegatesOfAt(address _who, uint256 _blockNumber)
-        external view
-        returns (
-            address[] memory _delegateAddresses,
-            uint256[] memory _bips,
-            uint256 _count,
-            uint256 _delegationMode
-        );
+        external
+        view
+        returns (address[] memory _delegateAddresses, uint256[] memory _bips, uint256 _count, uint256 _delegationMode);
 
     /**
      * Returns VPContract event interface used for read-only operations (view methods).

@@ -42,8 +42,12 @@ interface IFtso {
      * @param votePowerAsset _Unused_.
      */
     event PriceRevealed(
-        address indexed voter, uint256 indexed epochId, uint256 price, uint256 timestamp,
-        uint256 votePowerNat, uint256 votePowerAsset
+        address indexed voter,
+        uint256 indexed epochId,
+        uint256 price,
+        uint256 timestamp,
+        uint256 votePowerNat,
+        uint256 votePowerAsset
     );
 
     /**
@@ -59,10 +63,15 @@ interface IFtso {
      * @param timestamp Timestamp of the block where the price has been finalized.
      */
     event PriceFinalized(
-        uint256 indexed epochId, uint256 price, bool rewardedFtso,
-        uint256 lowIQRRewardPrice, uint256 highIQRRewardPrice,
-        uint256 lowElasticBandRewardPrice, uint256 highElasticBandRewardPrice,
-        PriceFinalizationType finalizationType, uint256 timestamp
+        uint256 indexed epochId,
+        uint256 price,
+        bool rewardedFtso,
+        uint256 lowIQRRewardPrice,
+        uint256 highIQRRewardPrice,
+        uint256 lowElasticBandRewardPrice,
+        uint256 highElasticBandRewardPrice,
+        PriceFinalizationType finalizationType,
+        uint256 timestamp
     );
 
     /**
@@ -74,9 +83,7 @@ interface IFtso {
      * @param endTime Deadline to submit prices, in seconds since UNIX epoch.
      * @param timestamp Current on-chain timestamp.
      */
-    event PriceEpochInitializedOnFtso(
-        uint256 indexed epochId, uint256 endTime, uint256 timestamp
-    );
+    event PriceEpochInitializedOnFtso(uint256 indexed epochId, uint256 endTime, uint256 timestamp);
 
     /**
      * Not enough votes were received for this asset during a price epoch that has just ended.
@@ -88,10 +95,7 @@ interface IFtso {
      * @param timestamp Timestamp of the block where the price epoch ended.
      */
     event LowTurnout(
-        uint256 indexed epochId,
-        uint256 natTurnout,
-        uint256 lowNatTurnoutThresholdBIPS,
-        uint256 timestamp
+        uint256 indexed epochId, uint256 natTurnout, uint256 lowNatTurnoutThresholdBIPS, uint256 timestamp
     );
 
     /**
@@ -125,7 +129,7 @@ interface IFtso {
      * as data providers reveal their prices and random numbers.
      * Only the last 50 epochs can be queried and there is no bounds checking
      * for this parameter. Out-of-bounds queries return undefined values.
-
+     *
      * @return The random number used in that epoch.
      */
     function getRandom(uint256 _epochId) external view returns (uint256);
@@ -148,13 +152,16 @@ interface IFtso {
      * @return _fallbackMode Whether the current epoch is in fallback mode.
      * Only votes from trusted addresses are used in this mode.
      */
-    function getPriceEpochData() external view returns (
-        uint256 _epochId,
-        uint256 _epochSubmitEndTime,
-        uint256 _epochRevealEndTime,
-        uint256 _votePowerBlock,
-        bool _fallbackMode
-    );
+    function getPriceEpochData()
+        external
+        view
+        returns (
+            uint256 _epochId,
+            uint256 _epochSubmitEndTime,
+            uint256 _epochRevealEndTime,
+            uint256 _votePowerBlock,
+            bool _fallbackMode
+        );
 
     /**
      * Returns current epoch's configuration.
@@ -162,11 +169,10 @@ interface IFtso {
      * @return _submitPeriodSeconds Submit period in seconds.
      * @return _revealPeriodSeconds Reveal period in seconds.
      */
-    function getPriceEpochConfiguration() external view returns (
-        uint256 _firstEpochStartTs,
-        uint256 _submitPeriodSeconds,
-        uint256 _revealPeriodSeconds
-    );
+    function getPriceEpochConfiguration()
+        external
+        view
+        returns (uint256 _firstEpochStartTs, uint256 _submitPeriodSeconds, uint256 _revealPeriodSeconds);
 
     /**
      * Returns asset price submitted by a voter in the specified epoch.
@@ -192,11 +198,10 @@ interface IFtso {
      * in seconds from UNIX epoch.
      * @return _assetPriceUsdDecimals Number of decimals used to return the USD price.
      */
-    function getCurrentPriceWithDecimals() external view returns (
-        uint256 _price,
-        uint256 _timestamp,
-        uint256 _assetPriceUsdDecimals
-    );
+    function getCurrentPriceWithDecimals()
+        external
+        view
+        returns (uint256 _price, uint256 _timestamp, uint256 _assetPriceUsdDecimals);
 
     /**
      * Returns current asset price calculated only using input from trusted providers.
@@ -213,11 +218,10 @@ interface IFtso {
      * in seconds from UNIX epoch.
      * @return _assetPriceUsdDecimals Number of decimals used to return the USD price.
      */
-    function getCurrentPriceWithDecimalsFromTrustedProviders() external view returns (
-        uint256 _price,
-        uint256 _timestamp,
-        uint256 _assetPriceUsdDecimals
-    );
+    function getCurrentPriceWithDecimalsFromTrustedProviders()
+        external
+        view
+        returns (uint256 _price, uint256 _timestamp, uint256 _assetPriceUsdDecimals);
 
     /**
      * Returns asset's current price details.
@@ -228,13 +232,16 @@ interface IFtso {
      * @return _lastPriceEpochFinalizationTimestamp Time when last price epoch was finalized.
      * @return _lastPriceEpochFinalizationType Finalization type of last finalized price epoch.
      */
-    function getCurrentPriceDetails() external view returns (
-        uint256 _price,
-        uint256 _priceTimestamp,
-        PriceFinalizationType _priceFinalizationType,
-        uint256 _lastPriceEpochFinalizationTimestamp,
-        PriceFinalizationType _lastPriceEpochFinalizationType
-    );
+    function getCurrentPriceDetails()
+        external
+        view
+        returns (
+            uint256 _price,
+            uint256 _priceTimestamp,
+            PriceFinalizationType _priceFinalizationType,
+            uint256 _lastPriceEpochFinalizationTimestamp,
+            PriceFinalizationType _lastPriceEpochFinalizationType
+        );
 
     /**
      * Returns the random number for the previous price epoch, obtained from the random numbers

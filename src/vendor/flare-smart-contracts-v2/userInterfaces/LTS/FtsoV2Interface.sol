@@ -5,7 +5,6 @@ pragma solidity >=0.7.6 <0.9;
  * FtsoV2 long term support interface.
  */
 interface FtsoV2Interface {
-
     /// Feed data structure
     struct FeedData {
         uint32 votingRoundId;
@@ -70,13 +69,7 @@ interface FtsoV2Interface {
      * @return _decimals The decimal places for the requested feed.
      * @return _timestamp The timestamp of the last update.
      */
-    function getFeedById(bytes21 _feedId)
-        external payable
-        returns (
-            uint256 _value,
-            int8 _decimals,
-            uint64 _timestamp
-        );
+    function getFeedById(bytes21 _feedId) external payable returns (uint256 _value, int8 _decimals, uint64 _timestamp);
 
     /**
      * Returns stored data of each feed.
@@ -87,12 +80,9 @@ interface FtsoV2Interface {
      * @return _timestamp The timestamp of the last update.
      */
     function getFeedsById(bytes21[] memory _feedIds)
-        external payable
-        returns (
-            uint256[] memory _values,
-            int8[] memory _decimals,
-            uint64 _timestamp
-        );
+        external
+        payable
+        returns (uint256[] memory _values, int8[] memory _decimals, uint64 _timestamp);
 
     /**
      * Returns value in wei and timestamp of a feed.
@@ -101,25 +91,19 @@ interface FtsoV2Interface {
      * @return _value The value for the requested feed in wei (i.e. with 18 decimal places).
      * @return _timestamp The timestamp of the last update.
      */
-    function getFeedByIdInWei(bytes21 _feedId)
-        external payable
-        returns (
-            uint256 _value,
-            uint64 _timestamp
-        );
+    function getFeedByIdInWei(bytes21 _feedId) external payable returns (uint256 _value, uint64 _timestamp);
 
-    /** Returns value of each feed and a timestamp.
+    /**
+     * Returns value of each feed and a timestamp.
      * For some feeds, a fee (calculated by the FeeCalculator contract) may need to be paid.
      * @param _feedIds Ids of the feeds.
      * @return _values The list of values for the requested feeds in wei (i.e. with 18 decimal places).
      * @return _timestamp The timestamp of the last update.
      */
     function getFeedsByIdInWei(bytes21[] memory _feedIds)
-        external payable
-        returns (
-            uint256[] memory _values,
-            uint64 _timestamp
-        );
+        external
+        payable
+        returns (uint256[] memory _values, uint64 _timestamp);
 
     /**
      * Checks if the feed data is valid (i.e. is part of the confirmed Merkle tree).

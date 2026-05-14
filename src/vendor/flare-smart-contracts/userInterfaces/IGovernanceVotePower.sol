@@ -23,7 +23,7 @@ interface IGovernanceVotePower {
      * @param _blockNumber The block number at which to fetch the vote power.
      * @return Governance vote power of `_who` at `_blockNumber`.
      */
-    function votePowerOfAt(address _who, uint256 _blockNumber) external view returns(uint256);
+    function votePowerOfAt(address _who, uint256 _blockNumber) external view returns (uint256);
 
     /**
      * Gets the governance vote power of an address at the latest block, including

@@ -18,11 +18,7 @@ interface IIGovernanceVotePower is IGovernanceVotePower {
      * @param previousBalance Delegated vote power before the change.
      * @param newBalance Delegated vote power after the change.
      */
-    event DelegateVotesChanged(
-        address indexed delegate,
-        uint256 previousBalance,
-        uint256 newBalance
-    );
+    event DelegateVotesChanged(address indexed delegate, uint256 previousBalance, uint256 newBalance);
 
     /**
      * Emitted when an account starts delegating vote power or switches its delegation
@@ -35,11 +31,7 @@ interface IIGovernanceVotePower is IGovernanceVotePower {
      * @param toDelegate Account receiving the delegation after the change.
      * Can be address(0) if `delegator` just undelegated all its vote power.
      */
-    event DelegateChanged(
-        address indexed delegator,
-        address indexed fromDelegate,
-        address indexed toDelegate
-    );
+    event DelegateChanged(address indexed delegator, address indexed fromDelegate, address indexed toDelegate);
 
     /**
      * Update governance vote power of all involved delegates after tokens are transferred.
@@ -92,5 +84,5 @@ interface IIGovernanceVotePower is IGovernanceVotePower {
      * Get the current cleanup block number set with `setCleanupBlockNumber()`.
      * @return The currently set cleanup block number.
      */
-    function getCleanupBlockNumber() external view returns(uint256);
+    function getCleanupBlockNumber() external view returns (uint256);
 }

@@ -30,7 +30,7 @@ interface IIVPToken is IVPToken, IICleanable {
      * @param _blockNumber The block number to query.
      * @return The total vote power at the queried block (sum of all accounts' vote powers).
      */
-    function totalVotePowerAtCached(uint256 _blockNumber) external returns(uint256);
+    function totalVotePowerAtCached(uint256 _blockNumber) external returns (uint256);
 
     /**
      * Get the vote power of `_owner` at block `_blockNumber` using cache.
@@ -40,7 +40,7 @@ interface IIVPToken is IVPToken, IICleanable {
      * @param _blockNumber The block number to query.
      * @return Vote power of `_owner` at `_blockNumber`.
      */
-    function votePowerOfAtCached(address _owner, uint256 _blockNumber) external returns(uint256);
+    function votePowerOfAtCached(address _owner, uint256 _blockNumber) external returns (uint256);
 
     /**
      * Return the vote power for several addresses.
@@ -48,8 +48,5 @@ interface IIVPToken is IVPToken, IICleanable {
      * @param _blockNumber The block number to query.
      * @return Array of vote power for each queried address.
      */
-    function batchVotePowerOfAt(
-        address[] memory _owners,
-        uint256 _blockNumber
-    ) external view returns(uint256[] memory);
+    function batchVotePowerOfAt(address[] memory _owners, uint256 _blockNumber) external view returns (uint256[] memory);
 }

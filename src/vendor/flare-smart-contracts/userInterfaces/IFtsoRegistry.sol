@@ -9,7 +9,6 @@ import "../genesis/interface/IFtsoRegistryGenesis.sol";
  * Interface for the `FtsoRegistry` contract.
  */
 interface IFtsoRegistry is IFtsoRegistryGenesis {
-
     /**
      * Structure describing the price of an FTSO asset at a particular point in time.
      */
@@ -31,7 +30,7 @@ interface IFtsoRegistry is IFtsoRegistryGenesis {
      * @return _activeFtsoAddress FTSO contract address for the queried index.
      */
 
-    function getFtso(uint256 _activeFtso) external view returns(IIFtso _activeFtsoAddress);
+    function getFtso(uint256 _activeFtso) external view returns (IIFtso _activeFtsoAddress);
     /**
      * Returns the address of the FTSO contract for a given symbol.
      * Reverts if unsupported symbol is passed.
@@ -39,20 +38,20 @@ interface IFtsoRegistry is IFtsoRegistryGenesis {
      * @return _activeFtsoAddress FTSO contract address for the queried symbol.
      */
 
-    function getFtsoBySymbol(string memory _symbol) external view returns(IIFtso _activeFtsoAddress);
+    function getFtsoBySymbol(string memory _symbol) external view returns (IIFtso _activeFtsoAddress);
     /**
      * Returns the indices of the currently supported FTSOs.
      * Active FTSOs are ones that currently receive price feeds.
      * @return _supportedIndices Array of all active FTSO indices in increasing order.
      */
-    function getSupportedIndices() external view returns(uint256[] memory _supportedIndices);
+    function getSupportedIndices() external view returns (uint256[] memory _supportedIndices);
 
     /**
      * Returns the symbols of the currently supported FTSOs.
      * Active FTSOs are ones that currently receive price feeds.
      * @return _supportedSymbols Array of all active FTSO symbols in increasing order.
      */
-    function getSupportedSymbols() external view returns(string[] memory _supportedSymbols);
+    function getSupportedSymbols() external view returns (string[] memory _supportedSymbols);
 
     /**
      * Get array of all FTSO contracts for all supported asset indices.
@@ -63,7 +62,7 @@ interface IFtsoRegistry is IFtsoRegistryGenesis {
      * where possible "null" holes are readily apparent.
      * @return _ftsos Array of all supported FTSOs.
      */
-    function getSupportedFtsos() external view returns(IIFtso[] memory _ftsos);
+    function getSupportedFtsos() external view returns (IIFtso[] memory _ftsos);
 
     /**
      * Returns the FTSO index corresponding to a given asset symbol.
@@ -88,7 +87,7 @@ interface IFtsoRegistry is IFtsoRegistryGenesis {
      * @return _price Current price of the asset in USD multiplied by 10^`ASSET_PRICE_USD_DECIMALS`.
      * @return _timestamp Timestamp for when this price was updated, in seconds since UNIX epoch.
      */
-    function getCurrentPrice(uint256 _ftsoIndex) external view returns(uint256 _price, uint256 _timestamp);
+    function getCurrentPrice(uint256 _ftsoIndex) external view returns (uint256 _price, uint256 _timestamp);
 
     /**
      * Public view function to get the current price of a given active asset symbol.
@@ -97,7 +96,7 @@ interface IFtsoRegistry is IFtsoRegistryGenesis {
      * @return _price Current price of the asset in USD multiplied by 10^`ASSET_PRICE_USD_DECIMALS`.
      * @return _timestamp Timestamp for when this price was updated, in seconds since UNIX epoch.
      */
-    function getCurrentPrice(string memory _symbol) external view returns(uint256 _price, uint256 _timestamp);
+    function getCurrentPrice(string memory _symbol) external view returns (uint256 _price, uint256 _timestamp);
 
     /**
      * Public view function to get the current price and decimals of a given active FTSO index.
@@ -107,8 +106,10 @@ interface IFtsoRegistry is IFtsoRegistryGenesis {
      * @return _timestamp Timestamp for when this price was updated, in seconds since UNIX epoch.
      * @return _assetPriceUsdDecimals Number of decimals used to return the `_price`.
      */
-    function getCurrentPriceWithDecimals(uint256 _assetIndex) external view
-        returns(uint256 _price, uint256 _timestamp, uint256 _assetPriceUsdDecimals);
+    function getCurrentPriceWithDecimals(uint256 _assetIndex)
+        external
+        view
+        returns (uint256 _price, uint256 _timestamp, uint256 _assetPriceUsdDecimals);
 
     /**
      * Public view function to get the current price and decimals of a given active asset symbol.
@@ -118,8 +119,10 @@ interface IFtsoRegistry is IFtsoRegistryGenesis {
      * @return _timestamp Timestamp for when this price was updated, in seconds since UNIX epoch.
      * @return _assetPriceUsdDecimals Number of decimals used to return the `_price`.
      */
-    function getCurrentPriceWithDecimals(string memory _symbol) external view
-        returns(uint256 _price, uint256 _timestamp, uint256 _assetPriceUsdDecimals);
+    function getCurrentPriceWithDecimals(string memory _symbol)
+        external
+        view
+        returns (uint256 _price, uint256 _timestamp, uint256 _assetPriceUsdDecimals);
 
     /**
      * Returns the current price of all supported assets.
@@ -149,8 +152,10 @@ interface IFtsoRegistry is IFtsoRegistryGenesis {
      * @return _supportedIndices Array of all supported indices.
      * @return _ftsos Array of all supported FTSO addresses.
      */
-    function getSupportedIndicesAndFtsos() external view
-        returns(uint256[] memory _supportedIndices, IIFtso[] memory _ftsos);
+    function getSupportedIndicesAndFtsos()
+        external
+        view
+        returns (uint256[] memory _supportedIndices, IIFtso[] memory _ftsos);
 
     /**
      * Get all supported symbols and corresponding FTSO addresses.
@@ -158,8 +163,10 @@ interface IFtsoRegistry is IFtsoRegistryGenesis {
      * @return _supportedSymbols Array of all supported symbols.
      * @return _ftsos Array of all supported FTSO addresses.
      */
-    function getSupportedSymbolsAndFtsos() external view
-        returns(string[] memory _supportedSymbols, IIFtso[] memory _ftsos);
+    function getSupportedSymbolsAndFtsos()
+        external
+        view
+        returns (string[] memory _supportedSymbols, IIFtso[] memory _ftsos);
 
     /**
      * Get all supported indices and corresponding symbols.
@@ -167,8 +174,10 @@ interface IFtsoRegistry is IFtsoRegistryGenesis {
      * @return _supportedIndices Array of all supported indices.
      * @return _supportedSymbols Array of all supported symbols.
      */
-    function getSupportedIndicesAndSymbols() external view
-        returns(uint256[] memory _supportedIndices, string[] memory _supportedSymbols);
+    function getSupportedIndicesAndSymbols()
+        external
+        view
+        returns (uint256[] memory _supportedIndices, string[] memory _supportedSymbols);
 
     /**
      * Get all supported indices, symbols, and corresponding FTSO addresses.
@@ -177,6 +186,8 @@ interface IFtsoRegistry is IFtsoRegistryGenesis {
      * @return _supportedSymbols Array of all supported symbols.
      * @return _ftsos Array of all supported FTSO addresses.
      */
-    function getSupportedIndicesSymbolsAndFtsos() external view
-        returns(uint256[] memory _supportedIndices, string[] memory _supportedSymbols, IIFtso[] memory _ftsos);
+    function getSupportedIndicesSymbolsAndFtsos()
+        external
+        view
+        returns (uint256[] memory _supportedIndices, string[] memory _supportedSymbols, IIFtso[] memory _ftsos);
 }

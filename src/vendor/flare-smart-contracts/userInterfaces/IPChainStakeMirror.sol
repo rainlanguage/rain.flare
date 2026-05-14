@@ -5,12 +5,10 @@ pragma abicoder v2;
 import "./IPChainVotePower.sol";
 import "./IPChainStakeMirrorVerifier.sol";
 
-
 /**
  * Interface for the `PChainStakeMirror` contract.
  */
 interface IPChainStakeMirror is IPChainVotePower {
-
     /**
      * Event emitted when max updates per block is set.
      * @param maxUpdatesPerBlock new number of max updated per block
@@ -26,11 +24,7 @@ interface IPChainStakeMirror is IPChainVotePower {
      * @param pChainTxId P-chain transaction id.
      */
     event StakeConfirmed(
-        address indexed owner,
-        bytes20 indexed nodeId,
-        bytes32 indexed txHash,
-        uint256 amountWei,
-        bytes32 pChainTxId
+        address indexed owner, bytes20 indexed nodeId, bytes32 indexed txHash, uint256 amountWei, bytes32 pChainTxId
     );
 
     /**
@@ -40,12 +34,7 @@ interface IPChainStakeMirror is IPChainVotePower {
      * @param txHash Unique tx hash - keccak256(abi.encode(PChainStake.txId, PChainStake.inputAddress));
      * @param amountWei Stake amount (in wei).
      */
-    event StakeEnded(
-        address indexed owner,
-        bytes20 indexed nodeId,
-        bytes32 indexed txHash,
-        uint256 amountWei
-    );
+    event StakeEnded(address indexed owner, bytes20 indexed nodeId, bytes32 indexed txHash, uint256 amountWei);
 
     /**
      * Event emitted when the stake was revoked.
@@ -54,22 +43,14 @@ interface IPChainStakeMirror is IPChainVotePower {
      * @param txHash Unique tx hash - keccak256(abi.encode(PChainStake.txId, PChainStake.inputAddress));
      * @param amountWei Stake amount (in wei).
      */
-    event StakeRevoked(
-        address indexed owner,
-        bytes20 indexed nodeId,
-        bytes32 indexed txHash,
-        uint256 amountWei
-    );
+    event StakeRevoked(address indexed owner, bytes20 indexed nodeId, bytes32 indexed txHash, uint256 amountWei);
 
     /**
      * Method for P-chain stake mirroring using `PChainStake` data and Merkle proof.
      * @param _stakeData Information about P-chain stake.
      * @param _merkleProof Merkle proof that should be used to prove the P-chain stake.
      */
-    function mirrorStake(
-        IPChainStakeMirrorVerifier.PChainStake calldata _stakeData,
-        bytes32[] calldata _merkleProof
-    )
+    function mirrorStake(IPChainStakeMirrorVerifier.PChainStake calldata _stakeData, bytes32[] calldata _merkleProof)
         external;
 
     /**
@@ -78,26 +59,29 @@ interface IPChainStakeMirror is IPChainVotePower {
      * @param _inputAddress P-chain address that opened stake.
      * @return True if stake is active and mirrored.
      */
-    function isActiveStakeMirrored(bytes32 _txId, bytes20 _inputAddress) external view returns(bool);
+    function isActiveStakeMirrored(bytes32 _txId, bytes20 _inputAddress) external view returns (bool);
 
     /**
      * Total amount of tokens at current block.
      * @return The current total amount of tokens.
-     **/
+     *
+     */
     function totalSupply() external view returns (uint256);
 
     /**
      * Total amount of tokens at a specific `_blockNumber`.
      * @param _blockNumber The block number when the totalSupply is queried.
      * @return The total amount of tokens at `_blockNumber`.
-     **/
-    function totalSupplyAt(uint _blockNumber) external view returns(uint256);
+     *
+     */
+    function totalSupplyAt(uint256 _blockNumber) external view returns (uint256);
 
     /**
      * Queries the token balance of `_owner` at current block.
      * @param _owner The address from which the balance will be retrieved.
      * @return The current balance.
-     **/
+     *
+     */
     function balanceOf(address _owner) external view returns (uint256);
 
     /**
@@ -105,6 +89,7 @@ interface IPChainStakeMirror is IPChainVotePower {
      * @param _owner The address from which the balance will be retrieved.
      * @param _blockNumber The block number when the balance is queried.
      * @return The balance at `_blockNumber`.
-     **/
-    function balanceOfAt(address _owner, uint _blockNumber) external view returns (uint256);
+     *
+     */
+    function balanceOfAt(address _owner, uint256 _blockNumber) external view returns (uint256);
 }

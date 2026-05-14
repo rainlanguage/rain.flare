@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.6 <0.9;
 
-
 /**
  * Interface for the `GovernanceSettings` that hold the Flare governance address and its timelock.
  *

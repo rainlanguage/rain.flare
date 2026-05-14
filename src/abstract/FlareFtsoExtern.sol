@@ -2,11 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import {
-    BaseRainlangExtern,
-    OperandV2,
-    StackItem
-} from "rainlang-0.1.1/src/abstract/BaseRainlangExtern.sol";
+import {BaseRainlangExtern, OperandV2, StackItem} from "rainlang-0.1.1/src/abstract/BaseRainlangExtern.sol";
 import {LibConvert} from "rain-lib-typecast-0.1.0/src/LibConvert.sol";
 import {LibOpFtsoCurrentPriceUsd} from "../lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {LibOpFtsoCurrentPricePair} from "../lib/op/LibOpFtsoCurrentPricePair.sol";
@@ -54,13 +50,9 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
     /// relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
     function buildOpcodeFunctionPointers() external pure returns (bytes memory) {
-        function(OperandV2, StackItem[] memory)
-            internal
-            view
-            returns (StackItem[] memory)[] memory fs = new function(OperandV2, StackItem[] memory)
-                internal
-                view
-                returns (StackItem[] memory)[](OPCODE_FUNCTION_POINTERS_LENGTH);
+        function(OperandV2, StackItem[] memory) internal view returns (StackItem[] memory)[] memory fs = new function(OperandV2, StackItem[] memory)
+        internal
+        view returns (StackItem[] memory)[](OPCODE_FUNCTION_POINTERS_LENGTH);
         fs[OPCODE_FTSO_CURRENT_PRICE_USD] = LibOpFtsoCurrentPriceUsd.run;
         fs[OPCODE_FTSO_CURRENT_PRICE_PAIR] = LibOpFtsoCurrentPricePair.run;
         fs[OPCODE_SLFR_CURRENT_EXCHANGE_RATE] = LibOpSLFRCurrentExchangeRate.run;
@@ -76,13 +68,9 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
     /// is relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
     function buildIntegrityFunctionPointers() external pure returns (bytes memory) {
-        function(OperandV2, uint256, uint256)
-            internal
-            pure
-            returns (uint256, uint256)[] memory fs = new function(OperandV2, uint256, uint256)
-                internal
-                pure
-                returns (uint256, uint256)[](OPCODE_FUNCTION_POINTERS_LENGTH);
+        function(OperandV2, uint256, uint256) internal pure returns (uint256, uint256)[] memory fs = new function(OperandV2, uint256, uint256)
+        internal
+        pure returns (uint256, uint256)[](OPCODE_FUNCTION_POINTERS_LENGTH);
         fs[OPCODE_FTSO_CURRENT_PRICE_USD] = LibOpFtsoCurrentPriceUsd.integrity;
         fs[OPCODE_FTSO_CURRENT_PRICE_PAIR] = LibOpFtsoCurrentPricePair.integrity;
         fs[OPCODE_SLFR_CURRENT_EXCHANGE_RATE] = LibOpSLFRCurrentExchangeRate.integrity;

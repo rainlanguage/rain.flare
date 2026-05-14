@@ -6,6 +6,7 @@ import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {
     IFtso,
     IFtsoRegistry,
+
     //forge-lint: disable-next-line(unused-import)
     LibFlareContractRegistry,
     FLARE_CONTRACT_REGISTRY,

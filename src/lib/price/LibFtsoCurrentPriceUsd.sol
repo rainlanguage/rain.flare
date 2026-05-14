@@ -31,12 +31,8 @@ library LibFtsoCurrentPriceUsd {
         // There are other fallback finalization modes, but weighted median and
         // trusted addresses are the only ones that don't imply the price was
         // simply copied from an earlier epoch.
-        if (
-            !(
-                priceFinalizationType == IFtso.PriceFinalizationType.WEIGHTED_MEDIAN
-                    || priceFinalizationType == IFtso.PriceFinalizationType.TRUSTED_ADDRESSES
-            )
-        ) {
+        if (!(priceFinalizationType == IFtso.PriceFinalizationType.WEIGHTED_MEDIAN
+                    || priceFinalizationType == IFtso.PriceFinalizationType.TRUSTED_ADDRESSES)) {
             revert PriceNotFinalized(priceFinalizationType);
         }
 

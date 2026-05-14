@@ -11,7 +11,6 @@ import "../../token/interface/IIVPToken.sol";
  * for general information about the FTSO system.
  */
 interface IIFtso is IFtso, IFtsoGenesis {
-
     /**
      * Computes epoch price based on gathered votes.
      *
@@ -26,12 +25,9 @@ interface IIFtso is IFtso, IFtsoGenesis {
      * @return _natWeights List of native token weights corresponding to the eligible addresses.
      * @return _totalNatWeight Sum of weights in `_natWeights`.
      */
-    function finalizePriceEpoch(uint256 _epochId, bool _returnRewardData) external
-        returns(
-            address[] memory _eligibleAddresses,
-            uint256[] memory _natWeights,
-            uint256 _totalNatWeight
-        );
+    function finalizePriceEpoch(uint256 _epochId, bool _returnRewardData)
+        external
+        returns (address[] memory _eligibleAddresses, uint256[] memory _natWeights, uint256 _totalNatWeight);
 
     /**
      * Forces finalization of a price epoch, calculating the median price from trusted addresses only.
@@ -56,11 +52,8 @@ interface IIFtso is IFtso, IFtsoGenesis {
      * @param _submitPeriodSeconds Duration of epoch submission window in seconds.
      * @param _revealPeriodSeconds Duration of epoch reveal window in seconds.
      */
-    function activateFtso(
-        uint256 _firstEpochStartTs,
-        uint256 _submitPeriodSeconds,
-        uint256 _revealPeriodSeconds
-    ) external;
+    function activateFtso(uint256 _firstEpochStartTs, uint256 _submitPeriodSeconds, uint256 _revealPeriodSeconds)
+        external;
 
     /**
      * Deactivates the contract.
@@ -158,7 +151,9 @@ interface IIFtso is IFtso, IFtsoGenesis {
      * @return _elasticBandWidthPPM Width of the secondary reward band, in parts-per-milion of the median.
      * @return _trustedAddresses Trusted voters that will be used if low voter turnout is detected.
      */
-    function epochsConfiguration() external view
+    function epochsConfiguration()
+        external
+        view
         returns (
             uint256 _maxVotePowerNatThresholdFraction,
             uint256 _maxVotePowerAssetThresholdFraction,
@@ -180,7 +175,9 @@ interface IIFtso is IFtso, IFtsoGenesis {
      * @return _assetWeightRatio Ratio of combined asset vote power vs. native token vp (in BIPS).
      * @return _votePowerBlock Vote power block for the epoch.
      */
-    function getVoteWeightingParameters() external view
+    function getVoteWeightingParameters()
+        external
+        view
         returns (
             IIVPToken[] memory _assets,
             uint256[] memory _assetMultipliers,

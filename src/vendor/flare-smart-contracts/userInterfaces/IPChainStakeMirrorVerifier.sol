@@ -6,7 +6,6 @@ pragma abicoder v2;
  * Interface with structure for P-chain stake mirror verifications.
  */
 interface IPChainStakeMirrorVerifier {
-
     /**
      * Structure describing the P-chain stake.
      */
