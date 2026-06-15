@@ -11,12 +11,7 @@ import {IFeeCalculator} from "../../../../src/vendor/flare-smart-contracts-v2/us
 import {IGoverned, IGovernanceSettings} from "src/interface/IGoverned.sol";
 import {IGovernedFeeCalculator} from "src/interface/IGovernedFeeCalculator.sol";
 import {StalePrice} from "src/err/ErrFtso.sol";
-
-contract FeedConsumer {
-    function getFeedValue(bytes21 feedId, uint256 timeout) external payable returns (uint256) {
-        return LibFtsoV2LTS.ftsoV2LTSGetFeed(feedId, timeout);
-    }
-}
+import {FeedConsumer} from "test/lib/lts/FeedConsumer.sol";
 
 contract LibFtsoV2LTSTest is Test {
     function testFtsoV2LTSGetFeed() external {
