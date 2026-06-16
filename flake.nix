@@ -36,6 +36,7 @@
                 -l none \
                 -o meta/FlareFtsoWords.rain.meta \
                 ;
+              forge script --silent ./script/BuildPointers.sol;
             '';
             additionalBuildInputs = rainix.sol-build-inputs.${system} ++ [ rain.defaultPackage.${system} ];
           };

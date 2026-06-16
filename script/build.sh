@@ -9,4 +9,5 @@ nix develop -c bash -euxo pipefail -c '
   mkdir -p meta
   forge script --silent ./script/BuildAuthoringMeta.sol
   rain meta build -i <(cat ./meta/FlareFtsoSubParserAuthoringMeta.rain.meta) -m authoring-meta-v2 -t cbor -e deflate -l none -o meta/FlareFtsoWords.rain.meta
+  forge script --silent ./script/BuildPointers.sol
 '
