@@ -10,7 +10,7 @@ on:
           - flare-ftso-words
 jobs:
   deploy:
-    uses: rainlanguage/rainix/.github/workflows/rainix-manual-sol-artifacts.yaml@main
+    uses: rainlanguage/rainix/.github/workflows/rainix-manual-sol-artifacts.yaml@f6bca081825f0fed57a8885e58feb4296307da20
     with:
       suite: ${{ inputs.suite }}
     secrets: inherit

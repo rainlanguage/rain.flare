@@ -2,5 +2,5 @@ name: rainix-sol
 on: [push]
 jobs:
   rainix-sol:
-    uses: rainlanguage/rainix/.github/workflows/rainix-sol.yaml@main
+    uses: rainlanguage/rainix/.github/workflows/rainix-sol.yaml@f6bca081825f0fed57a8885e58feb4296307da20
     secrets: inherit
