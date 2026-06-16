@@ -161,6 +161,45 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         this.externalRun(operand, inputs);
     }
 
+    /// Deterministic boundary: when `block.timestamp == priceTimestamp + timeout`
+    /// the price is NOT yet stale (the staleness check is strictly
+    /// greater-than). It MUST be accepted and returned, not reverted as
+    /// StalePrice. The fuzzed `testRunStale`/`testRunHappy` only land on this
+    /// exact boundary by chance, so pin it explicitly.
+    function testRunStaleBoundaryNotStale(OperandV2 operand) external {
+        string memory symbol = "ETH";
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+        uint256 timeout = 3600;
+
+        CurrentPrice memory currentPrice;
+        currentPrice.price = 98765;
+        currentPrice.decimals = 5;
+        currentPrice.timestamp = 50000;
+
+        PriceDetails memory priceDetails;
+        conformPriceDetails(priceDetails, currentPrice);
+        finalizePrice(priceDetails);
+
+        // Exactly on the boundary: not stale.
+        vm.warp(currentPrice.timestamp + timeout);
+
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+        mockPrice(FTSO, currentPrice);
+
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+        StackItem[] memory outputs = this.externalRun(operand, inputs);
+        assertEq(outputs.length, 1);
+        assertEq(
+            StackItem.unwrap(outputs[0]),
+            Float.unwrap(LibDecimalFloat.packLossless(int256(currentPrice.price), -int256(currentPrice.decimals)))
+        );
+    }
+
     /// Anything other than WEIGHTED_MEDIAN or TRUSTED_ADDRESSES should revert
     /// as it means the price is not final.
     function testRunFtsoNotFinal(
