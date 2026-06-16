@@ -4,7 +4,12 @@ pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {LibFork} from "test/fork/LibFork.sol";
-import {LibFlareContractRegistry, IFtsoRegistry} from "src/lib/registry/LibFlareContractRegistry.sol";
+import {
+    LibFlareContractRegistry,
+    IFtsoRegistry,
+    FtsoV2Interface,
+    IFeeCalculator
+} from "src/lib/registry/LibFlareContractRegistry.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
 
@@ -16,5 +21,15 @@ contract LibFlareContractRegistryTest is Test {
     function testGetFtsoRegistry() external view {
         IFtsoRegistry ftsoRegistry = LibFlareContractRegistry.getFtsoRegistry();
         assertEq(address(ftsoRegistry), address(0x13DC2b5053857AE17a4f95aFF55530b267F3E040));
+    }
+
+    function testGetFtsoV2LTS() external view {
+        FtsoV2Interface ftsoV2 = LibFlareContractRegistry.getFtsoV2LTS();
+        assertEq(address(ftsoV2), address(0xB18d3A5e5A85C65cE47f977D7F486B79F99D3d32));
+    }
+
+    function testGetFeeCalculator() external view {
+        IFeeCalculator feeCalculator = LibFlareContractRegistry.getFeeCalculator();
+        assertEq(address(feeCalculator), address(0xFDe4f89E6d67ec1a497e1c25944ba5D2d7a36bf3));
     }
 }
