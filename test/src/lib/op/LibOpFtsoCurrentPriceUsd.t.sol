@@ -199,9 +199,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     }
 
     /// A negative Float timeout must revert with NegativeFixedDecimalConversion.
-    function testRunNegativeTimeoutReverts(OperandV2 operand, string memory symbol, int256 coeff, int32 exp)
-        external
-    {
+    function testRunNegativeTimeoutReverts(OperandV2 operand, string memory symbol, int256 coeff, int32 exp) external {
         vm.assume(bytes(symbol).length <= 31);
         coeff = bound(coeff, type(int224).min, -1);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
