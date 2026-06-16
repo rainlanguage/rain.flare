@@ -57,7 +57,7 @@ CI (`copy-artifacts`) diffs these files and fails if they drift from source.
 - **`src/abstract/FlareFtsoSubParser.sol`** — sub-parser: maps word names to
   extern call stubs so they appear as native Rainlang words.
 - **`src/lib/op/`** — one library per opcode (LibOpFtsoCurrentPriceUsd,
-  LibOpFtsoCurrentPricePair, LibOpSFLRCurrentExchangeRate).
+  LibOpFtsoCurrentPricePair, LibOpSFlrCurrentExchangeRate).
 - **`src/lib/registry/LibFlareContractRegistry.sol`** — sugar for looking up
   FTSO registry / V2 LTS / FeeCalculator from the immutable Flare contract
   registry address.
@@ -74,9 +74,12 @@ CI (`copy-artifacts`) diffs these files and fails if they drift from source.
 - The two opcode-index constant sets (`OPCODE_*` in FlareFtsoExtern and
   `SUB_PARSER_WORD_*` in LibFlareFtsoSubParser) must agree by value; a mismatch
   silently misroutes words at runtime. No offline test checks this.
-- Fork tests pin specific block numbers (see `test/fork/ForkConstants.sol` for
-  canonical values). Value assertions (exchange rates, prices) are coupled to
-  these pins; re-pin in ForkConstants.sol, not in individual test files.
+- Fork tests pin specific block numbers (see `BLOCK_NUMBER` in
+  `test/src/lib/registry/LibFlareContractRegistry.t.sol` for the canonical
+  value, imported by the other fork tests). Value assertions (exchange rates,
+  prices) are coupled to these pins; re-pin in
+  `test/src/lib/registry/LibFlareContractRegistry.t.sol`, not in individual
+  test files.
 - All reusable CI workflows are in the `rainlanguage/rainix` repo.
 
 ## License
