@@ -10,6 +10,7 @@ import {LibFork} from "test/fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge} from "src/err/ErrFtso.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
+import {LibFtsoCurrentPriceUsd} from "src/lib/price/LibFtsoCurrentPriceUsd.sol";
 
 contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     function externalRun(OperandV2 operand, StackItem[] memory inputs)
@@ -192,6 +193,33 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
 
         vm.expectRevert(abi.encodeWithSelector(PriceNotFinalized.selector, priceDetails.priceFinalizationType));
         this.externalRun(operand, inputs);
+    }
+
+    /// A timeout so large that priceTimestamp + timeout overflows uint256 must not
+    /// panic. The staleness check uses subtraction instead of addition, so an
+    /// overflowing timeout is treated as infinite (price is never stale).
+    /// Mutation: restoring the addition-based check causes Panic(0x11) here.
+    function testRunTimestampPlusTimeoutOverflow(string memory symbol, PriceDetails memory priceDetails) external {
+        vm.assume(bytes(symbol).length > 0 && bytes(symbol).length <= 31);
+
+        CurrentPrice memory currentPrice;
+        currentPrice.price = 1;
+        currentPrice.timestamp = 1;
+        currentPrice.decimals = 5;
+
+        vm.warp(type(uint256).max);
+
+        conformPriceDetails(priceDetails, currentPrice);
+        finalizePrice(priceDetails);
+
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+        mockPrice(FTSO, currentPrice);
+
+        // timeout = max → priceTimestamp + timeout overflows; must not panic.
+        LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(symbol, type(uint256).max);
     }
 
     /// An inactive FTSO should revert.
