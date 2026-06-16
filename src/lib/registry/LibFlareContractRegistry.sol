@@ -28,23 +28,38 @@ string constant FTSO_V2_LTS_NAME = "FtsoV2";
 /// contract registry.
 string constant FEE_CALCULATOR_NAME = "FeeCalculator";
 
+/// @notice Thrown when a name lookup in the Flare contract registry returns
+/// address(0). IFlareContractRegistry documents address(0) as the not-found
+/// sentinel; propagating a zero-typed contract handle silently would cause
+/// every subsequent call to revert with a confusing low-level error.
+/// @param name The registry name that resolved to address(0).
+error ContractNotRegistered(string name);
+
 library LibFlareContractRegistry {
     /// Sugar for getting the FTSO registry address from the Flare contract
-    /// registry.
+    /// registry. Reverts with ContractNotRegistered if the name is not found.
     function getFtsoRegistry() internal view returns (IFtsoRegistry) {
-        return IFtsoRegistry(FLARE_CONTRACT_REGISTRY.getContractAddressByName(FTSO_REGISTRY_NAME));
+        address addr = FLARE_CONTRACT_REGISTRY.getContractAddressByName(FTSO_REGISTRY_NAME);
+        if (addr == address(0)) revert ContractNotRegistered(FTSO_REGISTRY_NAME);
+        return IFtsoRegistry(addr);
     }
 
     /// Sugar for getting the FTSO V2 LTS contract address from the Flare
-    /// contract registry.
+    /// contract registry. Reverts with ContractNotRegistered if the name is not
+    /// found.
     //forge-lint: disable-next-line(mixed-case-function)
     function getFtsoV2LTS() internal view returns (FtsoV2Interface) {
-        return FtsoV2Interface(FLARE_CONTRACT_REGISTRY.getContractAddressByName(FTSO_V2_LTS_NAME));
+        address addr = FLARE_CONTRACT_REGISTRY.getContractAddressByName(FTSO_V2_LTS_NAME);
+        if (addr == address(0)) revert ContractNotRegistered(FTSO_V2_LTS_NAME);
+        return FtsoV2Interface(addr);
     }
 
     /// Sugar for getting the FeeCalculator contract address from the Flare
-    /// contract registry.
+    /// contract registry. Reverts with ContractNotRegistered if the name is not
+    /// found.
     function getFeeCalculator() internal view returns (IFeeCalculator) {
-        return IFeeCalculator(FLARE_CONTRACT_REGISTRY.getContractAddressByName(FEE_CALCULATOR_NAME));
+        address addr = FLARE_CONTRACT_REGISTRY.getContractAddressByName(FEE_CALCULATOR_NAME);
+        if (addr == address(0)) revert ContractNotRegistered(FEE_CALCULATOR_NAME);
+        return IFeeCalculator(addr);
     }
 }
