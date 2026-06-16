@@ -14,8 +14,7 @@ import {
     FTSO_V2_LTS_NAME,
     FEE_CALCULATOR_NAME
 } from "src/lib/registry/LibFlareContractRegistry.sol";
-import {IFlareContractRegistry} from
-    "src/vendor/flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
+import {IFlareContractRegistry} from "src/vendor/flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
 
