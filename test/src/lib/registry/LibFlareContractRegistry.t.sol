@@ -4,10 +4,7 @@ pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {LibFork} from "test/fork/LibFork.sol";
-import {
-    LibFlareContractRegistry,
-    IFtsoRegistry
-} from "src/lib/registry/LibFlareContractRegistry.sol";
+import {LibFlareContractRegistry, IFtsoRegistry} from "src/lib/registry/LibFlareContractRegistry.sol";
 import {FtsoV2Interface} from "src/vendor/flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
 import {IFeeCalculator} from "src/vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
 
