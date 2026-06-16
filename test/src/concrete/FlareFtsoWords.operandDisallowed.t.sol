@@ -17,9 +17,7 @@ contract FlareFtsoWordsOperandDisallowedTest is OpTest {
         checkUnhappyParse2(
             bytes(
                 string.concat(
-                    "using-words-from ",
-                    address(w).toHexString(),
-                    " _: ftso-current-price-usd<0>(\"ETH\" 3600);"
+                    "using-words-from ", address(w).toHexString(), " _: ftso-current-price-usd<0>(\"ETH\" 3600);"
                 )
             ),
             abi.encodeWithSelector(UnexpectedOperand.selector)
@@ -47,13 +45,7 @@ contract FlareFtsoWordsOperandDisallowedTest is OpTest {
     function testFlareFtsoWordsOperandDisallowedSflr() external {
         FlareFtsoWords w = new FlareFtsoWords();
         checkUnhappyParse2(
-            bytes(
-                string.concat(
-                    "using-words-from ",
-                    address(w).toHexString(),
-                    " _: sflr-exchange-rate<0>();"
-                )
-            ),
+            bytes(string.concat("using-words-from ", address(w).toHexString(), " _: sflr-exchange-rate<0>();")),
             abi.encodeWithSelector(UnexpectedOperand.selector)
         );
     }
