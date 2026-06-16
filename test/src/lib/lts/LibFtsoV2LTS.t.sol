@@ -76,5 +76,13 @@ contract LibFtsoV2LTSTest is Test {
         uint256 feedValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
         assertEq(feedValue, 2522.575e18);
         assertEq(alice.balance, 0);
+
+        // #56 — overpayment: surplus is stranded in the consumer (documents current behavior;
+        // replace with refund assertion when a refund mechanism is added).
+        vm.deal(alice, uint256(fee) + 1 ether);
+        uint256 overpaidValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
+        assertEq(overpaidValue, 2522.575e18);
+        assertEq(address(feedConsumer).balance, 1 ether);
+        assertEq(alice.balance, 0);
     }
 }
