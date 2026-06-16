@@ -6,9 +6,9 @@ import {OperandV2, StackItem} from "rain-interpreter-interface-0.1.0/src/interfa
 import {LibSceptreStakedFlare} from "../sflr/LibSceptreStakedFlare.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
-/// @title LibOpSLFRCurrentExchangeRate
+/// @title LibOpSFlrCurrentExchangeRate
 /// Implements the `sflrCurrentExchangeRate` externed opcode.
-library LibOpSLFRCurrentExchangeRate {
+library LibOpSFlrCurrentExchangeRate {
     /// Extern integrity for getting the current exchange rate of FLR to SFLR.
     function integrity(OperandV2, uint256, uint256) internal pure returns (uint256, uint256) {
         return (0, 1);
