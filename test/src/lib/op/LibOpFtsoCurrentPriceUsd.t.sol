@@ -10,6 +10,10 @@ import {LibFork} from "test/fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge} from "src/err/ErrFtso.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
+import {
+    NegativeFixedDecimalConversion,
+    LossyConversionFromFloat
+} from "rain-math-float-0.1.1/src/error/ErrDecimalFloat.sol";
 
 contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     function externalRun(OperandV2 operand, StackItem[] memory inputs)
@@ -191,6 +195,34 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
 
         vm.expectRevert(abi.encodeWithSelector(PriceNotFinalized.selector, priceDetails.priceFinalizationType));
+        this.externalRun(operand, inputs);
+    }
+
+    /// A negative Float timeout must revert with NegativeFixedDecimalConversion.
+    function testRunNegativeTimeoutReverts(OperandV2 operand, string memory symbol, int256 coeff, int32 exp)
+        external
+    {
+        vm.assume(bytes(symbol).length <= 31);
+        coeff = bound(coeff, type(int224).min, -1);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.packLossless(coeff, int256(exp))));
+        vm.expectRevert(abi.encodeWithSelector(NegativeFixedDecimalConversion.selector, coeff, int256(exp)));
+        this.externalRun(operand, inputs);
+    }
+
+    /// A fractional (non-integer) Float timeout must revert with LossyConversionFromFloat.
+    function testRunFractionalTimeoutReverts(OperandV2 operand, string memory symbol, int256 coeff) external {
+        vm.assume(bytes(symbol).length <= 31);
+        coeff = bound(coeff, 1, int256(type(int224).max));
+        vm.assume(coeff % 10 != 0);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        // exponent -1 with a non-multiple-of-10 coefficient is always fractional
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.packLossless(coeff, -1)));
+        vm.expectRevert(abi.encodeWithSelector(LossyConversionFromFloat.selector, coeff, int256(-1)));
         this.externalRun(operand, inputs);
     }
 
