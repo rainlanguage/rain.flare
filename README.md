@@ -94,6 +94,23 @@ version of `foundry` for development, to ensure versions are all compatible.
 Read the `flake.nix` file to find some additional commands included for dev and
 CI usage.
 
+### Regenerating committed artifacts
+
+Run `./script/build.sh` to regenerate every committed artifact that the
+`rainix-sol-artifacts` CI check diffs against: `meta/*.rain.meta` (the CBOR
+encoded authoring-meta blob) and — after `build.sh` completes — run the
+`BuildPointers.sol` forge script to update `src/generated/*.pointers.sol`
+(contains `DESCRIBED_BY_META_HASH` and `BYTECODE_HASH`):
+
+```
+./script/build.sh
+nix develop .#sol-shell -c forge script ./script/BuildPointers.sol
+```
+
+Commit the resulting changes whenever word descriptions, operand meta, or the
+deployed contract changes.  The CI `copy-artifacts` job diffs these files and
+turns red on drift.
+
 ## Legal stuff
 
 Everything is under DecentraLicense 1.0 (DCL-1.0) which can be found in `LICENSES/`.
