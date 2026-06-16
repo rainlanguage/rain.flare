@@ -45,10 +45,15 @@ library LibFtsoCurrentPriceUsd {
             revert InconsistentFtso();
         }
 
-        // Handle stale prices.
+        // Handle stale prices. Use unchecked to avoid Panic(0x11) from a
+        // misbehaving FTSO that reports a near-uint256-max timestamp; an
+        // overflowing deadline is treated as stale.
         //slither-disable-next-line timestamp
-        if (block.timestamp > priceTimestamp + timeout) {
-            revert StalePrice(priceTimestamp, timeout);
+        unchecked {
+            uint256 deadline = priceTimestamp + timeout;
+            if (deadline < priceTimestamp || block.timestamp > deadline) {
+                revert StalePrice(priceTimestamp, timeout);
+            }
         }
 
         return (price, decimals);
