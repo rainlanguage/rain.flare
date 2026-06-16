@@ -70,12 +70,12 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         assertEq(outputs.length, 1);
         assertEq(
             StackItem.unwrap(outputs[0]),
-            Float.unwrap(LibDecimalFloat.div(LibDecimalFloat.packLossless(20e18, -18), LibDecimalFloat.packLossless(4e15, -18)))
+            Float.unwrap(
+                LibDecimalFloat.div(LibDecimalFloat.packLossless(20e18, -18), LibDecimalFloat.packLossless(4e15, -18))
+            )
         );
         // Sanity: the derived value is numerically 5000.
-        assertTrue(
-            LibDecimalFloat.eq(Float.wrap(StackItem.unwrap(outputs[0])), LibDecimalFloat.packLossless(5000, 0))
-        );
+        assertTrue(LibDecimalFloat.eq(Float.wrap(StackItem.unwrap(outputs[0])), LibDecimalFloat.packLossless(5000, 0)));
     }
 
     /// A zero base (first symbol) price yields a derived price of exactly zero,
