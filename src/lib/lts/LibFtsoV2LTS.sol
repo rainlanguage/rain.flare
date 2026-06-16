@@ -77,7 +77,12 @@ bytes21 constant JOULE_USD_FEED_ID = 0x014a4f554c452f555344000000000000000000000
 library LibFtsoV2LTS {
     /// @dev Fetches the value of a feed from the FTSO using V2 LTS.
     /// Note that this is NOT a view function and will cost gas if the FTSO has
-    /// a fee set.
+    /// a fee set. The fee is computed internally via `IFeeCalculator` and only
+    /// that exact amount is forwarded to the FTSO. Any excess native value in
+    /// the calling context (msg.value > fee) is NOT refunded — it remains in the
+    /// caller's contract balance. Callers that receive user funds MUST pre-compute
+    /// the fee via `IFeeCalculator.calculateFeeByIds` and forward exactly that
+    /// amount, or implement their own refund logic on any surplus.
     //forge-lint: disable-next-line(mixed-case-function)
     function ftsoV2LTSGetFeed(bytes21 feedId, uint256 timeout) internal returns (uint256) {
         // Fetch the FTSO from the registry.
