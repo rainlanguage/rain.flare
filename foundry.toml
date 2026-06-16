@@ -9,9 +9,6 @@ libs = ['dependencies']
 
 solc = "0.8.25"
 
-[profile.default.fuzz]
-runs = 1000
-seed = "0x1"
 optimizer = true
 optimizer_runs = 1000
 evm_version = "cancun"
@@ -22,6 +19,10 @@ fs_permissions = [
   { access = "read-write", path = "src/generated" },
   { access = "read-write", path = "meta" },
 ]
+
+[profile.default.fuzz]
+runs = 1000
+seed = "0x1"
 
 [dependencies]
 forge-std = "1.16.1"
