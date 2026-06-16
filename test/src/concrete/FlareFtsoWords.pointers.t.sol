@@ -14,6 +14,7 @@ import {
 } from "src/concrete/FlareFtsoWords.sol";
 import {LibGenParseMeta} from "rain-interpreter-interface-0.1.0/src/lib/codegen/LibGenParseMeta.sol";
 import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
+import {OPCODE_FUNCTION_POINTERS_LENGTH} from "src/abstract/FlareFtsoExtern.sol";
 
 contract FlareFtsoWordsPointersTest is Test {
     function testIntegrityPointers() external {
@@ -24,6 +25,13 @@ contract FlareFtsoWordsPointersTest is Test {
     function testOpcodePointers() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
         assertEq(OPCODE_FUNCTION_POINTERS, flareFtsoWords.buildOpcodeFunctionPointers());
+    }
+
+    function testFunctionPointersLength() external {
+        FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
+        // Each function pointer is 2 bytes (16-bit).
+        assertEq(flareFtsoWords.buildOpcodeFunctionPointers().length, OPCODE_FUNCTION_POINTERS_LENGTH * 2);
+        assertEq(flareFtsoWords.buildIntegrityFunctionPointers().length, OPCODE_FUNCTION_POINTERS_LENGTH * 2);
     }
 
     function testSubParserWordParsers() external {
