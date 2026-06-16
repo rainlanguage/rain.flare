@@ -211,6 +211,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         // Bound price < max so we can add 1 without overflow.
         currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)) - 1);
         currentPrice.decimals = bound(currentPrice.decimals, 0, type(uint8).max);
+        currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - 1);
         timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
 
         conformPriceDetails(priceDetails, currentPrice);
