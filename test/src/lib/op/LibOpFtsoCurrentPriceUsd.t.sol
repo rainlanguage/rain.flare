@@ -8,7 +8,7 @@ import {IFtso} from "src/lib/registry/LibFlareContractRegistry.sol";
 import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.0/src/lib/LibIntOrAString.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
-import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge} from "src/err/ErrFtso.sol";
+import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge, InconsistentFtso} from "src/err/ErrFtso.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
 contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
@@ -191,6 +191,49 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
 
         vm.expectRevert(abi.encodeWithSelector(PriceNotFinalized.selector, priceDetails.priceFinalizationType));
+        this.externalRun(operand, inputs);
+    }
+
+    /// #60 — InconsistentFtso fires when getCurrentPriceDetails and getCurrentPriceWithDecimals
+    /// disagree on price (divergePrice=true) or timestamp (divergePrice=false).
+    /// Both sub-conditions are exercised by the fuzz.
+    function testRunInconsistentFtso(
+        OperandV2 operand,
+        string memory symbol,
+        uint256 timeout,
+        PriceDetails memory priceDetails,
+        CurrentPrice memory currentPrice,
+        bool divergePrice
+    ) external {
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+
+        // Bound price < max so we can add 1 without overflow.
+        currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)) - 1);
+        currentPrice.decimals = bound(currentPrice.decimals, 0, type(uint8).max);
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
+
+        conformPriceDetails(priceDetails, currentPrice);
+        finalizePrice(priceDetails);
+
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+
+        // Build a version of currentPrice that diverges from priceDetails.
+        CurrentPrice memory diverged = currentPrice;
+        if (divergePrice) {
+            diverged.price = currentPrice.price + 1;
+        } else {
+            diverged.timestamp = currentPrice.timestamp + 1;
+        }
+        mockPrice(FTSO, diverged);
+
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+        vm.expectRevert(abi.encodeWithSelector(InconsistentFtso.selector));
         this.externalRun(operand, inputs);
     }
 

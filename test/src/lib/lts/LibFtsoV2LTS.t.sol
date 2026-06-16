@@ -30,6 +30,30 @@ contract LibFtsoV2LTSTest is Test {
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
     }
 
+    /// #55 — pins both sides of the staleness boundary so a `>` → `>=` regression
+    /// or an off-by-one in the timeout arithmetic is caught without a fork.
+    /// Feed last-updated timestamp: 1729795768 (pinned from testFtsoV2LTSGetFeedStale).
+    function testFtsoV2LTSGetFeedStaleBoundary() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+        FeedConsumer feedConsumer = new FeedConsumer();
+        uint64 feedTs = 1729795768;
+        uint256 timeout = 3600;
+
+        // Exactly at the boundary: block.timestamp == feedTs + timeout → NOT stale.
+        vm.warp(feedTs + timeout);
+        assertEq(feedConsumer.getFeedValue(ETH_USD_FEED_ID, timeout), 2522.575e18);
+
+        // One second past: block.timestamp == feedTs + timeout + 1 → stale.
+        vm.warp(feedTs + timeout + 1);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, feedTs, timeout));
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, timeout);
+
+        // timeout == 0: any block.timestamp > feedTs is stale.
+        vm.warp(feedTs + 1);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, feedTs, uint256(0)));
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
+    }
+
     /// forge-config: default.fuzz.runs = 1
     function testFtsoV2LTSGetFeedPaid(uint128 fee) external {
         vm.assume(fee > 0);
