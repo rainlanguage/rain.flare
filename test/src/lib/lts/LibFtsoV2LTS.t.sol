@@ -4,7 +4,7 @@ pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {LibFtsoV2LTS, ETH_USD_FEED_ID} from "src/lib/lts/LibFtsoV2LTS.sol";
-import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
+import {BLOCK_NUMBER} from "test/fork/ForkConstants.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {LibFlareContractRegistry} from "src/lib/registry/LibFlareContractRegistry.sol";
 import {IFeeCalculator} from "../../../../src/vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";

@@ -7,7 +7,7 @@ import {LibOpFtsoCurrentPriceUsd} from "src/lib/op/LibOpFtsoCurrentPriceUsd.sol"
 import {IFtso} from "src/lib/registry/LibFlareContractRegistry.sol";
 import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.0/src/lib/LibIntOrAString.sol";
 import {LibFork} from "test/fork/LibFork.sol";
-import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
+import {BLOCK_NUMBER} from "test/fork/ForkConstants.sol";
 import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge} from "src/err/ErrFtso.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
