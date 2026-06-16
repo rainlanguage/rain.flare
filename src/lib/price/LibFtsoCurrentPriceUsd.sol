@@ -7,6 +7,21 @@ import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "../
 import {IFtso} from "../../vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
 
 library LibFtsoCurrentPriceUsd {
+    /// @dev Fetches the current USD price and its native decimals for an FTSO
+    /// symbol from the Flare contract registry. The returned price is NOT
+    /// normalized; callers MUST normalize to their required precision (e.g. 18
+    /// decimals) and MUST guard against unexpectedly large decimals before
+    /// scaling (see `DecimalsTooLarge` in the caller).
+    /// @param symbol The FTSO asset symbol to price, e.g. "ETH".
+    /// @param timeout Max age in seconds before the price is considered stale.
+    /// @return price The FTSO USD price, scaled by 10**decimals.
+    /// @return decimals The number of decimals the FTSO uses for `price`.
+    /// @custom:error InactiveFtso The FTSO reports itself as inactive.
+    /// @custom:error PriceNotFinalized The price was not finalized by weighted
+    /// median or trusted addresses (other modes copy an earlier epoch).
+    /// @custom:error InconsistentFtso The two FTSO reads disagreed on price or
+    /// timestamp, indicating a bug in the FTSO.
+    /// @custom:error StalePrice The price timestamp is older than `timeout` seconds.
     function ftsoCurrentPriceUsd(string memory symbol, uint256 timeout) internal view returns (uint256, uint256) {
         // Fetch the FTSO from the registry.
         IFtsoRegistry ftsoRegistry = LibFlareContractRegistry.getFtsoRegistry();
