@@ -25,14 +25,22 @@ contract LibDineroFlrEthTest is Test {
         assertEq(rate18, 0.989103076939285809e18);
     }
 
+    // External wrappers needed so vm.expectRevert captures the outer call frame
+    // (not the inner LSTPerToken/tokensPerLST staticcall which returns, not reverts).
+    function _callGetETHPerFLRETH18() external {
+        LibDineroFlrEth.getETHPerFLRETH18();
+    }
+
+    function _callGetFLRETHPerETH18() external {
+        LibDineroFlrEth.getFLRETHPerETH18();
+    }
+
     function testGetETHPerFLRETH18RevertsOnZeroRate() external {
         vm.mockCall(
-            address(FLRETH_CONTRACT),
-            abi.encodeWithSelector(IDineroFlrEth.LSTPerToken.selector),
-            abi.encode(uint256(0))
+            address(FLRETH_CONTRACT), abi.encodeWithSelector(IDineroFlrEth.LSTPerToken.selector), abi.encode(uint256(0))
         );
         vm.expectRevert(ZeroFlrEthRate.selector);
-        LibDineroFlrEth.getETHPerFLRETH18();
+        this._callGetETHPerFLRETH18();
     }
 
     function testGetFLRETHPerETH18RevertsOnZeroRate() external {
@@ -42,6 +50,6 @@ contract LibDineroFlrEthTest is Test {
             abi.encode(uint256(0))
         );
         vm.expectRevert(ZeroFlrEthRate.selector);
-        LibDineroFlrEth.getFLRETHPerETH18();
+        this._callGetFLRETHPerETH18();
     }
 }
