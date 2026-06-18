@@ -6,6 +6,6 @@ import {Vm} from "forge-std-1.16.1/src/Vm.sol";
 
 library LibFork {
     function rpcUrlFlare(Vm vm) internal view returns (string memory) {
-        return vm.envString("RPC_URL_FLARE_FORK");
+        return vm.envString("FLARE_RPC_URL");
     }
 }
