@@ -30,6 +30,7 @@ import {
 } from "../abstract/FlareFtsoSubParser.sol";
 import {
     DESCRIBED_BY_META_HASH,
+
     //forge-lint: disable-next-line(unused-import)
     BYTECODE_HASH
 } from "../generated/FlareFtsoWords.pointers.sol";

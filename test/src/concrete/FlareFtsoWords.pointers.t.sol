@@ -46,6 +46,8 @@ contract FlareFtsoWordsPointersTest is Test {
 
     function testBytecodeHash() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
-        assertEq(address(flareFtsoWords).codehash, BYTECODE_HASH, "committed BYTECODE_HASH drifted from compiled bytecode");
+        assertEq(
+            address(flareFtsoWords).codehash, BYTECODE_HASH, "committed BYTECODE_HASH drifted from compiled bytecode"
+        );
     }
 }
