@@ -48,13 +48,14 @@ library LibFtsoCurrentPriceUsd {
         // Handle stale prices. Use unchecked to avoid Panic(0x11) from a
         // misbehaving FTSO that reports a near-uint256-max timestamp; an
         // overflowing deadline is treated as stale.
-        //slither-disable-next-line timestamp
+        //slither-disable-start timestamp
         unchecked {
             uint256 deadline = priceTimestamp + timeout;
             if (deadline < priceTimestamp || block.timestamp > deadline) {
                 revert StalePrice(priceTimestamp, timeout);
             }
         }
+        //slither-disable-end
 
         return (price, decimals);
     }
