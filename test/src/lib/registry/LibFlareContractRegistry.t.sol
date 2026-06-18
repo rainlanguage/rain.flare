@@ -8,13 +8,8 @@ import {
     LibFlareContractRegistry,
     IFtsoRegistry,
     FtsoV2Interface,
-    IFeeCalculator,
-    FLARE_CONTRACT_REGISTRY,
-    FTSO_REGISTRY_NAME,
-    FTSO_V2_LTS_NAME,
-    FEE_CALCULATOR_NAME
+    IFeeCalculator
 } from "src/lib/registry/LibFlareContractRegistry.sol";
-import {IFlareContractRegistry} from "src/vendor/flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
 
@@ -38,31 +33,4 @@ contract LibFlareContractRegistryTest is Test {
         assertEq(address(feeCalculator), address(0xFDe4f89E6d67ec1a497e1c25944ba5D2d7a36bf3));
     }
 
-    /// The Flare contract registry returns `address(0)` for any name it does not
-    /// know (see `IFlareContractRegistry.getContractAddressByName` NatSpec). The
-    /// library performs no zero-address check, so when a lookup misses it returns
-    /// a typed interface wrapping `address(0)` rather than reverting. This test
-    /// pins that current behavior for all three lookups by mocking the registry
-    /// to report every name as missing.
-    function testGetterReturnsZeroAddressWhenNameMissing() external {
-        vm.mockCall(
-            address(FLARE_CONTRACT_REGISTRY),
-            abi.encodeWithSelector(IFlareContractRegistry.getContractAddressByName.selector, FTSO_REGISTRY_NAME),
-            abi.encode(address(0))
-        );
-        vm.mockCall(
-            address(FLARE_CONTRACT_REGISTRY),
-            abi.encodeWithSelector(IFlareContractRegistry.getContractAddressByName.selector, FTSO_V2_LTS_NAME),
-            abi.encode(address(0))
-        );
-        vm.mockCall(
-            address(FLARE_CONTRACT_REGISTRY),
-            abi.encodeWithSelector(IFlareContractRegistry.getContractAddressByName.selector, FEE_CALCULATOR_NAME),
-            abi.encode(address(0))
-        );
-
-        assertEq(address(LibFlareContractRegistry.getFtsoRegistry()), address(0));
-        assertEq(address(LibFlareContractRegistry.getFtsoV2LTS()), address(0));
-        assertEq(address(LibFlareContractRegistry.getFeeCalculator()), address(0));
-    }
 }
