@@ -13,8 +13,7 @@ import {
     FEE_CALCULATOR_NAME,
     ContractNotRegistered
 } from "src/lib/registry/LibFlareContractRegistry.sol";
-import {LibFlareContractRegistryExternal} from
-    "test/src/lib/registry/LibFlareContractRegistryExternal.sol";
+import {LibFlareContractRegistryExternal} from "test/src/lib/registry/LibFlareContractRegistryExternal.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
 

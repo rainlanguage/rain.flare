@@ -2,10 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {
-    LibFlareContractRegistry,
-    IFtsoRegistry
-} from "src/lib/registry/LibFlareContractRegistry.sol";
+import {LibFlareContractRegistry, IFtsoRegistry} from "src/lib/registry/LibFlareContractRegistry.sol";
 
 /// External wrapper around the internal library getters so that calling them via
 /// `this.<fn>()` produces a dedicated external call frame. `vm.expectRevert`
