@@ -32,5 +32,4 @@ contract LibFlareContractRegistryTest is Test {
         IFeeCalculator feeCalculator = LibFlareContractRegistry.getFeeCalculator();
         assertEq(address(feeCalculator), address(0xFDe4f89E6d67ec1a497e1c25944ba5D2d7a36bf3));
     }
-
 }
