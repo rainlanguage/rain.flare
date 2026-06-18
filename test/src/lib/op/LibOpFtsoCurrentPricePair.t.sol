@@ -298,10 +298,8 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
 
         conformPriceDetails(priceDetailsB, currentPriceB);
         vm.assume(
-            !(
-                priceDetailsB.priceFinalizationType == uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN)
-                    || priceDetailsB.priceFinalizationType == uint8(IFtso.PriceFinalizationType.TRUSTED_ADDRESSES)
-            )
+            !(priceDetailsB.priceFinalizationType == uint8(IFtso.PriceFinalizationType.WEIGHTED_MEDIAN)
+                    || priceDetailsB.priceFinalizationType == uint8(IFtso.PriceFinalizationType.TRUSTED_ADDRESSES))
         );
 
         mockRegistry(1);
@@ -313,9 +311,7 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         inputs[0] = StackItem.wrap(bytes32(intSymbolA));
         inputs[1] = StackItem.wrap(bytes32(intSymbolB));
         inputs[2] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
-        vm.expectRevert(
-            abi.encodeWithSelector(PriceNotFinalized.selector, priceDetailsB.priceFinalizationType)
-        );
+        vm.expectRevert(abi.encodeWithSelector(PriceNotFinalized.selector, priceDetailsB.priceFinalizationType));
         this.externalRun(operand, inputs);
     }
 
