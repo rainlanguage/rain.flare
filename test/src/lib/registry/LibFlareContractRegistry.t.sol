@@ -13,26 +13,10 @@ import {
     FEE_CALCULATOR_NAME,
     ContractNotRegistered
 } from "src/lib/registry/LibFlareContractRegistry.sol";
+import {LibFlareContractRegistryExternal} from
+    "test/src/lib/registry/LibFlareContractRegistryExternal.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
-
-/// External wrapper around the internal library getters so that calling them via
-/// `this.<fn>()` produces a dedicated external call frame. `vm.expectRevert`
-/// asserts the *next call frame* reverts; an inlined internal library call has
-/// no frame of its own, so the wrapper is required to observe the revert.
-contract LibFlareContractRegistryExternal {
-    function getFtsoRegistry() external view returns (address) {
-        return address(LibFlareContractRegistry.getFtsoRegistry());
-    }
-
-    function getFtsoV2LTS() external view returns (address) {
-        return address(LibFlareContractRegistry.getFtsoV2LTS());
-    }
-
-    function getFeeCalculator() external view returns (address) {
-        return address(LibFlareContractRegistry.getFeeCalculator());
-    }
-}
 
 contract LibFlareContractRegistryTest is Test {
     LibFlareContractRegistryExternal internal external_ = new LibFlareContractRegistryExternal();
