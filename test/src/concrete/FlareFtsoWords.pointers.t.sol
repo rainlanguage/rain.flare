@@ -24,7 +24,7 @@ import {
 import {
     OPCODE_FTSO_CURRENT_PRICE_USD,
     OPCODE_FTSO_CURRENT_PRICE_PAIR,
-    OPCODE_SLFR_CURRENT_EXCHANGE_RATE,
+    OPCODE_SFLR_CURRENT_EXCHANGE_RATE,
     OPCODE_FUNCTION_POINTERS_LENGTH
 } from "src/abstract/FlareFtsoExtern.sol";
 
@@ -68,13 +68,13 @@ contract FlareFtsoWordsPointersTest is Test {
     function testWordOpcodeIndicesAligned() external pure {
         assertEq(SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD, OPCODE_FTSO_CURRENT_PRICE_USD);
         assertEq(SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR, OPCODE_FTSO_CURRENT_PRICE_PAIR);
-        assertEq(SUB_PARSER_WORD_SFLR_EXCHANGE_RATE, OPCODE_SLFR_CURRENT_EXCHANGE_RATE);
+        assertEq(SUB_PARSER_WORD_SFLR_EXCHANGE_RATE, OPCODE_SFLR_CURRENT_EXCHANGE_RATE);
         assertEq(SUB_PARSER_WORD_PARSERS_LENGTH, OPCODE_FUNCTION_POINTERS_LENGTH);
 
         bytes memory authoringMetaBytes = LibFlareFtsoSubParser.authoringMetaV2();
         AuthoringMetaV2[] memory meta = abi.decode(authoringMetaBytes, (AuthoringMetaV2[]));
         assertEq(meta[OPCODE_FTSO_CURRENT_PRICE_USD].word, bytes32("ftso-current-price-usd"));
         assertEq(meta[OPCODE_FTSO_CURRENT_PRICE_PAIR].word, bytes32("ftso-current-price-pair"));
-        assertEq(meta[OPCODE_SLFR_CURRENT_EXCHANGE_RATE].word, bytes32("sflr-exchange-rate"));
+        assertEq(meta[OPCODE_SFLR_CURRENT_EXCHANGE_RATE].word, bytes32("sflr-exchange-rate"));
     }
 }
