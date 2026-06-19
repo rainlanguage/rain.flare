@@ -9,7 +9,8 @@ IStakedFlr constant SFLR_CONTRACT = IStakedFlr(address(0x12e605bc104e93B45e1aD99
 
 library LibSceptreStakedFlare {
     /// Fixed 18 decimal place ratio of sFLR to FLR.
-    /// For each 1e18 FLR, this is how many sFLR are minted.
+    /// For each 1e18 FLR pooled, this is how many sFLR shares it is worth
+    /// according to the sFLR contract's current exchange rate.
     //forge-lint: disable-next-line(mixed-case-function)
     function getSFLRPerFLR18() internal view returns (uint256) {
         return SFLR_CONTRACT.getSharesByPooledFlr(1e18);
