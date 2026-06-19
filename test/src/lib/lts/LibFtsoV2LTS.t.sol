@@ -21,6 +21,14 @@ contract LibFtsoV2LTSTest is Test {
         assertEq(feedValue, 2522.575e18);
     }
 
+    function testLtsFeedScaleBand() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        uint256 feedValue = LibFtsoV2LTS.ftsoV2LTSGetFeed(ETH_USD_FEED_ID, 3600);
+        assertGe(feedValue, 1e18, "ETH/USD LTS feed below 1 -- scale may have changed");
+        assertLe(feedValue, 1e24, "ETH/USD LTS feed above 1e6 -- scale may have changed");
+    }
+
     function testFtsoV2LTSGetFeedStale() external {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 

@@ -17,4 +17,10 @@ contract LibSceptreStakedFlareTest is Test {
         uint256 rate18 = LibSceptreStakedFlare.getSFLRPerFLR18();
         assertEq(rate18, 0.877817288626455057e18);
     }
+
+    function testSflrRateScaleBand() external view {
+        uint256 rate18 = LibSceptreStakedFlare.getSFLRPerFLR18();
+        assertGe(rate18, 0.1e18, "sFLR/FLR rate below 0.1 -- scale may have changed");
+        assertLe(rate18, 10e18, "sFLR/FLR rate above 10 -- scale may have changed");
+    }
 }
