@@ -95,9 +95,9 @@ library LibFtsoV2LTS {
 
         (uint256 value, uint64 timestamp) = ftsoRegistry.getFeedByIdInWei{value: fee}(feedId);
 
-        // Handle stale prices.
+        // Handle stale prices. Subtraction avoids overflow when timeout is large.
         //slither-disable-next-line timestamp
-        if (block.timestamp > timestamp + timeout) {
+        if (block.timestamp > timestamp && block.timestamp - timestamp > timeout) {
             revert StalePrice(timestamp, timeout);
         }
 
