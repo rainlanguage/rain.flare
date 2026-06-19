@@ -8,7 +8,7 @@ import {IFtso} from "src/lib/registry/LibFlareContractRegistry.sol";
 import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.0/src/lib/LibIntOrAString.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
-import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge} from "src/err/ErrFtso.sol";
+import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge, InconsistentFtso} from "src/err/ErrFtso.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 import {
     NegativeFixedDecimalConversion,
@@ -165,6 +165,45 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         this.externalRun(operand, inputs);
     }
 
+    /// Deterministic boundary: when `block.timestamp == priceTimestamp + timeout`
+    /// the price is NOT yet stale (the staleness check is strictly
+    /// greater-than). It MUST be accepted and returned, not reverted as
+    /// StalePrice. The fuzzed `testRunStale`/`testRunHappy` only land on this
+    /// exact boundary by chance, so pin it explicitly.
+    function testRunStaleBoundaryNotStale(OperandV2 operand) external {
+        string memory symbol = "ETH";
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+        uint256 timeout = 3600;
+
+        CurrentPrice memory currentPrice;
+        currentPrice.price = 98765;
+        currentPrice.decimals = 5;
+        currentPrice.timestamp = 50000;
+
+        PriceDetails memory priceDetails;
+        conformPriceDetails(priceDetails, currentPrice);
+        finalizePrice(priceDetails);
+
+        // Exactly on the boundary: not stale.
+        vm.warp(currentPrice.timestamp + timeout);
+
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+        mockPrice(FTSO, currentPrice);
+
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+        StackItem[] memory outputs = this.externalRun(operand, inputs);
+        assertEq(outputs.length, 1);
+        assertEq(
+            StackItem.unwrap(outputs[0]),
+            Float.unwrap(LibDecimalFloat.packLossless(int256(currentPrice.price), -int256(currentPrice.decimals)))
+        );
+    }
+
     /// Anything other than WEIGHTED_MEDIAN or TRUSTED_ADDRESSES should revert
     /// as it means the price is not final.
     function testRunFtsoNotFinal(
@@ -240,5 +279,172 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
         vm.expectRevert(abi.encodeWithSelector(InactiveFtso.selector));
         this.externalRun(operand, inputs);
+    }
+
+    /// A price finalized via TRUSTED_ADDRESSES must be accepted (not reverted)
+    /// and produce the normalized USD price, exactly as WEIGHTED_MEDIAN does.
+    /// This pins the second branch of the finalization acceptance check.
+    function testRunHappyTrustedAddresses(
+        OperandV2 operand,
+        string memory symbol,
+        uint256 timeout,
+        uint256 currentTime,
+        PriceDetails memory priceDetails,
+        CurrentPrice memory currentPrice
+    ) external {
+        currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
+        currentPrice.decimals = bound(currentPrice.decimals, 0, type(uint8).max);
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
+        currentTime = warpNotStale(currentPrice, timeout, currentTime);
+
+        conformPriceDetails(priceDetails, currentPrice);
+        // Finalize via TRUSTED_ADDRESSES rather than WEIGHTED_MEDIAN.
+        priceDetails.priceFinalizationType = uint8(IFtso.PriceFinalizationType.TRUSTED_ADDRESSES);
+
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+        mockPrice(FTSO, currentPrice);
+
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+        StackItem[] memory outputs = this.externalRun(operand, inputs);
+        assertEq(outputs.length, 1);
+        assertEq(
+            StackItem.unwrap(outputs[0]),
+            Float.unwrap(LibDecimalFloat.packLossless(int256(currentPrice.price), -int256(currentPrice.decimals)))
+        );
+    }
+
+    /// If the price reported by getCurrentPriceDetails disagrees with the price
+    /// reported by getCurrentPriceWithDecimals the FTSO is inconsistent and we
+    /// must revert. Pins the `price != price1` branch of the consistency check.
+    function testRunInconsistentPrice(
+        OperandV2 operand,
+        string memory symbol,
+        uint256 timeout,
+        uint256 currentTime,
+        PriceDetails memory priceDetails,
+        CurrentPrice memory currentPrice,
+        uint256 divergentPrice
+    ) external {
+        currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
+        currentPrice.decimals = bound(currentPrice.decimals, 0, type(uint8).max);
+        // The divergent price MUST differ from the details price.
+        vm.assume(divergentPrice != currentPrice.price);
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
+        currentTime = warpNotStale(currentPrice, timeout, currentTime);
+
+        conformPriceDetails(priceDetails, currentPrice);
+        finalizePrice(priceDetails);
+
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+        // getCurrentPriceWithDecimals reports a DIFFERENT price than the details.
+        vm.mockCall(
+            FTSO,
+            abi.encodeWithSelector(IFtso.getCurrentPriceWithDecimals.selector),
+            abi.encode(divergentPrice, currentPrice.timestamp, currentPrice.decimals)
+        );
+
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+        vm.expectRevert(abi.encodeWithSelector(InconsistentFtso.selector));
+        this.externalRun(operand, inputs);
+    }
+
+    /// If the timestamp reported by getCurrentPriceDetails disagrees with the
+    /// timestamp reported by getCurrentPriceWithDecimals the FTSO is
+    /// inconsistent and we must revert. Pins the `priceTimestamp != priceTimestamp1`
+    /// branch of the consistency check.
+    function testRunInconsistentTimestamp(
+        OperandV2 operand,
+        string memory symbol,
+        uint256 timeout,
+        uint256 currentTime,
+        PriceDetails memory priceDetails,
+        CurrentPrice memory currentPrice,
+        uint256 divergentTimestamp
+    ) external {
+        currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
+        currentPrice.decimals = bound(currentPrice.decimals, 0, type(uint8).max);
+        // The divergent timestamp MUST differ from the details timestamp.
+        vm.assume(divergentTimestamp != currentPrice.timestamp);
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
+        currentTime = warpNotStale(currentPrice, timeout, currentTime);
+
+        conformPriceDetails(priceDetails, currentPrice);
+        finalizePrice(priceDetails);
+
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+        // getCurrentPriceWithDecimals reports a DIFFERENT timestamp than the details.
+        vm.mockCall(
+            FTSO,
+            abi.encodeWithSelector(IFtso.getCurrentPriceWithDecimals.selector),
+            abi.encode(currentPrice.price, divergentTimestamp, currentPrice.decimals)
+        );
+
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+        vm.expectRevert(abi.encodeWithSelector(InconsistentFtso.selector));
+        this.externalRun(operand, inputs);
+    }
+
+    /// The decimals boundary is exactly type(uint8).max: 255 decimals must be
+    /// accepted (not reverted) and 256 must revert. Pins the `>` comparison at
+    /// the exact boundary rather than relying on the fuzzer to land on 255.
+    function testRunDecimalsBoundary(
+        OperandV2 operand,
+        string memory symbol,
+        uint256 timeout,
+        uint256 currentTime,
+        PriceDetails memory priceDetails,
+        CurrentPrice memory currentPrice
+    ) external {
+        currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
+        currentPrice.decimals = 255;
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+
+        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
+        currentTime = warpNotStale(currentPrice, timeout, currentTime);
+
+        conformPriceDetails(priceDetails, currentPrice);
+        finalizePrice(priceDetails);
+
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+        mockPrice(FTSO, currentPrice);
+
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+        // 255 decimals is exactly at the boundary and must NOT revert.
+        StackItem[] memory outputs = this.externalRun(operand, inputs);
+        assertEq(outputs.length, 1);
+        assertEq(
+            StackItem.unwrap(outputs[0]),
+            Float.unwrap(LibDecimalFloat.packLossless(int256(currentPrice.price), -int256(currentPrice.decimals)))
+        );
     }
 }
