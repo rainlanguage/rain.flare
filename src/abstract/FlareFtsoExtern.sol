@@ -6,7 +6,7 @@ import {BaseRainlangExtern, OperandV2, StackItem} from "rainlang-0.1.2/src/abstr
 import {LibConvert} from "rain-lib-typecast-0.1.0/src/LibConvert.sol";
 import {LibOpFtsoCurrentPriceUsd} from "../lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {LibOpFtsoCurrentPricePair} from "../lib/op/LibOpFtsoCurrentPricePair.sol";
-import {LibOpSFlrCurrentExchangeRate} from "../lib/op/LibOpSFlrCurrentExchangeRate.sol";
+import {LibOpSFLRCurrentExchangeRate} from "../lib/op/LibOpSFlrCurrentExchangeRate.sol";
 
 import {INTEGRITY_FUNCTION_POINTERS, OPCODE_FUNCTION_POINTERS} from "../generated/FlareFtsoWords.pointers.sol";
 
@@ -55,7 +55,7 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
         view returns (StackItem[] memory)[](OPCODE_FUNCTION_POINTERS_LENGTH);
         fs[OPCODE_FTSO_CURRENT_PRICE_USD] = LibOpFtsoCurrentPriceUsd.run;
         fs[OPCODE_FTSO_CURRENT_PRICE_PAIR] = LibOpFtsoCurrentPricePair.run;
-        fs[OPCODE_SFLR_CURRENT_EXCHANGE_RATE] = LibOpSFlrCurrentExchangeRate.run;
+        fs[OPCODE_SFLR_CURRENT_EXCHANGE_RATE] = LibOpSFLRCurrentExchangeRate.run;
 
         uint256[] memory pointers;
         assembly ("memory-safe") {
@@ -73,7 +73,7 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
         pure returns (uint256, uint256)[](OPCODE_FUNCTION_POINTERS_LENGTH);
         fs[OPCODE_FTSO_CURRENT_PRICE_USD] = LibOpFtsoCurrentPriceUsd.integrity;
         fs[OPCODE_FTSO_CURRENT_PRICE_PAIR] = LibOpFtsoCurrentPricePair.integrity;
-        fs[OPCODE_SFLR_CURRENT_EXCHANGE_RATE] = LibOpSFlrCurrentExchangeRate.integrity;
+        fs[OPCODE_SFLR_CURRENT_EXCHANGE_RATE] = LibOpSFLRCurrentExchangeRate.integrity;
 
         uint256[] memory pointers;
         assembly ("memory-safe") {
