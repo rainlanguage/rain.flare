@@ -4,18 +4,18 @@ pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {OperandV2, StackItem} from "rain-interpreter-interface-0.1.0/src/interface/IInterpreterV4.sol";
-import {LibOpSLFRCurrentExchangeRate} from "src/lib/op/LibOpSFlrCurrentExchangeRate.sol";
+import {LibOpSFLRCurrentExchangeRate} from "src/lib/op/LibOpSFlrCurrentExchangeRate.sol";
 import {IStakedFlr} from "src/interface/IStakedFlr.sol";
 import {SFLR_CONTRACT} from "src/lib/sflr/LibSceptreStakedFlare.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
 contract LibOpSFlrCurrentExchangeRateTest is Test {
     function externalRun(OperandV2 operand, StackItem[] memory inputs) external view returns (StackItem[] memory) {
-        return LibOpSLFRCurrentExchangeRate.run(operand, inputs);
+        return LibOpSFLRCurrentExchangeRate.run(operand, inputs);
     }
 
     function testIntegrity(OperandV2 operand, uint256 inputs, uint256 outputs) external pure {
-        (uint256 calcInputs, uint256 calcOutputs) = LibOpSLFRCurrentExchangeRate.integrity(operand, inputs, outputs);
+        (uint256 calcInputs, uint256 calcOutputs) = LibOpSFLRCurrentExchangeRate.integrity(operand, inputs, outputs);
         assertEq(calcInputs, 0);
         assertEq(calcOutputs, 1);
     }
