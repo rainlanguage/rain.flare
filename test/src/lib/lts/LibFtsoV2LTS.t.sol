@@ -65,10 +65,11 @@ contract LibFtsoV2LTSTest is Test {
         assertEq(alice.balance, fee - 1);
 
         vm.startPrank(alice);
-        vm.expectRevert();
+        // EVM OutOfFunds when the library tries to forward more ETH than it holds.
+        vm.expectRevert(bytes(""));
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
 
-        vm.expectRevert();
+        vm.expectRevert(bytes(""));
         feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
 
         vm.deal(alice, fee);
