@@ -11,7 +11,7 @@ import {
 import {
     OPCODE_FTSO_CURRENT_PRICE_USD,
     OPCODE_FTSO_CURRENT_PRICE_PAIR,
-    OPCODE_SLFR_CURRENT_EXCHANGE_RATE
+    OPCODE_SFLR_CURRENT_EXCHANGE_RATE
 } from "./FlareFtsoExtern.sol";
 import {LibSubParse, IInterpreterExternV4} from "rainlang-0.1.2/src/lib/parse/LibSubParse.sol";
 import {LibParseOperand} from "rainlang-0.1.2/src/lib/parse/LibParseOperand.sol";
@@ -137,7 +137,7 @@ abstract contract FlareFtsoSubParser is BaseRainlangSubParser {
     {
         //slither-disable-next-line unused-return
         return LibSubParse.subParserExtern(
-            IInterpreterExternV4(extern()), constantsHeight, ioByte, operand, OPCODE_SLFR_CURRENT_EXCHANGE_RATE
+            IInterpreterExternV4(extern()), constantsHeight, ioByte, operand, OPCODE_SFLR_CURRENT_EXCHANGE_RATE
         );
     }
 }
