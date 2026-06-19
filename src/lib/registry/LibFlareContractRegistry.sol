@@ -6,6 +6,8 @@ import {FtsoV2Interface} from "../../vendor/flare-smart-contracts-v2/userInterfa
 import {IFeeCalculator} from "../../vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
 import {IFtsoRegistry} from "../../vendor/flare-smart-contracts/userInterfaces/IFtsoRegistry.sol";
 import {IFlareContractRegistry} from "../../vendor/flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
+// Re-exported so that files importing this registry lib also get IFtso without
+// a separate vendor import. Tests use IFtso.PriceFinalizationType and selectors.
 //forge-lint: disable-next-line(unused-import)
 import {IFtso} from "../../vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
 
