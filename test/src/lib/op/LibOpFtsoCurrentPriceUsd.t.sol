@@ -161,6 +161,41 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         this.externalRun(operand, inputs);
     }
 
+    /// When priceTimestamp + timeout overflows uint256, the staleness check must
+    /// revert with StalePrice rather than panic with Panic(0x11).
+    function testRunStaleOverflow(
+        OperandV2 operand,
+        string memory symbol,
+        uint256 timeout,
+        uint256 currentTime,
+        PriceDetails memory priceDetails,
+        CurrentPrice memory currentPrice
+    ) external {
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+
+        timeout = bound(timeout, 1, uint256(int256(type(int224).max)));
+        // Force priceTimestamp + timeout to overflow.
+        currentPrice.timestamp = bound(currentPrice.timestamp, type(uint256).max - timeout + 1, type(uint256).max);
+        currentTime = bound(currentTime, 0, type(uint256).max);
+        vm.warp(currentTime);
+
+        conformPriceDetails(priceDetails, currentPrice);
+        finalizePrice(priceDetails);
+
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+        mockPrice(FTSO, currentPrice);
+
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, currentPrice.timestamp, timeout));
+        this.externalRun(operand, inputs);
+    }
+
     /// Deterministic boundary: when `block.timestamp == priceTimestamp + timeout`
     /// the price is NOT yet stale (the staleness check is strictly
     /// greater-than). It MUST be accepted and returned, not reverted as
