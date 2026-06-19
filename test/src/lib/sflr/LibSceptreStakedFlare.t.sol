@@ -3,8 +3,8 @@
 pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
-import {LibFork} from "test/fork/LibFork.sol";
-import {LibSceptreStakedFlare} from "src/lib/sflr/LibSceptreStakedFlare.sol";
+import {LibFork} from "../../../fork/LibFork.sol";
+import {LibSceptreStakedFlare} from "../../../../src/lib/sflr/LibSceptreStakedFlare.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
 
