@@ -28,7 +28,12 @@ import {
     //forge-lint: disable-next-line(unused-import)
     AuthoringMetaV2
 } from "../abstract/FlareFtsoSubParser.sol";
-import {DESCRIBED_BY_META_HASH} from "../generated/FlareFtsoWords.pointers.sol";
+import {
+    DESCRIBED_BY_META_HASH,
+
+    //forge-lint: disable-next-line(unused-import)
+    BYTECODE_HASH
+} from "../generated/FlareFtsoWords.pointers.sol";
 import {IDescribedByMetaV1} from "rain-metadata-0.1.0/src/interface/IDescribedByMetaV1.sol";
 
 /// @title FlareFtsoWords

@@ -10,6 +10,7 @@ import {
     OPCODE_FUNCTION_POINTERS,
     SUB_PARSER_WORD_PARSERS,
     SUB_PARSER_PARSE_META,
+    BYTECODE_HASH,
     AuthoringMetaV2
 } from "src/concrete/FlareFtsoWords.sol";
 import {LibGenParseMeta} from "rain-interpreter-interface-0.1.0/src/lib/codegen/LibGenParseMeta.sol";
@@ -41,5 +42,12 @@ contract FlareFtsoWordsPointersTest is Test {
         AuthoringMetaV2[] memory authoringMeta = abi.decode(authoringMetaBytes, (AuthoringMetaV2[]));
         bytes memory expected = LibGenParseMeta.buildParseMetaV2(authoringMeta, 2);
         assertEq(SUB_PARSER_PARSE_META, expected);
+    }
+
+    function testBytecodeHash() external {
+        FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
+        assertEq(
+            address(flareFtsoWords).codehash, BYTECODE_HASH, "committed BYTECODE_HASH drifted from compiled bytecode"
+        );
     }
 }
