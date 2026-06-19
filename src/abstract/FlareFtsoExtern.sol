@@ -6,7 +6,7 @@ import {BaseRainlangExtern, OperandV2, StackItem} from "rainlang-0.1.2/src/abstr
 import {LibConvert} from "rain-lib-typecast-0.1.0/src/LibConvert.sol";
 import {LibOpFtsoCurrentPriceUsd} from "../lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {LibOpFtsoCurrentPricePair} from "../lib/op/LibOpFtsoCurrentPricePair.sol";
-import {LibOpSLFRCurrentExchangeRate} from "../lib/op/LibOpSFlrCurrentExchangeRate.sol";
+import {LibOpSFLRCurrentExchangeRate} from "../lib/op/LibOpSFlrCurrentExchangeRate.sol";
 
 import {INTEGRITY_FUNCTION_POINTERS, OPCODE_FUNCTION_POINTERS} from "../generated/FlareFtsoWords.pointers.sol";
 
@@ -14,8 +14,8 @@ import {INTEGRITY_FUNCTION_POINTERS, OPCODE_FUNCTION_POINTERS} from "../generate
 uint256 constant OPCODE_FTSO_CURRENT_PRICE_USD = 0;
 /// @dev Index into the function pointers array for the current pair price.
 uint256 constant OPCODE_FTSO_CURRENT_PRICE_PAIR = 1;
-/// @dev Index into the function pointers array for the SLFR exchange rate.
-uint256 constant OPCODE_SLFR_CURRENT_EXCHANGE_RATE = 2;
+/// @dev Index into the function pointers array for the SFLR exchange rate.
+uint256 constant OPCODE_SFLR_CURRENT_EXCHANGE_RATE = 2;
 /// @dev The number of function pointers in the array.
 uint256 constant OPCODE_FUNCTION_POINTERS_LENGTH = 3;
 
@@ -58,7 +58,7 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
         view returns (StackItem[] memory)[](OPCODE_FUNCTION_POINTERS_LENGTH);
         fs[OPCODE_FTSO_CURRENT_PRICE_USD] = LibOpFtsoCurrentPriceUsd.run;
         fs[OPCODE_FTSO_CURRENT_PRICE_PAIR] = LibOpFtsoCurrentPricePair.run;
-        fs[OPCODE_SLFR_CURRENT_EXCHANGE_RATE] = LibOpSLFRCurrentExchangeRate.run;
+        fs[OPCODE_SFLR_CURRENT_EXCHANGE_RATE] = LibOpSFLRCurrentExchangeRate.run;
 
         uint256[] memory pointers;
         assembly ("memory-safe") {
@@ -76,7 +76,7 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
         pure returns (uint256, uint256)[](OPCODE_FUNCTION_POINTERS_LENGTH);
         fs[OPCODE_FTSO_CURRENT_PRICE_USD] = LibOpFtsoCurrentPriceUsd.integrity;
         fs[OPCODE_FTSO_CURRENT_PRICE_PAIR] = LibOpFtsoCurrentPricePair.integrity;
-        fs[OPCODE_SLFR_CURRENT_EXCHANGE_RATE] = LibOpSLFRCurrentExchangeRate.integrity;
+        fs[OPCODE_SFLR_CURRENT_EXCHANGE_RATE] = LibOpSFLRCurrentExchangeRate.integrity;
 
         uint256[] memory pointers;
         assembly ("memory-safe") {
