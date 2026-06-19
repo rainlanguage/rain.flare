@@ -42,18 +42,19 @@ library LibOpFtsoCurrentPricePair {
     ///   0. The derived price of the two assets, normalized to 18 decimals.
     function run(OperandV2 operand, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         uint256 symbolA;
+        uint256 symbolB;
         assembly ("memory-safe") {
-            // Truncating from 3 inputs to 2, so we can forward directly to the
-            // `ftsoCurrentPriceUsd` opcode.
             inputs := add(inputs, 0x20)
             symbolA := mload(inputs)
+            symbolB := mload(add(inputs, 0x20))
             mstore(inputs, 2)
-        }
-        StackItem[] memory outputsB = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
-        assembly ("memory-safe") {
             mstore(add(inputs, 0x20), symbolA)
         }
         StackItem[] memory outputsA = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
+        assembly ("memory-safe") {
+            mstore(add(inputs, 0x20), symbolB)
+        }
+        StackItem[] memory outputsB = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
 
         Float priceA;
         Float priceB;
@@ -64,7 +65,6 @@ library LibOpFtsoCurrentPricePair {
 
         Float pricePair = priceA.div(priceB);
 
-        // Repurpose one of the inner outputs arrays to return the derived price.
         assembly ("memory-safe") {
             mstore(add(outputsA, 0x20), pricePair)
         }

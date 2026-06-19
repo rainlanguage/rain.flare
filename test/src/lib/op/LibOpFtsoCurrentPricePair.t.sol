@@ -160,23 +160,45 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
     }
 
     /// An inactive FTSO should revert. Tests the first symbol being inactive.
-    function testRunFtsoNotActiveA(
+    function testRunFtsoNotActiveA(OperandV2 operand, string memory symbolA, string memory symbolB) external {
+        vm.assume(bytes(symbolA).length < 0x20);
+        vm.assume(bytes(symbolB).length < 0x20);
+        vm.assume(keccak256(bytes(symbolA)) != keccak256(bytes(symbolB)));
+
+        uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbolA));
+        uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbolB));
+
+        mockRegistry(1);
+        mockFtsoRegistry(FTSO_A, symbolA);
+
+        vm.mockCall(FTSO_A, abi.encodeWithSelector(IFtso.active.selector), abi.encode(false));
+
+        StackItem[] memory inputs = new StackItem[](3);
+        inputs[0] = StackItem.wrap(bytes32(intSymbolA));
+        inputs[1] = StackItem.wrap(bytes32(intSymbolB));
+        inputs[2] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(0, 0)));
+        vm.expectRevert(abi.encodeWithSelector(InactiveFtso.selector));
+        this.externalRun(operand, inputs);
+    }
+
+    /// An inactive FTSO should revert. Tests the second symbol.
+    function testRunFtsoNotActiveB(
         OperandV2 operand,
         string memory symbolA,
         string memory symbolB,
         uint256 timeout,
         uint256 currentTime,
-        PriceDetails memory priceDetailsB,
-        CurrentPrice memory currentPriceB
+        PriceDetails memory priceDetailsA,
+        CurrentPrice memory currentPriceA
     ) external {
         vm.assume(bytes(symbolA).length < 0x20);
         vm.assume(bytes(symbolB).length < 0x20);
         vm.assume(keccak256(bytes(symbolA)) != keccak256(bytes(symbolB)));
-        currentPriceB.price = bound(currentPriceB.price, 0, uint256(int256(type(int224).max)));
-        currentPriceB.decimals = bound(currentPriceB.decimals, 0, type(uint8).max);
+        currentPriceA.price = bound(currentPriceA.price, 0, uint256(int256(type(int224).max)));
+        currentPriceA.decimals = bound(currentPriceA.decimals, 0, type(uint8).max);
 
         timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
-        warpNotStale(currentPriceB, timeout, currentTime);
+        warpNotStale(currentPriceA, timeout, currentTime);
 
         uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbolA));
         uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbolB));
@@ -185,37 +207,11 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         mockFtsoRegistry(FTSO_A, symbolA);
         mockFtsoRegistry(FTSO_B, symbolB);
 
-        activateFtso(FTSO_B);
-        conformPriceDetails(priceDetailsB, currentPriceB);
-        finalizePrice(priceDetailsB);
-        mockPriceDetails(FTSO_B, priceDetailsB);
-        mockPrice(FTSO_B, currentPriceB);
-
-        vm.mockCall(FTSO_A, abi.encodeWithSelector(IFtso.active.selector), abi.encode(false));
-
-        StackItem[] memory inputs = new StackItem[](3);
-        inputs[0] = StackItem.wrap(bytes32(intSymbolA));
-        inputs[1] = StackItem.wrap(bytes32(intSymbolB));
-        inputs[2] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
-        vm.expectRevert(abi.encodeWithSelector(InactiveFtso.selector));
-        this.externalRun(operand, inputs);
-    }
-
-    /// An inactive FTSO should revert. Tests the second symbol.
-    function testRunFtsoNotActiveB(OperandV2 operand, string memory symbolA, string memory symbolB, uint256 timeout)
-        external
-    {
-        vm.assume(bytes(symbolA).length < 0x20);
-        vm.assume(bytes(symbolB).length < 0x20);
-        vm.assume(keccak256(bytes(symbolA)) != keccak256(bytes(symbolB)));
-
-        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
-
-        uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbolA));
-        uint256 intSymbolB = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbolB));
-
-        mockRegistry(1);
-        mockFtsoRegistry(FTSO_B, symbolB);
+        activateFtso(FTSO_A);
+        conformPriceDetails(priceDetailsA, currentPriceA);
+        finalizePrice(priceDetailsA);
+        mockPriceDetails(FTSO_A, priceDetailsA);
+        mockPrice(FTSO_A, currentPriceA);
 
         vm.mockCall(FTSO_B, abi.encodeWithSelector(IFtso.active.selector), abi.encode(false));
 
