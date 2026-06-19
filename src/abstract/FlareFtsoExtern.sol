@@ -26,8 +26,11 @@ uint256 constant OPCODE_FUNCTION_POINTERS_LENGTH = 3;
 ///
 /// Handles things such as:
 /// - Looking up the correct FTSO contract for a given symbol from registries.
-/// - Checking finalization status of prices and rejecting if not finalized.
-/// - Checking the timestamp of prices and rejecting if too old.
+/// - Checking finalization status of FTSO prices and rejecting if not finalized
+///   (applies to ftso-current-price-usd and ftso-current-price-pair only).
+/// - Checking the timestamp of FTSO prices and rejecting if too old (applies to
+///   ftso-current-price-usd and ftso-current-price-pair only; the sFLR exchange
+///   rate is an on-chain protocol value with no meaningful staleness concept).
 /// - Normalizing prices to 18 decimal fixed point.
 /// - Aggregate logic for multiple FTSOs such as deriving pair prices from two
 ///   symbols given a shared USD denominator.
