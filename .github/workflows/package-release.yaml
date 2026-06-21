@@ -5,7 +5,7 @@ on:
       - main
 jobs:
   release:
-    uses: rainlanguage/rainix/.github/workflows/rainix-autopublish.yaml@main
+    uses: rainlanguage/rainix/.github/workflows/rainix-autopublish.yaml@6b43e604e1b6ce3c00ece4ae159bb5d1457548b5
     with:
       soldeer-package: rain-flare
     secrets: inherit

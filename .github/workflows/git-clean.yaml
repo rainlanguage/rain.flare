@@ -2,5 +2,5 @@ name: Git is clean
 on: [push]
 jobs:
   copy-artifacts:
-    uses: rainlanguage/rainix/.github/workflows/rainix-copy-artifacts.yaml@main
+    uses: rainlanguage/rainix/.github/workflows/rainix-copy-artifacts.yaml@6b43e604e1b6ce3c00ece4ae159bb5d1457548b5
     secrets: inherit
