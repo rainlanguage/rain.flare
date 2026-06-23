@@ -57,8 +57,7 @@ contract FlareFtsoWordsPointersTest is Test {
     }
 
     function testAuthoringMetaContent() external pure {
-        AuthoringMetaV2[] memory m =
-            abi.decode(LibFlareFtsoSubParser.authoringMetaV2(), (AuthoringMetaV2[]));
+        AuthoringMetaV2[] memory m = abi.decode(LibFlareFtsoSubParser.authoringMetaV2(), (AuthoringMetaV2[]));
         assertEq(m.length, SUB_PARSER_WORD_PARSERS_LENGTH);
         assertEq(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].word, bytes32("ftso-current-price-usd"));
         assertEq(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].word, bytes32("ftso-current-price-pair"));
