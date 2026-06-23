@@ -11,9 +11,9 @@ import {
     SUB_PARSER_WORD_PARSERS,
     SUB_PARSER_PARSE_META,
     AuthoringMetaV2
-} from "src/concrete/FlareFtsoWords.sol";
+} from "../../../src/concrete/FlareFtsoWords.sol";
 import {LibGenParseMeta} from "rain-interpreter-interface-0.1.0/src/lib/codegen/LibGenParseMeta.sol";
-import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
+import {LibFlareFtsoSubParser} from "../../../src/lib/parse/LibFlareFtsoSubParser.sol";
 
 contract FlareFtsoWordsPointersTest is Test {
     function testIntegrityPointers() external {

@@ -3,8 +3,8 @@
 pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
-import {LibFork} from "test/fork/LibFork.sol";
-import {LibFlareContractRegistry, IFtsoRegistry} from "src/lib/registry/LibFlareContractRegistry.sol";
+import {LibFork} from "../../../../test/fork/LibFork.sol";
+import {LibFlareContractRegistry, IFtsoRegistry} from "../../../../src/lib/registry/LibFlareContractRegistry.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
 
