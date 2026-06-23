@@ -417,4 +417,35 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
             Float.unwrap(LibDecimalFloat.packLossless(int256(currentPrice.price), -int256(currentPrice.decimals)))
         );
     }
+
+    function testRunStaleTimestampOverflow(
+        OperandV2 operand,
+        string memory symbol,
+        uint256 timeout,
+        PriceDetails memory priceDetails,
+        CurrentPrice memory currentPrice
+    ) external {
+        vm.assume(bytes(symbol).length <= 31);
+        timeout = bound(timeout, 1, uint256(int256(type(int224).max)));
+        currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
+        currentPrice.decimals = bound(currentPrice.decimals, 0, type(uint8).max);
+        // Bound priceTimestamp so that priceTimestamp + timeout overflows uint256.
+        currentPrice.timestamp = bound(currentPrice.timestamp, type(uint256).max - timeout + 1, type(uint256).max);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+
+        conformPriceDetails(priceDetails, currentPrice);
+        finalizePrice(priceDetails);
+
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+        mockPrice(FTSO, currentPrice);
+
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, currentPrice.timestamp, timeout));
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+        this.externalRun(operand, inputs);
+    }
 }
