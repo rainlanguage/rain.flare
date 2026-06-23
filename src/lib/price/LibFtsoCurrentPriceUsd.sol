@@ -48,9 +48,9 @@ library LibFtsoCurrentPriceUsd {
         // Handle stale prices. Use unchecked addition so a near-max
         // priceTimestamp doesn't panic; overflow wraps the deadline below
         // priceTimestamp, which we treat as stale.
-        //slither-disable-next-line timestamp
         unchecked {
             uint256 deadline = priceTimestamp + timeout;
+            //slither-disable-next-line timestamp
             if (deadline < priceTimestamp || block.timestamp > deadline) {
                 revert StalePrice(priceTimestamp, timeout);
             }
