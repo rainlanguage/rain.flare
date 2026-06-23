@@ -3,15 +3,15 @@
 pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
-import {LibFtsoV2LTS, ETH_USD_FEED_ID} from "src/lib/lts/LibFtsoV2LTS.sol";
+import {LibFtsoV2LTS, ETH_USD_FEED_ID} from "../../../../src/lib/lts/LibFtsoV2LTS.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
-import {LibFork} from "test/fork/LibFork.sol";
-import {LibFlareContractRegistry} from "src/lib/registry/LibFlareContractRegistry.sol";
+import {LibFork} from "../../../../test/fork/LibFork.sol";
+import {LibFlareContractRegistry} from "../../../../src/lib/registry/LibFlareContractRegistry.sol";
 import {IFeeCalculator} from "../../../../src/vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
-import {IGoverned, IGovernanceSettings} from "src/interface/IGoverned.sol";
-import {IGovernedFeeCalculator} from "src/interface/IGovernedFeeCalculator.sol";
-import {StalePrice} from "src/err/ErrFtso.sol";
-import {FeedConsumer} from "test/lib/lts/FeedConsumer.sol";
+import {IGoverned, IGovernanceSettings} from "../../../../src/interface/IGoverned.sol";
+import {IGovernedFeeCalculator} from "../../../../src/interface/IGovernedFeeCalculator.sol";
+import {StalePrice} from "../../../../src/err/ErrFtso.sol";
+import {FeedConsumer} from "../../../../test/lib/lts/FeedConsumer.sol";
 
 contract LibFtsoV2LTSTest is Test {
     function testFtsoV2LTSGetFeed() external {

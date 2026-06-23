@@ -3,8 +3,8 @@
 pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
-import {LibFork} from "test/fork/LibFork.sol";
-import {LibDineroFlrEth} from "src/lib/flreth/LibDineroFlrEth.sol";
+import {LibFork} from "../../../../test/fork/LibFork.sol";
+import {LibDineroFlrEth} from "../../../../src/lib/flreth/LibDineroFlrEth.sol";
 
 uint256 constant BLOCK_NUMBER = 37796420;
 
