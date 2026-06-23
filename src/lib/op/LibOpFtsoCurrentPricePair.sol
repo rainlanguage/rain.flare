@@ -53,10 +53,12 @@ library LibOpFtsoCurrentPricePair {
             symbolA := mload(inputs)
             mstore(inputs, 2)
         }
+        // First inner fetch resolves inputs[1] (symbolB) -> the quote/denominator price.
         StackItem[] memory outputsB = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
         assembly ("memory-safe") {
             mstore(add(inputs, 0x20), symbolA)
         }
+        // Restore symbolA into slot 0; second inner fetch resolves symbolA -> the base/numerator price.
         StackItem[] memory outputsA = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
 
         Float priceA;
