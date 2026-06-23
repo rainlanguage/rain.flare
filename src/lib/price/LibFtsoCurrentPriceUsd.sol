@@ -45,10 +45,15 @@ library LibFtsoCurrentPriceUsd {
             revert InconsistentFtso();
         }
 
-        // Handle stale prices.
+        // Handle stale prices. Use unchecked addition so a near-max
+        // priceTimestamp doesn't panic; overflow wraps the deadline below
+        // priceTimestamp, which we treat as stale.
         //slither-disable-next-line timestamp
-        if (block.timestamp > priceTimestamp + timeout) {
-            revert StalePrice(priceTimestamp, timeout);
+        unchecked {
+            uint256 deadline = priceTimestamp + timeout;
+            if (deadline < priceTimestamp || block.timestamp > deadline) {
+                revert StalePrice(priceTimestamp, timeout);
+            }
         }
 
         return (price, decimals);
