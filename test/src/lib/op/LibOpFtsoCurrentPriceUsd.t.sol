@@ -10,6 +10,10 @@ import {LibFork} from "test/fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge, InconsistentFtso} from "src/err/ErrFtso.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
+import {
+    NegativeFixedDecimalConversion,
+    LossyConversionFromFloat
+} from "rain-math-float-0.1.1/src/error/ErrDecimalFloat.sol";
 
 contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     function externalRun(OperandV2 operand, StackItem[] memory inputs)
@@ -416,5 +420,28 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
             StackItem.unwrap(outputs[0]),
             Float.unwrap(LibDecimalFloat.packLossless(int256(currentPrice.price), -int256(currentPrice.decimals)))
         );
+    }
+
+    function testRunNegativeTimeoutReverts(OperandV2 operand, string memory symbol, int256 coeff, int256 exp) external {
+        vm.assume(bytes(symbol).length <= 31);
+        coeff = bound(coeff, type(int224).min, -1);
+        exp = bound(exp, -10, 10);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.packLossless(coeff, exp)));
+        vm.expectRevert(abi.encodeWithSelector(NegativeFixedDecimalConversion.selector, coeff, exp));
+        this.externalRun(operand, inputs);
+    }
+
+    function testRunFractionalTimeoutReverts(OperandV2 operand, string memory symbol) external {
+        vm.assume(bytes(symbol).length <= 31);
+        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+        StackItem[] memory inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(intSymbol));
+        // 1.5 seconds: fractional Float that cannot be losslessly converted to an integer timeout.
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.packLossless(int256(15), int256(-1))));
+        vm.expectRevert(abi.encodeWithSelector(LossyConversionFromFloat.selector, int256(15), int256(-1)));
+        this.externalRun(operand, inputs);
     }
 }
