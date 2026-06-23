@@ -128,7 +128,7 @@ abstract contract FlareFtsoSubParser is BaseRainlangSubParser {
     }
 
     /// Thin wrapper around LibSubParse.subParserExtern that provides the extern
-    /// address and index of the current pair price opcode index in the extern.
+    /// address and index of the sFLR current exchange rate opcode index in the extern.
     //slither-disable-next-line dead-code
     function sFlrCurrentExchangeRateSubParser(uint256 constantsHeight, uint256 ioByte, OperandV2 operand)
         internal
