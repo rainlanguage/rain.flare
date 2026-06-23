@@ -22,4 +22,13 @@ contract LibDineroFlrEthTest is Test {
         uint256 rate18 = LibDineroFlrEth.getFLRETHPerETH18();
         assertEq(rate18, 0.989103076939285809e18);
     }
+
+    /// #62 — asserts getETHPerFLRETH18 and getFLRETHPerETH18 are reciprocals of each
+    /// other within 0.1%. An inverted direction mapping between LSTPerToken /
+    /// tokensPerLST and the wrappers would produce a product far from 1e36.
+    function testRatesAreReciprocal() external view {
+        uint256 ethPerFlreth = LibDineroFlrEth.getETHPerFLRETH18();
+        uint256 flrethPerEth = LibDineroFlrEth.getFLRETHPerETH18();
+        assertApproxEqRel(ethPerFlreth * flrethPerEth, 1e36, 1e15);
+    }
 }
