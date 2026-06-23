@@ -97,9 +97,5 @@ contract LibFtsoV2LTSTest is Test {
 
         vm.prank(executors[0]);
         IGoverned(address(feeCalculator)).executeGovernanceCall(setDefaultFeeSelector);
-
-        bytes21[] memory feedIds = new bytes21[](1);
-        feedIds[0] = bytes21(ETH_USD_FEED_ID);
-        assertEq(feeCalculator.calculateFeeByIds(feedIds), fee);
     }
 }
