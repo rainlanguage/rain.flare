@@ -15,6 +15,10 @@ contract LibSceptreStakedFlareTest is Test {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
     }
 
+    function externalGetSFLRPerFLR18() external view returns (uint256) {
+        return LibSceptreStakedFlare.getSFLRPerFLR18();
+    }
+
     function testGetSFLRPerFLR18() external view {
         uint256 rate18 = LibSceptreStakedFlare.getSFLRPerFLR18();
         assertEq(rate18, 0.877817288626455057e18);
@@ -27,6 +31,6 @@ contract LibSceptreStakedFlareTest is Test {
             abi.encode(uint256(0))
         );
         vm.expectRevert(abi.encodeWithSelector(ZeroSFLRRate.selector));
-        LibSceptreStakedFlare.getSFLRPerFLR18();
+        this.externalGetSFLRPerFLR18();
     }
 }
