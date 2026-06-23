@@ -34,8 +34,14 @@ library LibOpFtsoCurrentPriceUsd {
     ///      unwrapped `IntOrAString` (i.e. a `uint256`).
     ///   1. The timeout in seconds to invalidate prices after if the FTSO stops
     ///      updating for some time.
+    /// @dev Reverts with `DecimalsTooLarge` if the FTSO reports more than
+    ///   `type(uint8).max` decimals. Propagates `InactiveFtso`,
+    ///   `PriceNotFinalized`, `StalePrice` and `InconsistentFtso` from
+    ///   `LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd` when the FTSO is inactive,
+    ///   the price is not finalized, the price is older than `timeout` seconds,
+    ///   or the FTSO returns inconsistent values.
     /// @return outputs The outputs of the operation. Always 1 item.
-    ///   0. The price of the asset in USD, normalized to 18 decimals.
+    ///   0. The price of the asset in USD, as a packed Float.
     function run(OperandV2, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         IntOrAString symbol;
         Float timeout;

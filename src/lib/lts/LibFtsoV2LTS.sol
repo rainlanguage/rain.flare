@@ -78,6 +78,11 @@ library LibFtsoV2LTS {
     /// @dev Fetches the value of a feed from the FTSO using V2 LTS.
     /// Note that this is NOT a view function and will cost gas if the FTSO has
     /// a fee set.
+    /// @dev Reverts StalePrice(timestamp, timeout) if block.timestamp > timestamp + timeout.
+    /// @dev Caller MUST forward msg.value >= the FeeCalculator fee for this feed; surplus is NOT refunded.
+    /// @param feedId The bytes21 Flare V2 feed id to read.
+    /// @param timeout Max age in seconds before the price is considered stale.
+    /// @return value The feed value in wei (1e18 fixed point).
     //forge-lint: disable-next-line(mixed-case-function)
     function ftsoV2LTSGetFeed(bytes21 feedId, uint256 timeout) internal returns (uint256) {
         // Fetch the FTSO from the registry.
