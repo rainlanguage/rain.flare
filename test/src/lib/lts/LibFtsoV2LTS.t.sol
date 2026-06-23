@@ -77,4 +77,25 @@ contract LibFtsoV2LTSTest is Test {
         assertEq(feedValue, 2522.575e18);
         assertEq(alice.balance, 0);
     }
+
+    /// forge-config: default.fuzz.runs = 1
+    function testFtsoV2LTSSetDefaultFee(uint128 fee) external {
+        vm.assume(fee > 0);
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        IFeeCalculator feeCalculator = LibFlareContractRegistry.getFeeCalculator();
+        address gov = IGoverned(address(feeCalculator)).governance();
+        IGovernanceSettings govSettings = IGoverned(address(feeCalculator)).governanceSettings();
+        address[] memory executors = govSettings.getExecutors();
+        uint256 timelock = govSettings.getTimelock();
+        bytes4 setDefaultFeeSelector = bytes4(keccak256("setDefaultFee(uint256)"));
+
+        vm.prank(gov);
+        IGovernedFeeCalculator(address(feeCalculator)).setDefaultFee(fee);
+
+        vm.warp(block.timestamp + timelock);
+
+        vm.prank(executors[0]);
+        IGoverned(address(feeCalculator)).executeGovernanceCall(setDefaultFeeSelector);
+    }
 }
