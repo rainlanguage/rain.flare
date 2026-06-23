@@ -65,10 +65,11 @@ contract LibFtsoV2LTSTest is Test {
         assertEq(alice.balance, fee - 1);
 
         vm.startPrank(alice);
-        vm.expectRevert();
+        // OutOfFunds is an EVM error with no Solidity revert data.
+        vm.expectRevert(new bytes(0));
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
 
-        vm.expectRevert();
+        vm.expectRevert(new bytes(0));
         feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
 
         vm.deal(alice, fee);
