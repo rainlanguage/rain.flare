@@ -4,6 +4,7 @@ pragma solidity =0.8.25;
 
 import {Script} from "forge-std-1.16.1/src/Script.sol";
 import {FlareFtsoWords} from "../src/concrete/FlareFtsoWords.sol";
+import {DESCRIBED_BY_META_HASH} from "../src/generated/FlareFtsoWords.pointers.sol";
 import {IMetaBoardV1_2} from "rain-metadata-0.1.0/src/interface/unstable/IMetaBoardV1_2.sol";
 import {LibDescribedByMeta} from "rain-metadata-0.1.0/src/lib/LibDescribedByMeta.sol";
 
@@ -12,6 +13,11 @@ contract Deploy is Script {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYMENT_KEY");
         bytes memory subParserDescribedByMeta = vm.readFileBinary("meta/FlareFtsoWords.rain.meta");
         IMetaBoardV1_2 metaboard = IMetaBoardV1_2(vm.envAddress("DEPLOY_METABOARD_ADDRESS"));
+
+        require(
+            keccak256(subParserDescribedByMeta) == DESCRIBED_BY_META_HASH,
+            "meta file does not match compiled DESCRIBED_BY_META_HASH"
+        );
 
         vm.startBroadcast(deployerPrivateKey);
         FlareFtsoWords subParser = new FlareFtsoWords();
