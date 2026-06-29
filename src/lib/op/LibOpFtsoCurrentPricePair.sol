@@ -31,6 +31,10 @@ library LibOpFtsoCurrentPricePair {
     /// derived price if there has been significant volatility between the two
     /// individual quotes, so SHOULD NOT be relied upon for high precision
     /// calculations.
+    /// @dev Propagates all reverts from LibOpFtsoCurrentPriceUsd (InactiveFtso,
+    /// PriceNotFinalized, InconsistentFtso, StalePrice, DecimalsTooLarge) for
+    /// both price fetches. Additionally reverts via LibDecimalFloat.div if the
+    /// second (quote) symbol price is zero.
     /// @param inputs The inputs to the operation.
     ///   0. The symbol of the first asset to fetch the price of, encoded as an
     ///      unwrapped `IntOrAString` (i.e. a `uint256`).
@@ -39,7 +43,8 @@ library LibOpFtsoCurrentPricePair {
     ///   2. The timeout in seconds to invalidate prices after if the FTSO stops
     ///      updating for some time.
     /// @return outputs The outputs of the operation.
-    ///   0. The derived price of the two assets, normalized to 18 decimals.
+    ///   0. The ratio of the first asset's USD price to the second asset's USD
+    ///      price, as a Rain Float (dimensionless, not fixed 18 decimals).
     function run(OperandV2 operand, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         uint256 symbolA;
         assembly ("memory-safe") {
