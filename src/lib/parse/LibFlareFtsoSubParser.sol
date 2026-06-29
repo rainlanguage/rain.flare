@@ -27,8 +27,10 @@ library LibFlareFtsoSubParser {
             "ftso-current-price-pair",
             "Returns the current price of the given token pair according to the FTSO. Accepts 3 inputs, the symbol string used by the FTSO for the base token, the symbol string used by the FTSO for the quote token and the timeout in seconds. The price is rounded down if it does not fit in a Rainlang number. The timeout will be used to determine if the price is stale and revert if it is. Note that the pair price is derived from two separate FTSO prices mechanically and is not provided directly by the FTSO."
         );
-        meta[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE] =
-            AuthoringMetaV2("sflr-exchange-rate", "Returns the current exchange rate of FLR to SFLR.");
+        meta[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE] = AuthoringMetaV2(
+            "sflr-exchange-rate",
+            "Returns the current sFLR-per-FLR exchange rate as a Rain Float. Accepts 0 inputs. The value is the number of sFLR shares equivalent to 1 FLR of pooled liquidity (e.g. ~0.877 means 1 FLR buys 0.877 sFLR). To convert in the FLR-per-sFLR direction, take the reciprocal."
+        );
         return abi.encode(meta);
     }
 }
