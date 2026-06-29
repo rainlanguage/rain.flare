@@ -3,11 +3,11 @@
 pragma solidity ^0.8.19;
 
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
-import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "../../err/ErrFtso.sol";
+import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso, DecimalsTooLarge} from "../../err/ErrFtso.sol";
 import {IFtso} from "../../vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
 
 library LibFtsoCurrentPriceUsd {
-    function ftsoCurrentPriceUsd(string memory symbol, uint256 timeout) internal view returns (uint256, uint256) {
+    function ftsoCurrentPriceUsd(string memory symbol, uint256 timeout) internal view returns (uint256, uint8) {
         // Fetch the FTSO from the registry.
         IFtsoRegistry ftsoRegistry = LibFlareContractRegistry.getFtsoRegistry();
         IFtso ftso = ftsoRegistry.getFtsoBySymbol(symbol);
@@ -45,12 +45,18 @@ library LibFtsoCurrentPriceUsd {
             revert InconsistentFtso();
         }
 
+        if (decimals > type(uint8).max) {
+            revert DecimalsTooLarge(decimals);
+        }
+
         // Handle stale prices.
         //slither-disable-next-line timestamp
         if (block.timestamp > priceTimestamp + timeout) {
             revert StalePrice(priceTimestamp, timeout);
         }
 
-        return (price, decimals);
+        // Guard above ensures safe downcast.
+        //forge-lint: disable-next-line(unsafe-typecast)
+        return (price, uint8(decimals));
     }
 }
