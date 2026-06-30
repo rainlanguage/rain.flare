@@ -129,7 +129,7 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         uint256 timeout = 3600;
         vm.warp(priceTimestamp + timeout + 1);
 
-        mockRegistry(1);  // only one registry lookup (for symbolB); symbolA never reached
+        mockRegistry(1); // only one registry lookup (for symbolB); symbolA never reached
         mockOneFtso(FTSO_B, "BBB", 4, 3, priceTimestamp);
 
         StackItem[] memory inputs = new StackItem[](3);
@@ -170,7 +170,7 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         uint256 priceTimestamp = 1000;
         vm.warp(priceTimestamp + 10);
 
-        mockRegistry(1);  // only one registry lookup (for symbolB); symbolA never reached
+        mockRegistry(1); // only one registry lookup (for symbolB); symbolA never reached
         mockFtsoRegistry(FTSO_B, "BBB");
         activateFtso(FTSO_B);
 
@@ -187,9 +187,7 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         inputs[1] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("BBB"))));
         inputs[2] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(3600, 0)));
 
-        vm.expectRevert(
-            abi.encodeWithSelector(PriceNotFinalized.selector, IFtso.PriceFinalizationType.NOT_FINALIZED)
-        );
+        vm.expectRevert(abi.encodeWithSelector(PriceNotFinalized.selector, IFtso.PriceFinalizationType.NOT_FINALIZED));
         this.externalRun(OperandV2.wrap(0), inputs);
     }
 
@@ -231,9 +229,7 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         inputs[1] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("BBB"))));
         inputs[2] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(3600, 0)));
 
-        vm.expectRevert(
-            abi.encodeWithSelector(PriceNotFinalized.selector, IFtso.PriceFinalizationType.NOT_FINALIZED)
-        );
+        vm.expectRevert(abi.encodeWithSelector(PriceNotFinalized.selector, IFtso.PriceFinalizationType.NOT_FINALIZED));
         this.externalRun(OperandV2.wrap(0), inputs);
     }
 
