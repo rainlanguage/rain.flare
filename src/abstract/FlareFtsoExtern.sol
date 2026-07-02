@@ -52,6 +52,8 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
     /// Create a 16-bit pointer array for the opcode function pointers. This is
     /// relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
+    /// @return A packed 16-bit byte array of opcode function pointers, one per
+    /// supported opcode, in opcode-index order.
     function buildOpcodeFunctionPointers() external pure returns (bytes memory) {
         function(OperandV2, StackItem[] memory) internal view returns (StackItem[] memory)[] memory fs = new function(OperandV2, StackItem[] memory)
         internal
@@ -70,6 +72,8 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
     /// Create a 16-bit pointer array for the integrity function pointers. This
     /// is relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
+    /// @return A packed 16-bit byte array of integrity function pointers, one per
+    /// supported opcode, in opcode-index order.
     function buildIntegrityFunctionPointers() external pure returns (bytes memory) {
         function(OperandV2, uint256, uint256) internal pure returns (uint256, uint256)[] memory fs = new function(OperandV2, uint256, uint256)
         internal
