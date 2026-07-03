@@ -9,21 +9,18 @@ import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFl
 /// @title LibOpSFLRCurrentExchangeRate
 /// Implements the `sflrCurrentExchangeRate` externed opcode.
 library LibOpSFLRCurrentExchangeRate {
-    /// Extern integrity for getting the current exchange rate of sFLR per FLR.
-    /// Always requires 0 inputs and produces 1 output.
+    /// Extern integrity for getting the current sFLR-per-FLR exchange rate.
+    /// Takes 0 inputs, produces 1 output.
     function integrity(OperandV2, uint256, uint256) internal pure returns (uint256, uint256) {
         return (0, 1);
     }
 
     /// Extern implementation for reading the current sFLR-per-FLR exchange rate
     /// directly from the Sceptre sFLR contract (IStakedFlr.getSharesByPooledFlr).
-    /// The rate is the number of sFLR shares one FLR of pooled liquidity buys;
-    /// values less than 1 mean sFLR is more expensive than FLR (i.e. sFLR has
-    /// accrued yield). Downstream callers expecting FLR-per-sFLR must take the
-    /// reciprocal.
-    /// @dev Inputs are unused; integrity enforces 0 inputs.
-    /// @return outputs Always 1 item: the current sFLR-per-FLR rate as a Rain
-    /// Float (e.g. ~0.877 when 1 FLR buys 0.877 sFLR).
+    /// @return outputs The outputs of the operation. Always 1 item.
+    ///   0. The current sFLR-per-FLR exchange rate as a Float, i.e.
+    ///      `getSharesByPooledFlr(1e18)` divided by 1e18. A value less than 1
+    ///      means 1 FLR yields fewer than 1 sFLR share (typical after accrual).
     function run(OperandV2, StackItem[] memory) internal view returns (StackItem[] memory) {
         uint256 rate18 = LibSceptreStakedFlare.getSFLRPerFLR18();
         Float rateFloat = LibDecimalFloat.fromFixedDecimalLosslessPacked(rate18, 18);
