@@ -41,9 +41,10 @@ library LibOpFtsoCurrentPricePair {
     /// @return outputs The outputs of the operation.
     ///   0. The derived price of the two assets as a Float representing the
     ///      base/quote ratio (priceA / priceB), decimal-exponent encoded.
-    /// @custom:error Reverts with a divide-by-zero panic if the quote (second)
-    ///   symbol resolves to a zero price via `LibDecimalFloat.div`. Also
-    ///   propagates all `ftsoCurrentPriceUsd` errors for each fetch.
+    /// @custom:error Reverts with `DivisionByZero` (a typed error from
+    ///   rain.math.float) if the quote (second) symbol resolves to a zero price
+    ///   via `LibDecimalFloat.div`. Also propagates all `ftsoCurrentPriceUsd`
+    ///   errors for each fetch.
     function run(OperandV2 operand, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         uint256 symbolA;
         assembly ("memory-safe") {
