@@ -39,12 +39,13 @@ library LibOpFtsoCurrentPricePair {
     ///   2. The timeout in seconds to invalidate prices after if the FTSO stops
     ///      updating for some time.
     /// @return outputs The outputs of the operation.
-    ///   0. The derived price symbolA/symbolB, normalized to 18 decimals.
-    /// @dev Reverts with `InactiveFtso`, `StalePrice`, or `PriceNotFinalized`
-    /// (propagated from `ftsoCurrentPriceUsd`) if either FTSO is unusable.
-    /// The denominator (symbolB) is fetched first; errors on that leg abort
-    /// before the numerator fetch.  Reverts with `DivisionByZero` (from
-    /// `LibDecimalFloat`) if the denominator USD price is zero.
+    ///   0. The derived price symbolA/symbolB as a Float representing the
+    ///      base/quote ratio (priceA / priceB), decimal-exponent encoded.
+    /// @custom:error Reverts with `InactiveFtso`, `StalePrice`, or `PriceNotFinalized`
+    ///   (propagated from `ftsoCurrentPriceUsd`) if either FTSO is unusable.
+    ///   The denominator (symbolB) is fetched first; errors on that leg abort
+    ///   before the numerator fetch. Reverts with `DivisionByZero` (from
+    ///   `LibDecimalFloat`) if the denominator USD price is zero.
     function run(OperandV2 operand, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         uint256 symbolA;
         assembly ("memory-safe") {
