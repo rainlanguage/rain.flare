@@ -39,7 +39,12 @@ library LibOpFtsoCurrentPricePair {
     ///   2. The timeout in seconds to invalidate prices after if the FTSO stops
     ///      updating for some time.
     /// @return outputs The outputs of the operation.
-    ///   0. The derived price of the two assets, normalized to 18 decimals.
+    ///   0. The derived price of the two assets as a Float representing the
+    ///      base/quote ratio (priceA / priceB), decimal-exponent encoded.
+    /// @custom:error Reverts with `DivisionByZero` (a typed error from
+    ///   rain.math.float) if the quote (second) symbol resolves to a zero price
+    ///   via `LibDecimalFloat.div`. Also propagates all `ftsoCurrentPriceUsd`
+    ///   errors for each fetch.
     function run(OperandV2 operand, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         uint256 symbolA;
         assembly ("memory-safe") {
