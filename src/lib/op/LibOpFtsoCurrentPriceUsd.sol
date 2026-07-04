@@ -24,11 +24,11 @@ library LibOpFtsoCurrentPriceUsd {
     /// price via an FTSO. Includes a timeout to prevent stale prices.
     /// Flare Network maintains a registry of contracts with a root at a known
     /// address. This registry is used to find the FTSO contract for the symbol
-    /// and then the price is fetched from the FTSO. As the price has its own
-    /// decimals, it is converted to 18 decimals to be compatible with general
-    /// DeFi conventions including those used by rain. The overall process aims
-    /// to be safe and simple, handling as many of the internal implementation
-    /// details of FTSOs for the rainlang author as possible.
+    /// and then the price is fetched from the FTSO. The price is returned as a
+    /// Rain Float, normalized from the FTSO's native decimals.
+    /// @dev Propagates InactiveFtso, PriceNotFinalized, InconsistentFtso, and
+    /// StalePrice from LibFtsoCurrentPriceUsd. Additionally reverts with
+    /// DecimalsTooLarge if the FTSO reports more than 255 decimals.
     /// @param inputs The inputs to the operation. Always 2 items.
     ///   0. The symbol of the asset to fetch the price of, encoded as an
     ///      unwrapped `IntOrAString` (i.e. a `uint256`).
