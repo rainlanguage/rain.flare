@@ -36,10 +36,6 @@ library LibOpFtsoCurrentPriceUsd {
     ///      updating for some time.
     /// @return outputs The outputs of the operation. Always 1 item.
     ///   0. The price of the asset in USD, as a Float.
-    /// @custom:error DecimalsTooLarge Reverts if the FTSO reports more than
-    ///   `type(uint8).max` decimals. Also propagates `InactiveFtso`,
-    ///   `PriceNotFinalized`, `StalePrice`, and `InconsistentFtso` from
-    ///   `LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd`.
     function run(OperandV2, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         IntOrAString symbol;
         Float timeout;
