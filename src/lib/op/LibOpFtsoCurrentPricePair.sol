@@ -31,6 +31,10 @@ library LibOpFtsoCurrentPricePair {
     /// derived price if there has been significant volatility between the two
     /// individual quotes, so SHOULD NOT be relied upon for high precision
     /// calculations.
+    /// @dev Propagates all reverts from LibOpFtsoCurrentPriceUsd (InactiveFtso,
+    /// PriceNotFinalized, InconsistentFtso, StalePrice, DecimalsTooLarge) for
+    /// both price fetches. Additionally reverts via LibDecimalFloat.div if the
+    /// second (quote) symbol price is zero.
     /// @param inputs The inputs to the operation.
     ///   0. symbolA — the numerator asset symbol, encoded as an unwrapped
     ///      `IntOrAString` (i.e. a `uint256`).
