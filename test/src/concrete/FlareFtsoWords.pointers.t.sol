@@ -21,6 +21,7 @@ import {
     SUB_PARSER_WORD_PARSERS_LENGTH
 } from "src/lib/parse/LibFlareFtsoSubParser.sol";
 import {OPCODE_FUNCTION_POINTERS_LENGTH} from "src/abstract/FlareFtsoExtern.sol";
+import {BYTECODE_HASH} from "src/generated/FlareFtsoWords.pointers.sol";
 
 contract FlareFtsoWordsPointersTest is Test {
     function testIntegrityPointers() external {
@@ -65,5 +66,10 @@ contract FlareFtsoWordsPointersTest is Test {
         assertTrue(bytes(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].description).length > 0);
         assertTrue(bytes(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].description).length > 0);
         assertTrue(bytes(m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].description).length > 0);
+    }
+
+    function testBytecodeHashMatchesDeployedCode() external {
+        FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
+        assertEq(address(flareFtsoWords).codehash, BYTECODE_HASH, "BYTECODE_HASH is stale");
     }
 }
