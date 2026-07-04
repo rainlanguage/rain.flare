@@ -14,6 +14,7 @@ import {
 } from "src/concrete/FlareFtsoWords.sol";
 import {LibGenParseMeta} from "rain-interpreter-interface-0.1.0/src/lib/codegen/LibGenParseMeta.sol";
 import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
+import {BYTECODE_HASH} from "src/generated/FlareFtsoWords.pointers.sol";
 
 contract FlareFtsoWordsPointersTest is Test {
     function testIntegrityPointers() external {
@@ -41,5 +42,10 @@ contract FlareFtsoWordsPointersTest is Test {
         AuthoringMetaV2[] memory authoringMeta = abi.decode(authoringMetaBytes, (AuthoringMetaV2[]));
         bytes memory expected = LibGenParseMeta.buildParseMetaV2(authoringMeta, 2);
         assertEq(SUB_PARSER_PARSE_META, expected);
+    }
+
+    function testBytecodeHashMatchesDeployedCode() external {
+        FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
+        assertEq(address(flareFtsoWords).codehash, BYTECODE_HASH, "BYTECODE_HASH is stale");
     }
 }
