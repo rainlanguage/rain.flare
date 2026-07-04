@@ -34,7 +34,8 @@ library LibOpFtsoCurrentPricePair {
     /// @dev Propagates all reverts from LibOpFtsoCurrentPriceUsd (InactiveFtso,
     /// PriceNotFinalized, InconsistentFtso, StalePrice, DecimalsTooLarge) for
     /// both price fetches. Additionally reverts via LibDecimalFloat.div if the
-    /// second (quote) symbol price is zero.
+    /// second (quote) symbol price is zero. The denominator (symbolB) leg is
+    /// fetched first; errors on that leg abort before the numerator fetch.
     /// @param inputs The inputs to the operation.
     ///   0. symbolA — the numerator asset symbol, encoded as an unwrapped
     ///      `IntOrAString` (i.e. a `uint256`).
@@ -44,12 +45,8 @@ library LibOpFtsoCurrentPricePair {
     ///      updating for some time.
     /// @return outputs The outputs of the operation.
     ///   0. The derived price symbolA/symbolB as a Float representing the
-    ///      base/quote ratio (priceA / priceB), decimal-exponent encoded.
-    /// @custom:error Reverts with `InactiveFtso`, `StalePrice`, or `PriceNotFinalized`
-    ///   (propagated from `ftsoCurrentPriceUsd`) if either FTSO is unusable.
-    ///   The denominator (symbolB) is fetched first; errors on that leg abort
-    ///   before the numerator fetch. Reverts with `DivisionByZero` (from
-    ///   `LibDecimalFloat`) if the denominator USD price is zero.
+    ///      base/quote ratio (numeratorPrice / denominatorPrice),
+    ///      decimal-exponent encoded.
     function run(OperandV2 operand, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         uint256 symbolA;
         assembly ("memory-safe") {
