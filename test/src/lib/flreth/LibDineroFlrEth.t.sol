@@ -22,4 +22,12 @@ contract LibDineroFlrEthTest is Test {
         uint256 rate18 = LibDineroFlrEth.getFLRETHPerETH18();
         assertEq(rate18, 0.989103076939285809e18);
     }
+
+    /// The two rates are mathematical inverses: ethPerFLRETH * flrethPerETH ≈ 1e36.
+    /// A failed reciprocity check would flag an inverted numerator/denominator mapping.
+    function testRatesAreReciprocal() external view {
+        uint256 ethPerFLRETH = LibDineroFlrEth.getETHPerFLRETH18();
+        uint256 flrethPerETH = LibDineroFlrEth.getFLRETHPerETH18();
+        assertApproxEqRel(ethPerFLRETH * flrethPerETH, 1e36, 1e15);
+    }
 }
