@@ -7,7 +7,7 @@ import {LibOpFtsoCurrentPricePair} from "src/lib/op/LibOpFtsoCurrentPricePair.so
 import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.0/src/lib/LibIntOrAString.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {LibFork} from "test/fork/LibFork.sol";
-import {InactiveFtso, StalePrice, PriceNotFinalized} from "src/err/ErrFtso.sol";
+import {InactiveFtso, StalePrice, PriceNotFinalized, DecimalsTooLarge} from "src/err/ErrFtso.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 import {DivisionByZero} from "rain-math-float-0.1.1/src/error/ErrDecimalFloat.sol";
 
@@ -338,5 +338,46 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         inputs[2] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
         vm.expectRevert(abi.encodeWithSelector(InactiveFtso.selector));
         this.externalRun(operand, inputs);
+    }
+
+    /// An FTSO reporting more than type(uint8).max decimals on symbolB (the
+    /// denominator, first inner fetch) must propagate DecimalsTooLarge through
+    /// the pair op's trampoline; symbolA is never reached.
+    function testRunPairDecimalsTooLargeFirstLeg() external {
+        uint256 priceTimestamp = 1000;
+        uint256 timeout = 3600;
+        vm.warp(priceTimestamp + 10);
+
+        mockRegistry(1); // only one registry lookup (for symbolB); symbolA never reached
+        mockOneFtso(FTSO_B, "BBB", 4, uint256(type(uint8).max) + 1, priceTimestamp);
+
+        StackItem[] memory inputs = new StackItem[](3);
+        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("AAA"))));
+        inputs[1] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("BBB"))));
+        inputs[2] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+
+        vm.expectRevert(abi.encodeWithSelector(DecimalsTooLarge.selector, uint256(type(uint8).max) + 1));
+        this.externalRun(OperandV2.wrap(0), inputs);
+    }
+
+    /// An FTSO reporting more than type(uint8).max decimals on symbolA (the
+    /// numerator, second inner fetch) must propagate DecimalsTooLarge even
+    /// after symbolB was successfully fetched with sane decimals.
+    function testRunPairDecimalsTooLargeSecondLeg() external {
+        uint256 priceTimestamp = 1000;
+        uint256 timeout = 3600;
+        vm.warp(priceTimestamp + 10);
+
+        mockRegistry(2);
+        mockOneFtso(FTSO_A, "AAA", 2000, uint256(type(uint8).max) + 1, priceTimestamp);
+        mockOneFtso(FTSO_B, "BBB", 4, 3, priceTimestamp);
+
+        StackItem[] memory inputs = new StackItem[](3);
+        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("AAA"))));
+        inputs[1] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("BBB"))));
+        inputs[2] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+
+        vm.expectRevert(abi.encodeWithSelector(DecimalsTooLarge.selector, uint256(type(uint8).max) + 1));
+        this.externalRun(OperandV2.wrap(0), inputs);
     }
 }
