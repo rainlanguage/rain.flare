@@ -3,19 +3,26 @@
 pragma solidity ^0.8.25;
 
 interface IStakedFlr {
-    /// @notice Converts an amount of FLR into the equivalent number of sFLR shares at
-    /// the current pool exchange rate. Both amounts are 18-decimal fixed point.
-    /// @param flrAmount FLR amount (18 decimals) to convert.
-    /// @return Number of sFLR shares (18 decimals) the FLR is worth now.
+    /// @notice Returns the number of sFLR shares equivalent to the given amount
+    /// of pooled FLR at the current pool exchange rate. This is the
+    /// sFLR-per-FLR direction of the exchange rate.
+    /// @dev Both input and output are 18-decimal fixed-point values.
+    /// Rounds down (floor), favouring the protocol.
+    /// @param flrAmount Amount of pooled FLR in 1e18 fixed-point.
+    /// @return Equivalent sFLR shares in 1e18 fixed-point.
     function getSharesByPooledFlr(uint256 flrAmount) external view returns (uint256);
 
-    /// @notice Inverse of getSharesByPooledFlr: converts sFLR shares back into pooled
-    /// FLR at the current exchange rate. Both amounts are 18-decimal fixed point.
-    /// @param shareAmount sFLR share amount (18 decimals) to convert.
-    /// @return Pooled FLR amount (18 decimals) the shares are worth now.
+    /// @notice Returns the amount of pooled FLR equivalent to the given number
+    /// of sFLR shares. Inverse of getSharesByPooledFlr: this is the
+    /// FLR-per-sFLR direction of the exchange rate.
+    /// @dev Both input and output are 18-decimal fixed-point values.
+    /// Rounds down (floor), favouring the protocol.
+    /// @param shareAmount Amount of sFLR shares in 1e18 fixed-point.
+    /// @return Equivalent pooled FLR in 1e18 fixed-point.
     function getPooledFlrByShares(uint256 shareAmount) external view returns (uint256);
 
-    /// @notice Stakes the FLR sent as msg.value, minting sFLR to the caller.
-    /// @return Amount of sFLR shares minted to the caller.
+    /// @notice Stakes msg.value FLR and mints the equivalent sFLR shares to
+    /// the caller.
+    /// @return Shares minted in 1e18 fixed-point.
     function submit() external payable returns (uint256);
 }

@@ -7,18 +7,25 @@ import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "../
 import {IFtso} from "../../vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
 
 library LibFtsoCurrentPriceUsd {
-    /// Fetches the current USD price and its native decimals for an FTSO symbol
-    /// from the Flare contract registry. Reverts InactiveFtso if the FTSO is not
-    /// active, PriceNotFinalized if the price was not finalized by weighted
-    /// median or trusted addresses, InconsistentFtso if the FTSO's two price
-    /// reads disagree, and StalePrice if the price is older than `timeout`
-    /// seconds. The returned price is NOT normalized; the returned `decimals` are
-    /// whatever the FTSO reports and are NOT bounds-checked here (callers MUST
-    /// guard against oversized decimals before scaling).
-    /// @param symbol The FTSO asset symbol to price, e.g. "ETH".
-    /// @param timeout Max age in seconds before the price is considered stale.
-    /// @return price The FTSO USD price, scaled by 10**decimals.
-    /// @return decimals The number of decimals the FTSO uses for `price`.
+    /// @notice Fetches the current FTSO USD price for a symbol from the Flare
+    /// contract registry and returns the raw price together with its native
+    /// decimal count. The returned price is NOT normalized and the returned
+    /// decimals are NOT bounds-checked here: the caller is responsible for
+    /// normalising to 18 decimals and enforcing the DecimalsTooLarge guard
+    /// before scaling.
+    /// @dev Reverts with InactiveFtso if the FTSO is not active.
+    /// Reverts with PriceNotFinalized if the finalization type is not
+    /// WEIGHTED_MEDIAN or TRUSTED_ADDRESSES.
+    /// Reverts with InconsistentFtso if the two price reads return different
+    /// values (indicates an FTSO bug).
+    /// Reverts with StalePrice(priceTimestamp, timeout) if the price is older
+    /// than timeout seconds.
+    /// @param symbol The FTSO symbol string (e.g. "FLR", "ETH").
+    /// @param timeout Max age in seconds; prices older than this revert.
+    /// @return price The raw FTSO price in the FTSO's native unit, scaled by
+    /// 10**decimals.
+    /// @return decimals The decimal precision of the returned price (typically
+    /// 5 for Flare FTSO v1, but not guaranteed).
     function ftsoCurrentPriceUsd(string memory symbol, uint256 timeout) internal view returns (uint256, uint256) {
         // Fetch the FTSO from the registry.
         IFtsoRegistry ftsoRegistry = LibFlareContractRegistry.getFtsoRegistry();

@@ -26,8 +26,11 @@ uint256 constant OPCODE_FUNCTION_POINTERS_LENGTH = 3;
 ///
 /// Handles things such as:
 /// - Looking up the correct FTSO contract for a given symbol from registries.
-/// - Checking finalization status of prices and rejecting if not finalized.
-/// - Checking the timestamp of prices and rejecting if too old.
+/// - Checking finalization status of FTSO prices and rejecting if not finalized
+///   (applies to ftso-current-price-usd and ftso-current-price-pair only).
+/// - Checking the timestamp of FTSO prices and rejecting if too old (applies to
+///   ftso-current-price-usd and ftso-current-price-pair only; the sFLR exchange
+///   rate is an on-chain protocol value with no meaningful staleness concept).
 /// - Normalizing prices to 18 decimal fixed point.
 /// - Aggregate logic for multiple FTSOs such as deriving pair prices from two
 ///   symbols given a shared USD denominator.
@@ -49,6 +52,8 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
     /// Create a 16-bit pointer array for the opcode function pointers. This is
     /// relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
+    /// @return A packed 16-bit byte array of opcode function pointers, one per
+    /// supported opcode, in opcode-index order.
     function buildOpcodeFunctionPointers() external pure returns (bytes memory) {
         function(OperandV2, StackItem[] memory) internal view returns (StackItem[] memory)[] memory fs = new function(OperandV2, StackItem[] memory)
         internal
@@ -67,6 +72,8 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
     /// Create a 16-bit pointer array for the integrity function pointers. This
     /// is relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
+    /// @return A packed 16-bit byte array of integrity function pointers, one per
+    /// supported opcode, in opcode-index order.
     function buildIntegrityFunctionPointers() external pure returns (bytes memory) {
         function(OperandV2, uint256, uint256) internal pure returns (uint256, uint256)[] memory fs = new function(OperandV2, uint256, uint256)
         internal
