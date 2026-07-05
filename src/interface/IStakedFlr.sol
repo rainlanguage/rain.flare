@@ -3,20 +3,24 @@
 pragma solidity ^0.8.25;
 
 interface IStakedFlr {
-    /// @dev Returns the number of sFLR shares that correspond to `flrAmount`
-    /// of pooled FLR at the current exchange rate. 18-decimal fixed point.
-    /// @param flrAmount The amount of FLR to convert, in wei.
-    /// @return The equivalent number of sFLR shares, scaled to 18 decimals.
+    /// @notice Returns the number of sFLR shares equivalent to the given amount
+    /// of pooled FLR. This is the sFLR-per-FLR direction of the exchange rate.
+    /// @dev Both input and output are 18-decimal fixed-point values.
+    /// Rounds down (floor), favouring the protocol.
+    /// @param flrAmount Amount of pooled FLR in 1e18 fixed-point.
+    /// @return Equivalent sFLR shares in 1e18 fixed-point.
     function getSharesByPooledFlr(uint256 flrAmount) external view returns (uint256);
 
-    /// @dev Returns the amount of pooled FLR that corresponds to `shareAmount`
-    /// of sFLR shares at the current exchange rate. 18-decimal fixed point.
-    /// @param shareAmount The number of sFLR shares to convert.
-    /// @return The equivalent pooled FLR amount, in wei.
+    /// @notice Returns the amount of pooled FLR equivalent to the given number
+    /// of sFLR shares. This is the FLR-per-sFLR direction of the exchange rate.
+    /// @dev Both input and output are 18-decimal fixed-point values.
+    /// Rounds down (floor), favouring the protocol.
+    /// @param shareAmount Amount of sFLR shares in 1e18 fixed-point.
+    /// @return Equivalent pooled FLR in 1e18 fixed-point.
     function getPooledFlrByShares(uint256 shareAmount) external view returns (uint256);
 
-    /// @dev Deposits native FLR (via msg.value) into the sFLR pool and mints
-    /// the corresponding sFLR shares to msg.sender.
-    /// @return The number of sFLR shares minted to the caller.
+    /// @notice Stakes msg.value FLR and mints the equivalent sFLR shares to
+    /// the caller.
+    /// @return Shares minted in 1e18 fixed-point.
     function submit() external payable returns (uint256);
 }
