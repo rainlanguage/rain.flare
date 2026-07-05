@@ -8,6 +8,7 @@ import {LibOpSFLRCurrentExchangeRate} from "src/lib/op/LibOpSFlrCurrentExchangeR
 import {IStakedFlr} from "src/interface/IStakedFlr.sol";
 import {SFLR_CONTRACT} from "src/lib/sflr/LibSceptreStakedFlare.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
+import {CoefficientOverflow} from "rain-math-float-0.1.1/src/error/ErrDecimalFloat.sol";
 
 contract LibOpSFlrCurrentExchangeRateTest is Test {
     function externalRun(OperandV2 operand, StackItem[] memory inputs) external view returns (StackItem[] memory) {
@@ -32,5 +33,48 @@ contract LibOpSFlrCurrentExchangeRateTest is Test {
         assertEq(outputs.length, 1);
         Float expected = LibDecimalFloat.fromFixedDecimalLosslessPacked(rate18, 18);
         assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(expected));
+    }
+
+    /// A zero rate is exactly representable: the op outputs the canonical
+    /// FLOAT_ZERO encoding.
+    function testRunRateZero() external {
+        vm.mockCall(
+            address(SFLR_CONTRACT),
+            abi.encodeWithSelector(IStakedFlr.getSharesByPooledFlr.selector, uint256(1e18)),
+            abi.encode(uint256(0))
+        );
+        StackItem[] memory outputs = this.externalRun(OperandV2.wrap(0), new StackItem[](0));
+        assertEq(outputs.length, 1);
+        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.FLOAT_ZERO));
+    }
+
+    /// A parity rate (1e18, i.e. exactly 1.0) is exactly representable: the op
+    /// outputs 1.0 encoded as coefficient 1e18 at exponent -18.
+    function testRunRateParityOne() external {
+        vm.mockCall(
+            address(SFLR_CONTRACT),
+            abi.encodeWithSelector(IStakedFlr.getSharesByPooledFlr.selector, uint256(1e18)),
+            abi.encode(uint256(1e18))
+        );
+        StackItem[] memory outputs = this.externalRun(OperandV2.wrap(0), new StackItem[](0));
+        assertEq(outputs.length, 1);
+        Float expected = LibDecimalFloat.packLossless(1e18, -18);
+        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(expected));
+    }
+
+    /// A rate whose coefficient exceeds the int224 bound (>= 2^223) cannot be
+    /// packed losslessly: the op reverts with CoefficientOverflow rather than
+    /// flooring or truncating the value.
+    function testRunRateCoefficientOverflow() external {
+        // type(int224).max is 2^223 - 1, so 2^223 is the smallest rate that
+        // overflows the coefficient.
+        uint256 rate18 = 2 ** 223;
+        vm.mockCall(
+            address(SFLR_CONTRACT),
+            abi.encodeWithSelector(IStakedFlr.getSharesByPooledFlr.selector, uint256(1e18)),
+            abi.encode(rate18)
+        );
+        vm.expectRevert(abi.encodeWithSelector(CoefficientOverflow.selector, int256(2 ** 223), int256(-18)));
+        this.externalRun(OperandV2.wrap(0), new StackItem[](0));
     }
 }
