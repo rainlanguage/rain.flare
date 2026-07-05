@@ -75,14 +75,20 @@ bytes21 constant TRX_USD_FEED_ID = 0x015452582f55534400000000000000000000000000;
 bytes21 constant JOULE_USD_FEED_ID = 0x014a4f554c452f5553440000000000000000000000;
 
 library LibFtsoV2LTS {
-    /// @dev Fetches the value of a feed from the FTSO using V2 LTS.
-    /// Note that this is NOT a view function and will cost gas if the FTSO has
-    /// a fee set. The fee is computed internally via `IFeeCalculator` and only
-    /// that exact amount is forwarded to the FTSO. Any excess native value in
-    /// the calling context (msg.value > fee) is NOT refunded — it remains in the
-    /// caller's contract balance. Callers that receive user funds MUST pre-compute
-    /// the fee via `IFeeCalculator.calculateFeeByIds` and forward exactly that
-    /// amount, or implement their own refund logic on any surplus.
+    /// @notice Fetches the current value of a Flare V2 LTS feed.
+    /// @dev This is NOT a view function: it sends msg.value to pay the feed
+    /// fee. The fee is computed internally via `IFeeCalculator` and only that
+    /// exact amount is forwarded to the FTSO. The caller must supply at least
+    /// the fee returned by IFeeCalculator.calculateFeeByIds; any surplus
+    /// (msg.value > fee) is NOT refunded — it remains in the caller's contract
+    /// balance. Callers that receive user funds MUST pre-compute the fee via
+    /// `IFeeCalculator.calculateFeeByIds` and forward exactly that amount, or
+    /// implement their own refund logic on any surplus.
+    /// Reverts with StalePrice(timestamp, timeout) if block.timestamp exceeds
+    /// the feed timestamp plus timeout.
+    /// @param feedId The bytes21 Flare V2 feed ID to read.
+    /// @param timeout Max age in seconds before the price is considered stale.
+    /// @return value The feed value in wei (1e18 fixed-point).
     //forge-lint: disable-next-line(mixed-case-function)
     function ftsoV2LTSGetFeed(bytes21 feedId, uint256 timeout) internal returns (uint256) {
         // Fetch the FTSO from the registry.
