@@ -52,6 +52,12 @@ Regardless, it is NOT recommended that this word be used for high precision
 calculations, as derived prices can drift from reality simply due to differences
 in the reporting times.
 
+The pair derivation divides two decimal floating-point prices using
+`LibDecimalFloat.div`. When the quotient is not exact, it rounds toward zero
+(i.e. slightly understates the derived price for positive prices). This is
+distinct from the single-FTSO decimal rescaling described in the Decimals
+section below, which also rounds down.
+
 ### Timeouts
 
 The rainlang author must provide a timeout which is used to guarantee that prices
@@ -77,8 +83,8 @@ The rescaling is generally lossless except in two edge cases:
 - When scaling numbers _down_ (i.e. ftso decimals is more than 18) there can be
   loss of precision for the significant figures beyond 18 decimals
 
-In the latter case of precision loss, rounding is always down as per EVM default
-behaviour.
+In the latter case of precision loss, the single-FTSO decimal rescale rounds
+down as per EVM default behaviour.
 
 ## Dev stuff
 
@@ -93,6 +99,23 @@ version of `foundry` for development, to ensure versions are all compatible.
 
 Read the `flake.nix` file to find some additional commands included for dev and
 CI usage.
+
+### Regenerating committed artifacts
+
+Run `./script/build.sh` to regenerate every committed artifact that the
+`rainix-sol-artifacts` CI check diffs against: `meta/*.rain.meta` (the CBOR
+encoded authoring-meta blob) and — after `build.sh` completes — run the
+`BuildPointers.sol` forge script to update `src/generated/*.pointers.sol`
+(contains `DESCRIBED_BY_META_HASH` and `BYTECODE_HASH`):
+
+```
+./script/build.sh
+nix develop .#sol-shell -c forge script ./script/BuildPointers.sol
+```
+
+Commit the resulting changes whenever word descriptions, operand meta, or the
+deployed contract changes.  The CI `copy-artifacts` job diffs these files and
+turns red on drift.
 
 ## Legal stuff
 
