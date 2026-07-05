@@ -6,6 +6,7 @@ path = [
   ".github/workflows/**/",
   ".gitignore",
   ".soldeerignore",
+  "CLAUDE.md",
   "README.md",
   "flake.lock",
   "flake.nix",
