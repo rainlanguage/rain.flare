@@ -13,7 +13,15 @@ import {
     AuthoringMetaV2
 } from "../../../src/concrete/FlareFtsoWords.sol";
 import {LibGenParseMeta} from "rain-interpreter-interface-0.1.0/src/lib/codegen/LibGenParseMeta.sol";
-import {LibFlareFtsoSubParser} from "../../../src/lib/parse/LibFlareFtsoSubParser.sol";
+import {
+    LibFlareFtsoSubParser,
+    SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD,
+    SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR,
+    SUB_PARSER_WORD_SFLR_EXCHANGE_RATE,
+    SUB_PARSER_WORD_PARSERS_LENGTH
+} from "../../../src/lib/parse/LibFlareFtsoSubParser.sol";
+import {OPCODE_FUNCTION_POINTERS_LENGTH} from "../../../src/abstract/FlareFtsoExtern.sol";
+import {BYTECODE_HASH} from "../../../src/generated/FlareFtsoWords.pointers.sol";
 
 contract FlareFtsoWordsPointersTest is Test {
     function testIntegrityPointers() external {
@@ -41,5 +49,27 @@ contract FlareFtsoWordsPointersTest is Test {
         AuthoringMetaV2[] memory authoringMeta = abi.decode(authoringMetaBytes, (AuthoringMetaV2[]));
         bytes memory expected = LibGenParseMeta.buildParseMetaV2(authoringMeta, 2);
         assertEq(SUB_PARSER_PARSE_META, expected);
+    }
+
+    function testOpcodePointersLength() external {
+        FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
+        assertEq(flareFtsoWords.buildOpcodeFunctionPointers().length, OPCODE_FUNCTION_POINTERS_LENGTH * 2);
+        assertEq(flareFtsoWords.buildIntegrityFunctionPointers().length, OPCODE_FUNCTION_POINTERS_LENGTH * 2);
+    }
+
+    function testAuthoringMetaContent() external pure {
+        AuthoringMetaV2[] memory m = abi.decode(LibFlareFtsoSubParser.authoringMetaV2(), (AuthoringMetaV2[]));
+        assertEq(m.length, SUB_PARSER_WORD_PARSERS_LENGTH);
+        assertEq(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].word, bytes32("ftso-current-price-usd"));
+        assertEq(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].word, bytes32("ftso-current-price-pair"));
+        assertEq(m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].word, bytes32("sflr-exchange-rate"));
+        assertTrue(bytes(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].description).length > 0);
+        assertTrue(bytes(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].description).length > 0);
+        assertTrue(bytes(m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].description).length > 0);
+    }
+
+    function testBytecodeHashMatchesDeployedCode() external {
+        FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
+        assertEq(address(flareFtsoWords).codehash, BYTECODE_HASH, "BYTECODE_HASH is stale");
     }
 }
