@@ -16,7 +16,8 @@ library LibOpSFLRCurrentExchangeRate {
     }
 
     /// Extern implementation for reading the current sFLR-per-FLR exchange rate
-    /// directly from the Sceptre sFLR contract (IStakedFlr.getSharesByPooledFlr).
+    /// based on directly reading the underlying assets self-reported by the
+    /// Sceptre sFLR contract (IStakedFlr.getSharesByPooledFlr).
     /// @return outputs The outputs of the operation. Always 1 item.
     ///   0. The current sFLR-per-FLR exchange rate as a Float, i.e.
     ///      `getSharesByPooledFlr(1e18)` divided by 1e18. A value less than 1

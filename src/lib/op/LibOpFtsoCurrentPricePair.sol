@@ -43,10 +43,12 @@ library LibOpFtsoCurrentPricePair {
     ///      `IntOrAString` (i.e. a `uint256`).
     ///   2. The timeout in seconds to invalidate prices after if the FTSO stops
     ///      updating for some time.
+    /// @dev Reverts if the second (quote) symbol resolves to a zero price, as
+    /// the derived price would divide by zero.
     /// @return outputs The outputs of the operation.
-    ///   0. The derived price symbolA/symbolB as a Float representing the
-    ///      base/quote ratio (numeratorPrice / denominatorPrice),
-    ///      decimal-exponent encoded.
+    ///   0. The derived price symbolA/symbolB as a packed Float representing
+    ///      the base/quote ratio (numeratorPrice / denominatorPrice),
+    ///      decimal-exponent encoded, not a fixed 18-decimal integer.
     function run(OperandV2 operand, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         uint256 symbolA;
         assembly ("memory-safe") {
@@ -62,6 +64,8 @@ library LibOpFtsoCurrentPricePair {
         assembly ("memory-safe") {
             mstore(add(inputs, 0x20), symbolA)
         }
+        // symbolA is restored into slot 0, so the second fetch resolves the
+        // numerator price.
         StackItem[] memory numeratorOutputs = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
 
         Float numeratorPrice;
