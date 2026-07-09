@@ -4,7 +4,13 @@ pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {LibFork} from "test/fork/LibFork.sol";
-import {LibFlareContractRegistry, IFtsoRegistry} from "src/lib/registry/LibFlareContractRegistry.sol";
+import {
+    LibFlareContractRegistry,
+    IFtsoRegistry,
+    FTSO_REGISTRY_NAME,
+    FTSO_V2_LTS_NAME,
+    FEE_CALCULATOR_NAME
+} from "src/lib/registry/LibFlareContractRegistry.sol";
 import {FtsoV2Interface} from "src/vendor/flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
 import {IFeeCalculator} from "src/vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
 
@@ -28,5 +34,11 @@ contract LibFlareContractRegistryTest is Test {
     function testGetFeeCalculator() external view {
         IFeeCalculator feeCalculator = LibFlareContractRegistry.getFeeCalculator();
         assertTrue(address(feeCalculator) != address(0));
+    }
+
+    function testRegistryNameLiterals() external pure {
+        assertEq(FTSO_REGISTRY_NAME, "FtsoRegistry");
+        assertEq(FTSO_V2_LTS_NAME, "FtsoV2");
+        assertEq(FEE_CALCULATOR_NAME, "FeeCalculator");
     }
 }
