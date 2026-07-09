@@ -4,7 +4,7 @@ pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {LibFork} from "../fork/LibFork.sol";
-import {BLOCK_NUMBER} from "../src/lib/registry/LibFlareContractRegistry.t.sol";
+import {BLOCK_NUMBER} from "../fork/ForkConstants.sol";
 
 import {IFlareContractRegistry} from "../../src/vendor/flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
 import {IFtsoRegistry} from "../../src/vendor/flare-smart-contracts/userInterfaces/IFtsoRegistry.sol";
