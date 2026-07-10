@@ -66,6 +66,51 @@ contract FlareFtsoWordsPointersTest is Test {
         assertTrue(bytes(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].description).length > 0);
         assertTrue(bytes(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].description).length > 0);
         assertTrue(bytes(m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].description).length > 0);
+        // Each description states the word's operand input count, which must
+        // match the fixed arity enforced by that word's `integrity` function.
+        // ftso-current-price-usd: integrity (2,1) => "2 input".
+        assertTrue(
+            contains(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].description, "2 input"),
+            "usd description input count does not match integrity arity (2,1)"
+        );
+        // ftso-current-price-pair: integrity (3,1) => "3 input".
+        assertTrue(
+            contains(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].description, "3 input"),
+            "pair description input count does not match integrity arity (3,1)"
+        );
+        // sflr-exchange-rate: integrity (0,1) => "0 input".
+        assertTrue(
+            contains(m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].description, "0 input"),
+            "sflr description input count does not match integrity arity (0,1)"
+        );
+    }
+
+    /// @dev Minimal substring check as Solidity has no built-in for strings.
+    /// Returns true iff `needle` occurs somewhere within `haystack`. The
+    /// `needle.length > haystack.length` guard keeps the window comparison in
+    /// bounds (and returns false, as a longer needle cannot be contained).
+    function contains(string memory haystack, string memory needle) internal pure returns (bool) {
+        bytes memory h = bytes(haystack);
+        bytes memory n = bytes(needle);
+        if (n.length == 0) {
+            return true;
+        }
+        if (n.length > h.length) {
+            return false;
+        }
+        for (uint256 i = 0; i <= h.length - n.length; i++) {
+            bool matched = true;
+            for (uint256 j = 0; j < n.length; j++) {
+                if (h[i + j] != n[j]) {
+                    matched = false;
+                    break;
+                }
+            }
+            if (matched) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function testBytecodeHashMatchesDeployedCode() external {
