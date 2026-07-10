@@ -14,6 +14,8 @@ import {
     ContractNotRegistered
 } from "src/lib/registry/LibFlareContractRegistry.sol";
 import {LibFlareContractRegistryExternal} from "test/src/lib/registry/LibFlareContractRegistryExternal.sol";
+import {FtsoV2Interface} from "src/vendor/flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
+import {IFeeCalculator} from "src/vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
 
@@ -65,6 +67,16 @@ contract LibFlareContractRegistryTest is Test {
         );
         vm.expectRevert(abi.encodeWithSelector(ContractNotRegistered.selector, FEE_CALCULATOR_NAME));
         external_.getFeeCalculator();
+    }
+
+    function testGetFtsoV2LTS() external view {
+        FtsoV2Interface ftsoV2 = LibFlareContractRegistry.getFtsoV2LTS();
+        assertEq(address(ftsoV2), address(0xB18d3A5e5A85C65cE47f977D7F486B79F99D3d32));
+    }
+
+    function testGetFeeCalculator() external view {
+        IFeeCalculator feeCalc = LibFlareContractRegistry.getFeeCalculator();
+        assertEq(address(feeCalc), address(0xFDe4f89E6d67ec1a497e1c25944ba5D2d7a36bf3));
     }
 
     function testRegistryNameLiterals() external pure {

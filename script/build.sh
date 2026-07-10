@@ -2,13 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-DCL-1.0
 # SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 # Regenerate committed meta artifacts that the rainix copy-artifacts reusable
-# diff-checks. Runs in the repo default devshell because `rain` is not in
-# rainix sol-shell.
+# diff-checks. Delegates to the rain-flare-prelude nix task so the build
+# recipe has a single definition (flake.nix) rather than being duplicated here.
 set -euo pipefail
-nix develop -c bash -euxo pipefail -c '
-  mkdir -p meta
-  forge script --silent ./script/BuildAuthoringMeta.sol
-  rain meta build -i <(cat ./meta/FlareFtsoSubParserAuthoringMeta.rain.meta) -m authoring-meta-v2 -t cbor -e deflate -l none -o meta/FlareFtsoWords.rain.meta
-  forge script --silent ./script/BuildPointers.sol
-  forge fmt
-'
+nix develop -c rain-flare-prelude
