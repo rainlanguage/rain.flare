@@ -10,7 +10,7 @@ interface IGoverned {
 
     /// @dev Returns the governance settings contract which specifies the
     /// timelocked executors and other governance parameters.
-    function governanceSettings() external returns (IGovernanceSettings);
+    function governanceSettings() external view returns (IGovernanceSettings);
 
     /// @dev Executes a previously-submitted governance proposal identified by
     /// its 4-byte function selector, after the timelock has elapsed.
