@@ -29,7 +29,7 @@ library LibFlareFtsoSubParser {
         );
         meta[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE] = AuthoringMetaV2(
             "sflr-exchange-rate",
-            "Returns the current sFLR per FLR exchange rate self-reported by the Sceptre staked FLR contract, i.e. how many sFLR shares correspond to 1 FLR. Accepts 0 inputs."
+            "Returns the current sFLR per FLR exchange rate self-reported by the Sceptre staked FLR contract, i.e. how many sFLR shares correspond to 1 FLR. A value less than 1 means 1 FLR yields fewer than 1 sFLR share. Accepts 0 inputs."
         );
         return abi.encode(meta);
     }
