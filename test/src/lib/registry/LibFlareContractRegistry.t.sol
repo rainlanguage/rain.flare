@@ -8,7 +8,10 @@ import {
     LibFlareContractRegistry,
     IFtsoRegistry,
     FtsoV2Interface,
-    IFeeCalculator
+    IFeeCalculator,
+    FTSO_REGISTRY_NAME,
+    FTSO_V2_LTS_NAME,
+    FEE_CALCULATOR_NAME
 } from "src/lib/registry/LibFlareContractRegistry.sol";
 
 uint256 constant BLOCK_NUMBER = 31843105;
@@ -31,5 +34,11 @@ contract LibFlareContractRegistryTest is Test {
     function testGetFeeCalculator() external view {
         IFeeCalculator feeCalculator = LibFlareContractRegistry.getFeeCalculator();
         assertEq(address(feeCalculator), address(0xFDe4f89E6d67ec1a497e1c25944ba5D2d7a36bf3));
+    }
+
+    function testRegistryNameLiterals() external pure {
+        assertEq(FTSO_REGISTRY_NAME, "FtsoRegistry");
+        assertEq(FTSO_V2_LTS_NAME, "FtsoV2");
+        assertEq(FEE_CALCULATOR_NAME, "FeeCalculator");
     }
 }

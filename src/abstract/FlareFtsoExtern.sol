@@ -6,7 +6,7 @@ import {BaseRainlangExtern, OperandV2, StackItem} from "rainlang-0.1.2/src/abstr
 import {LibConvert} from "rain-lib-typecast-0.1.0/src/LibConvert.sol";
 import {LibOpFtsoCurrentPriceUsd} from "../lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {LibOpFtsoCurrentPricePair} from "../lib/op/LibOpFtsoCurrentPricePair.sol";
-import {LibOpSLFRCurrentExchangeRate} from "../lib/op/LibOpSFlrCurrentExchangeRate.sol";
+import {LibOpSFLRCurrentExchangeRate} from "../lib/op/LibOpSFlrCurrentExchangeRate.sol";
 
 import {INTEGRITY_FUNCTION_POINTERS, OPCODE_FUNCTION_POINTERS} from "../generated/FlareFtsoWords.pointers.sol";
 
@@ -14,8 +14,8 @@ import {INTEGRITY_FUNCTION_POINTERS, OPCODE_FUNCTION_POINTERS} from "../generate
 uint256 constant OPCODE_FTSO_CURRENT_PRICE_USD = 0;
 /// @dev Index into the function pointers array for the current pair price.
 uint256 constant OPCODE_FTSO_CURRENT_PRICE_PAIR = 1;
-/// @dev Index into the function pointers array for the SLFR exchange rate.
-uint256 constant OPCODE_SLFR_CURRENT_EXCHANGE_RATE = 2;
+/// @dev Index into the function pointers array for the SFLR exchange rate.
+uint256 constant OPCODE_SFLR_CURRENT_EXCHANGE_RATE = 2;
 /// @dev The number of function pointers in the array.
 uint256 constant OPCODE_FUNCTION_POINTERS_LENGTH = 3;
 
@@ -26,8 +26,11 @@ uint256 constant OPCODE_FUNCTION_POINTERS_LENGTH = 3;
 ///
 /// Handles things such as:
 /// - Looking up the correct FTSO contract for a given symbol from registries.
-/// - Checking finalization status of prices and rejecting if not finalized.
-/// - Checking the timestamp of prices and rejecting if too old.
+/// - Checking finalization status of FTSO prices and rejecting if not finalized
+///   (applies to ftso-current-price-usd and ftso-current-price-pair only).
+/// - Checking the timestamp of FTSO prices and rejecting if too old (applies to
+///   ftso-current-price-usd and ftso-current-price-pair only; the sFLR exchange
+///   rate is an on-chain protocol value with no meaningful staleness concept).
 /// - Normalizing prices to 18 decimal fixed point.
 /// - Aggregate logic for multiple FTSOs such as deriving pair prices from two
 ///   symbols given a shared USD denominator.
@@ -49,13 +52,15 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
     /// Create a 16-bit pointer array for the opcode function pointers. This is
     /// relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
+    /// @return A packed 16-bit byte array of opcode function pointers, one per
+    /// supported opcode, in opcode-index order.
     function buildOpcodeFunctionPointers() external pure returns (bytes memory) {
         function(OperandV2, StackItem[] memory) internal view returns (StackItem[] memory)[] memory fs = new function(OperandV2, StackItem[] memory)
         internal
         view returns (StackItem[] memory)[](OPCODE_FUNCTION_POINTERS_LENGTH);
         fs[OPCODE_FTSO_CURRENT_PRICE_USD] = LibOpFtsoCurrentPriceUsd.run;
         fs[OPCODE_FTSO_CURRENT_PRICE_PAIR] = LibOpFtsoCurrentPricePair.run;
-        fs[OPCODE_SLFR_CURRENT_EXCHANGE_RATE] = LibOpSLFRCurrentExchangeRate.run;
+        fs[OPCODE_SFLR_CURRENT_EXCHANGE_RATE] = LibOpSFLRCurrentExchangeRate.run;
 
         uint256[] memory pointers;
         assembly ("memory-safe") {
@@ -67,13 +72,15 @@ abstract contract FlareFtsoExtern is BaseRainlangExtern {
     /// Create a 16-bit pointer array for the integrity function pointers. This
     /// is relatively gas inefficent so it is only called during tests to cross
     /// reference against the constant values that are used at runtime.
+    /// @return A packed 16-bit byte array of integrity function pointers, one per
+    /// supported opcode, in opcode-index order.
     function buildIntegrityFunctionPointers() external pure returns (bytes memory) {
         function(OperandV2, uint256, uint256) internal pure returns (uint256, uint256)[] memory fs = new function(OperandV2, uint256, uint256)
         internal
         pure returns (uint256, uint256)[](OPCODE_FUNCTION_POINTERS_LENGTH);
         fs[OPCODE_FTSO_CURRENT_PRICE_USD] = LibOpFtsoCurrentPriceUsd.integrity;
         fs[OPCODE_FTSO_CURRENT_PRICE_PAIR] = LibOpFtsoCurrentPricePair.integrity;
-        fs[OPCODE_SLFR_CURRENT_EXCHANGE_RATE] = LibOpSLFRCurrentExchangeRate.integrity;
+        fs[OPCODE_SFLR_CURRENT_EXCHANGE_RATE] = LibOpSFLRCurrentExchangeRate.integrity;
 
         uint256[] memory pointers;
         assembly ("memory-safe") {
