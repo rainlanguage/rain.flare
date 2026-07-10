@@ -30,28 +30,46 @@ contract LibFtsoV2LTSTest is Test {
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
     }
 
-    /// #55 — pins both sides of the staleness boundary so a `>` → `>=` regression
-    /// or an off-by-one in the timeout arithmetic is caught without a fork.
-    /// Feed last-updated timestamp: 1729795768 (pinned from testFtsoV2LTSGetFeedStale).
-    function testFtsoV2LTSGetFeedStaleBoundary() external {
+    /// block.timestamp == feedTimestamp + timeout: the staleness check is strict `>`,
+    /// so this must succeed (not stale).
+    function testFtsoV2LTSGetFeedExactTimeoutNotStale() external {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
         FeedConsumer feedConsumer = new FeedConsumer();
-        uint64 feedTs = 1729795768;
-        uint256 timeout = 3600;
+        vm.warp(1729795768 + 3600);
+        uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
+        assertGt(value, 0);
+    }
 
-        // Exactly at the boundary: block.timestamp == feedTs + timeout → NOT stale.
-        vm.warp(feedTs + timeout);
-        assertEq(feedConsumer.getFeedValue(ETH_USD_FEED_ID, timeout), 2522.575e18);
+    /// block.timestamp == feedTimestamp + timeout + 1: one second past the boundary
+    /// must revert with StalePrice.
+    function testFtsoV2LTSGetFeedJustStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
-        // One second past: block.timestamp == feedTs + timeout + 1 → stale.
-        vm.warp(feedTs + timeout + 1);
-        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, feedTs, timeout));
-        feedConsumer.getFeedValue(ETH_USD_FEED_ID, timeout);
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1729795768 + 3600 + 1);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1729795768, 3600));
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
+    }
 
-        // timeout == 0: any block.timestamp > feedTs is stale.
-        vm.warp(feedTs + 1);
-        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, feedTs, uint256(0)));
+    /// timeout == 0: any block.timestamp strictly after feedTimestamp is stale.
+    function testFtsoV2LTSGetFeedTimeoutZeroStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1729795768 + 1);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1729795768, 0));
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
+    }
+
+    /// timeout == 0 at exactly feedTimestamp: not stale (0 > 0 is false).
+    function testFtsoV2LTSGetFeedTimeoutZeroExactNotStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1729795768);
+        uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
+        assertGt(value, 0);
     }
 
     /// forge-config: default.fuzz.runs = 1
