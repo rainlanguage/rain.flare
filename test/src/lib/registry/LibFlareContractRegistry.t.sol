@@ -66,4 +66,10 @@ contract LibFlareContractRegistryTest is Test {
         vm.expectRevert(abi.encodeWithSelector(ContractNotRegistered.selector, FEE_CALCULATOR_NAME));
         external_.getFeeCalculator();
     }
+
+    function testRegistryNameLiterals() external pure {
+        assertEq(FTSO_REGISTRY_NAME, "FtsoRegistry");
+        assertEq(FTSO_V2_LTS_NAME, "FtsoV2");
+        assertEq(FEE_CALCULATOR_NAME, "FeeCalculator");
+    }
 }
