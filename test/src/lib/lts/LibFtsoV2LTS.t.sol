@@ -30,6 +30,48 @@ contract LibFtsoV2LTSTest is Test {
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
     }
 
+    /// block.timestamp == feedTimestamp + timeout: the staleness check is strict `>`,
+    /// so this must succeed (not stale).
+    function testFtsoV2LTSGetFeedExactTimeoutNotStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1729795768 + 3600);
+        uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
+        assertGt(value, 0);
+    }
+
+    /// block.timestamp == feedTimestamp + timeout + 1: one second past the boundary
+    /// must revert with StalePrice.
+    function testFtsoV2LTSGetFeedJustStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1729795768 + 3600 + 1);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1729795768, 3600));
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
+    }
+
+    /// timeout == 0: any block.timestamp strictly after feedTimestamp is stale.
+    function testFtsoV2LTSGetFeedTimeoutZeroStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1729795768 + 1);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1729795768, 0));
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
+    }
+
+    /// timeout == 0 at exactly feedTimestamp: not stale (0 > 0 is false).
+    function testFtsoV2LTSGetFeedTimeoutZeroExactNotStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1729795768);
+        uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
+        assertGt(value, 0);
+    }
+
     /// forge-config: default.fuzz.runs = 1
     function testFtsoV2LTSGetFeedPaid(uint128 fee) external {
         vm.assume(fee > 0);
