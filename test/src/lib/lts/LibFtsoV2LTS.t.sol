@@ -107,17 +107,25 @@ contract LibFtsoV2LTSTest is Test {
         assertEq(alice.balance, fee - 1);
 
         vm.startPrank(alice);
-        // EVM OutOfFunds when the library tries to forward more ETH than it holds.
-        vm.expectRevert(bytes(""));
+        // OutOfFunds is an EVM error with no Solidity revert data.
+        vm.expectRevert(new bytes(0));
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
 
-        vm.expectRevert(bytes(""));
+        vm.expectRevert(new bytes(0));
         feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
 
         vm.deal(alice, fee);
         assertEq(alice.balance, fee);
         uint256 feedValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
         assertEq(feedValue, 2522.575e18);
+        assertEq(alice.balance, 0);
+
+        // #56 — overpayment: surplus is stranded in the consumer (documents current behavior;
+        // replace with refund assertion when a refund mechanism is added).
+        vm.deal(alice, uint256(fee) + 1 ether);
+        uint256 overpaidValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
+        assertEq(overpaidValue, 2522.575e18);
+        assertEq(address(feedConsumer).balance, 1 ether);
         assertEq(alice.balance, 0);
     }
 }

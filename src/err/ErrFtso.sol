@@ -29,5 +29,5 @@ error InconsistentFtso();
 /// @param decimals The decimals that were too large.
 error DecimalsTooLarge(uint256 decimals);
 
-/// Thrown when the sFLR contract reports a zero exchange rate.
+/// Thrown when the sFLR contract returns a zero exchange rate.
 error ZeroSFLRRate();
