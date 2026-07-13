@@ -94,6 +94,17 @@ version of `foundry` for development, to ensure versions are all compatible.
 Read the `flake.nix` file to find some additional commands included for dev and
 CI usage.
 
+The test suite includes fork tests that read the Flare RPC URL from the
+`FLARE_RPC_URL` environment variable. `forge test` fails immediately if it is
+unset, so export it before running the tests locally:
+
+```
+export FLARE_RPC_URL=<flare rpc endpoint>
+```
+
+In CI the rainix shared workflow provides `FLARE_RPC_URL` from the
+`RPC_URL_FLARE_FORK` secret.
+
 ## Legal stuff
 
 Everything is under DecentraLicense 1.0 (DCL-1.0) which can be found in `LICENSES/`.
