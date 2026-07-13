@@ -4,7 +4,9 @@ pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {LibFork} from "test/fork/LibFork.sol";
-import {LibDineroFlrEth} from "src/lib/flreth/LibDineroFlrEth.sol";
+import {LibDineroFlrEth, FLRETH_CONTRACT} from "src/lib/flreth/LibDineroFlrEth.sol";
+import {IDineroFlrEth} from "src/interface/IDineroFlrEth.sol";
+import {ZeroFlrEthRate} from "src/err/ErrFlrEth.sol";
 
 uint256 constant BLOCK_NUMBER = 37796420;
 
@@ -23,12 +25,42 @@ contract LibDineroFlrEthTest is Test {
         assertEq(rate18, 0.989103076939285809e18);
     }
 
-    /// #62 — asserts getETHPerFLRETH18 and getFLRETHPerETH18 are reciprocals of each
-    /// other within 0.1%. An inverted direction mapping between LSTPerToken /
-    /// tokensPerLST and the wrappers would produce a product far from 1e36.
+    /// #62 — asserts getETHPerFLRETH18 and getFLRETHPerETH18 are reciprocals of
+    /// each other within 0.1%. The product is symmetric, so a swapped
+    /// LSTPerToken / tokensPerLST mapping would preserve it: this test enforces
+    /// reciprocal consistency only, while directional mapping is pinned by the
+    /// exact-value getter assertions above.
     function testRatesAreReciprocal() external view {
         uint256 ethPerFlreth = LibDineroFlrEth.getETHPerFLRETH18();
         uint256 flrethPerEth = LibDineroFlrEth.getFLRETHPerETH18();
         assertApproxEqRel(ethPerFlreth * flrethPerEth, 1e36, 1e15);
+    }
+
+    // External wrappers needed so vm.expectRevert captures the outer call frame
+    // (not the inner LSTPerToken/tokensPerLST staticcall which returns, not reverts).
+    function _callGetETHPerFLRETH18() external {
+        LibDineroFlrEth.getETHPerFLRETH18();
+    }
+
+    function _callGetFLRETHPerETH18() external {
+        LibDineroFlrEth.getFLRETHPerETH18();
+    }
+
+    function testGetETHPerFLRETH18RevertsOnZeroRate() external {
+        vm.mockCall(
+            address(FLRETH_CONTRACT), abi.encodeWithSelector(IDineroFlrEth.LSTPerToken.selector), abi.encode(uint256(0))
+        );
+        vm.expectRevert(ZeroFlrEthRate.selector);
+        this._callGetETHPerFLRETH18();
+    }
+
+    function testGetFLRETHPerETH18RevertsOnZeroRate() external {
+        vm.mockCall(
+            address(FLRETH_CONTRACT),
+            abi.encodeWithSelector(IDineroFlrEth.tokensPerLST.selector),
+            abi.encode(uint256(0))
+        );
+        vm.expectRevert(ZeroFlrEthRate.selector);
+        this._callGetFLRETHPerETH18();
     }
 }
