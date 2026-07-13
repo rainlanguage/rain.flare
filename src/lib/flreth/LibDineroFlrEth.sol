@@ -3,6 +3,7 @@
 pragma solidity ^0.8.19;
 
 import {IDineroFlrEth} from "../../interface/IDineroFlrEth.sol";
+import {ZeroFlrEthRate} from "../../err/ErrFlrEth.sol";
 
 IDineroFlrEth constant FLRETH_CONTRACT = IDineroFlrEth(address(0x26A1faB310bd080542DC864647d05985360B16A5));
 
@@ -11,13 +12,17 @@ library LibDineroFlrEth {
     /// For each 1e18 FLRETH, this is how many ETH are deposited.
     //forge-lint: disable-next-line(mixed-case-function)
     function getETHPerFLRETH18() internal view returns (uint256) {
-        return FLRETH_CONTRACT.LSTPerToken();
+        uint256 rate = FLRETH_CONTRACT.LSTPerToken();
+        if (rate == 0) revert ZeroFlrEthRate();
+        return rate;
     }
 
     /// Fixed 18 decimal place ratio of FLRETH per ETH.
     /// For each 1e18 ETH, this is how many FLRETH are minted.
     //forge-lint: disable-next-line(mixed-case-function)
     function getFLRETHPerETH18() internal view returns (uint256) {
-        return FLRETH_CONTRACT.tokensPerLST();
+        uint256 rate = FLRETH_CONTRACT.tokensPerLST();
+        if (rate == 0) revert ZeroFlrEthRate();
+        return rate;
     }
 }

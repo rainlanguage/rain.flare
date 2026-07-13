@@ -28,10 +28,9 @@ import {
 import {
     OPERAND_HANDLER_FUNCTION_POINTERS as SUB_PARSER_OPERAND_HANDLERS,
     SUB_PARSER_WORD_PARSERS,
-    PARSE_META as SUB_PARSER_PARSE_META
+    PARSE_META as SUB_PARSER_PARSE_META,
+    PARSE_META_BUILD_DEPTH
 } from "../generated/FlareFtsoWords.pointers.sol";
-
-uint8 constant PARSE_META_BUILD_DEPTH = 1;
 
 /// @title FlareFtsoSubParser
 /// Implements the sub parser half of FlareFtsoWords. Responsible for parsing
@@ -128,7 +127,7 @@ abstract contract FlareFtsoSubParser is BaseRainlangSubParser {
     }
 
     /// Thin wrapper around LibSubParse.subParserExtern that provides the extern
-    /// address and index of the current pair price opcode index in the extern.
+    /// address and index of the sFLR current exchange rate opcode index in the extern.
     //slither-disable-next-line dead-code
     function sFlrCurrentExchangeRateSubParser(uint256 constantsHeight, uint256 ioByte, OperandV2 operand)
         internal

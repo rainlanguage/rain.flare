@@ -4,7 +4,9 @@ pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {LibFork} from "test/fork/LibFork.sol";
-import {LibDineroFlrEth} from "src/lib/flreth/LibDineroFlrEth.sol";
+import {LibDineroFlrEth, FLRETH_CONTRACT} from "src/lib/flreth/LibDineroFlrEth.sol";
+import {IDineroFlrEth} from "src/interface/IDineroFlrEth.sol";
+import {ZeroFlrEthRate} from "src/err/ErrFlrEth.sol";
 
 uint256 constant BLOCK_NUMBER = 37796420;
 
@@ -31,5 +33,33 @@ contract LibDineroFlrEthTest is Test {
         uint256 flrEthPerEth = LibDineroFlrEth.getFLRETHPerETH18();
         assertGe(flrEthPerEth, 0.1e18, "flrETH/ETH rate below 0.1 -- scale may have changed");
         assertLe(flrEthPerEth, 10e18, "flrETH/ETH rate above 10 -- scale may have changed");
+    }
+
+    // External wrappers needed so vm.expectRevert captures the outer call frame
+    // (not the inner LSTPerToken/tokensPerLST staticcall which returns, not reverts).
+    function _callGetETHPerFLRETH18() external {
+        LibDineroFlrEth.getETHPerFLRETH18();
+    }
+
+    function _callGetFLRETHPerETH18() external {
+        LibDineroFlrEth.getFLRETHPerETH18();
+    }
+
+    function testGetETHPerFLRETH18RevertsOnZeroRate() external {
+        vm.mockCall(
+            address(FLRETH_CONTRACT), abi.encodeWithSelector(IDineroFlrEth.LSTPerToken.selector), abi.encode(uint256(0))
+        );
+        vm.expectRevert(ZeroFlrEthRate.selector);
+        this._callGetETHPerFLRETH18();
+    }
+
+    function testGetFLRETHPerETH18RevertsOnZeroRate() external {
+        vm.mockCall(
+            address(FLRETH_CONTRACT),
+            abi.encodeWithSelector(IDineroFlrEth.tokensPerLST.selector),
+            abi.encode(uint256(0))
+        );
+        vm.expectRevert(ZeroFlrEthRate.selector);
+        this._callGetFLRETHPerETH18();
     }
 }

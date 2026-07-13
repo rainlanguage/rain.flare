@@ -38,6 +38,48 @@ contract LibFtsoV2LTSTest is Test {
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
     }
 
+    /// block.timestamp == feedTimestamp + timeout: the staleness check is strict `>`,
+    /// so this must succeed (not stale).
+    function testFtsoV2LTSGetFeedExactTimeoutNotStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1729795768 + 3600);
+        uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
+        assertGt(value, 0);
+    }
+
+    /// block.timestamp == feedTimestamp + timeout + 1: one second past the boundary
+    /// must revert with StalePrice.
+    function testFtsoV2LTSGetFeedJustStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1729795768 + 3600 + 1);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1729795768, 3600));
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
+    }
+
+    /// timeout == 0: any block.timestamp strictly after feedTimestamp is stale.
+    function testFtsoV2LTSGetFeedTimeoutZeroStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1729795768 + 1);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1729795768, 0));
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
+    }
+
+    /// timeout == 0 at exactly feedTimestamp: not stale (0 > 0 is false).
+    function testFtsoV2LTSGetFeedTimeoutZeroExactNotStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1729795768);
+        uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
+        assertGt(value, 0);
+    }
+
     /// forge-config: default.fuzz.runs = 1
     function testFtsoV2LTSGetFeedPaid(uint128 fee) external {
         vm.assume(fee > 0);
@@ -73,16 +115,25 @@ contract LibFtsoV2LTSTest is Test {
         assertEq(alice.balance, fee - 1);
 
         vm.startPrank(alice);
-        vm.expectRevert();
+        // OutOfFunds is an EVM error with no Solidity revert data.
+        vm.expectRevert(new bytes(0));
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
 
-        vm.expectRevert();
+        vm.expectRevert(new bytes(0));
         feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
 
         vm.deal(alice, fee);
         assertEq(alice.balance, fee);
         uint256 feedValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
         assertEq(feedValue, 2522.575e18);
+        assertEq(alice.balance, 0);
+
+        // #56 — overpayment: surplus is stranded in the consumer (documents current behavior;
+        // replace with refund assertion when a refund mechanism is added).
+        vm.deal(alice, uint256(fee) + 1 ether);
+        uint256 overpaidValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
+        assertEq(overpaidValue, 2522.575e18);
+        assertEq(address(feedConsumer).balance, 1 ether);
         assertEq(alice.balance, 0);
     }
 }
