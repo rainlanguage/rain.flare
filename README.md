@@ -105,12 +105,12 @@ CI usage.
 Run `./script/build.sh` to regenerate every committed artifact that the
 `rainix-sol-artifacts` CI check diffs against: `meta/*.rain.meta` (the CBOR
 encoded authoring-meta blob) and — after `build.sh` completes — run the
-`BuildPointers.sol` forge script to update `src/generated/*.pointers.sol`
+`Build.sol` forge script to update `src/generated/*.pointers.sol`
 (contains `DESCRIBED_BY_META_HASH` and `BYTECODE_HASH`):
 
 ```
 ./script/build.sh
-nix develop .#sol-shell -c forge script ./script/BuildPointers.sol
+nix develop .#sol-shell -c forge script ./script/Build.sol
 ```
 
 Commit the resulting changes whenever word descriptions, operand meta, or the
