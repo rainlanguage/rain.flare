@@ -133,4 +133,42 @@ contract LibFtsoV2LTSTest is Test {
         assertEq(address(feedConsumer).balance, 1 ether);
         assertEq(alice.balance, 0);
     }
+
+    /// forge-config: default.fuzz.runs = 1
+    function testFtsoV2LTSSetDefaultFee(uint128 fee) external {
+        vm.assume(fee > 0);
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        IFeeCalculator feeCalculator = LibFlareContractRegistry.getFeeCalculator();
+        address gov = IGoverned(address(feeCalculator)).governance();
+        IGovernanceSettings govSettings = IGoverned(address(feeCalculator)).governanceSettings();
+        address[] memory executors = govSettings.getExecutors();
+        uint256 timelock = govSettings.getTimelock();
+        bytes4 setDefaultFeeSelector = bytes4(keccak256("setDefaultFee(uint256)"));
+
+        // The fee schedule resolves per-feed fee, then category fee, then the
+        // default fee. At BLOCK_NUMBER category 0x01 has a category fee of
+        // zero set on-chain, which shadows the default fee for every crypto
+        // feed (including ETH/USD), so the default fee is observed through a
+        // feed id whose per-feed and category (0xff) fees are both unset.
+        bytes21[] memory feedIds = new bytes21[](1);
+        feedIds[0] = bytes21(0xff4554482f55534400000000000000000000000000);
+        uint256 feeBefore = feeCalculator.calculateFeeByIds(feedIds);
+        vm.assume(fee != feeBefore);
+
+        vm.prank(gov);
+        IGovernedFeeCalculator(address(feeCalculator)).setDefaultFee(fee);
+
+        // The proposed default fee has no effect until the timelocked call is
+        // executed.
+        assertEq(feeCalculator.calculateFeeByIds(feedIds), feeBefore);
+
+        vm.warp(block.timestamp + timelock);
+
+        vm.prank(executors[0]);
+        IGoverned(address(feeCalculator)).executeGovernanceCall(setDefaultFeeSelector);
+
+        // A feed with no per-feed override charges the newly set default fee.
+        assertEq(feeCalculator.calculateFeeByIds(feedIds), fee);
+    }
 }
