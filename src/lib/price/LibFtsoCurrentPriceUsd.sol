@@ -3,7 +3,7 @@
 pragma solidity ^0.8.19;
 
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
-import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "../../err/ErrFtso.sol";
+import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso, DecimalsTooLarge} from "../../err/ErrFtso.sol";
 import {IFtso} from "../../vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
 
 library LibFtsoCurrentPriceUsd {
@@ -65,6 +65,10 @@ library LibFtsoCurrentPriceUsd {
         //slither-disable-next-line timestamp
         if (block.timestamp > priceTimestamp + timeout) {
             revert StalePrice(priceTimestamp, timeout);
+        }
+
+        if (decimals > type(uint8).max) {
+            revert DecimalsTooLarge(decimals);
         }
 
         return (price, decimals);
