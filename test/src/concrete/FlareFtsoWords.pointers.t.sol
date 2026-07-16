@@ -10,6 +10,7 @@ import {
     OPCODE_FUNCTION_POINTERS,
     SUB_PARSER_WORD_PARSERS,
     SUB_PARSER_PARSE_META,
+    PARSE_META_BUILD_DEPTH,
     AuthoringMetaV2
 } from "../../../src/concrete/FlareFtsoWords.sol";
 import {LibGenParseMeta} from "rain-interpreter-interface-0.1.0/src/lib/codegen/LibGenParseMeta.sol";
@@ -47,8 +48,9 @@ contract FlareFtsoWordsPointersTest is Test {
     function testSubParserParseMeta() external pure {
         bytes memory authoringMetaBytes = LibFlareFtsoSubParser.authoringMetaV2();
         AuthoringMetaV2[] memory authoringMeta = abi.decode(authoringMetaBytes, (AuthoringMetaV2[]));
-        bytes memory expected = LibGenParseMeta.buildParseMetaV2(authoringMeta, 2);
+        bytes memory expected = LibGenParseMeta.buildParseMetaV2(authoringMeta, PARSE_META_BUILD_DEPTH);
         assertEq(SUB_PARSER_PARSE_META, expected);
+        assertEq(uint8(SUB_PARSER_PARSE_META[0]), PARSE_META_BUILD_DEPTH, "parse meta depth byte");
     }
 
     function testOpcodePointersLength() external {

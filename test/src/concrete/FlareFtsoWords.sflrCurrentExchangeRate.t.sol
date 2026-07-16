@@ -7,8 +7,7 @@ import {FlareFtsoWords} from "../../../src/concrete/FlareFtsoWords.sol";
 import {LibFork} from "../../fork/LibFork.sol";
 import {Strings} from "@openzeppelin-contracts-5.6.1/utils/Strings.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
-
-uint256 constant BLOCK_NUMBER = 31843105;
+import {BLOCK_NUMBER} from "../../fork/ForkConstants.sol";
 
 contract FlareSflrCurrentExchangeRateTest is OpTest {
     using Strings for address;

@@ -23,6 +23,9 @@ import {
 
     //forge-lint: disable-next-line(unused-import)
     SUB_PARSER_PARSE_META,
+
+    //forge-lint: disable-next-line(unused-import)
+    PARSE_META_BUILD_DEPTH,
     BaseRainlangSubParser,
 
     //forge-lint: disable-next-line(unused-import)
