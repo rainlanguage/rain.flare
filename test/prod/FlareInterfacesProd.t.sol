@@ -4,7 +4,7 @@ pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
 import {LibFork} from "../fork/LibFork.sol";
-import {BLOCK_NUMBER} from "../src/lib/registry/LibFlareContractRegistry.t.sol";
+import {BLOCK_NUMBER} from "../fork/ForkConstants.sol";
 
 import {IFlareContractRegistry} from "../../src/vendor/flare-smart-contracts/userInterfaces/IFlareContractRegistry.sol";
 import {IFtsoRegistry} from "../../src/vendor/flare-smart-contracts/userInterfaces/IFtsoRegistry.sol";
@@ -30,6 +30,8 @@ import {
     ADA_USD_FEED_ID,
     ETH_USD_FEED_ID
 } from "../../src/lib/lts/LibFtsoV2LTS.sol";
+import {SFLR_CONTRACT, LibSceptreStakedFlare} from "../../src/lib/sflr/LibSceptreStakedFlare.sol";
+import {FLRETH_CONTRACT, LibDineroFlrEth} from "../../src/lib/flreth/LibDineroFlrEth.sol";
 
 /// @title FlareInterfacesProdTest
 /// @notice Exercises every method this repo calls on a vendored Flare
@@ -170,5 +172,27 @@ contract FlareInterfacesProdTest is Test {
             assertTrue(value > 0, "feed value is zero");
             assertTrue(timestamp > 0, "feed timestamp is zero");
         }
+    }
+
+    /// IStakedFlr.getSharesByPooledFlr — used in LibSceptreStakedFlare to
+    /// read the sFLR/FLR exchange rate. Forks at chain head (not a pinned
+    /// block) so an address or selector change turns CI red immediately.
+    function testSFlrInterfaceProd() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm));
+        assertGt(address(SFLR_CONTRACT).code.length, 0, "sFLR not a contract");
+        uint256 rate = LibSceptreStakedFlare.getSFLRPerFLR18();
+        assertTrue(rate > 0.5e18 && rate < 1e18, "sFLR/FLR rate implausible");
+    }
+
+    /// IDineroFlrEth.LSTPerToken and .tokensPerLST — used in LibDineroFlrEth
+    /// to read the flrETH/ETH exchange rates. Forks at chain head so an
+    /// address or selector change turns CI red immediately.
+    function testFlrEthInterfaceProd() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm));
+        assertGt(address(FLRETH_CONTRACT).code.length, 0, "flrETH not a contract");
+        uint256 ethPerFlrEth = LibDineroFlrEth.getETHPerFLRETH18();
+        assertTrue(ethPerFlrEth > 1e18 && ethPerFlrEth < 2e18, "ETH/flrETH rate implausible");
+        uint256 flrEthPerEth = LibDineroFlrEth.getFLRETHPerETH18();
+        assertTrue(flrEthPerEth > 0.5e18 && flrEthPerEth < 1e18, "flrETH/ETH rate implausible");
     }
 }
