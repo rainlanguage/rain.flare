@@ -13,8 +13,7 @@ import {
 } from "../../../../src/lib/registry/LibFlareContractRegistry.sol";
 import {FtsoV2Interface} from "../../../../src/vendor/flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
 import {IFeeCalculator} from "../../../../src/vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
-
-uint256 constant BLOCK_NUMBER = 31843105;
+import {BLOCK_NUMBER} from "../../../../test/fork/ForkConstants.sol";
 
 contract LibFlareContractRegistryTest is Test {
     constructor() {
