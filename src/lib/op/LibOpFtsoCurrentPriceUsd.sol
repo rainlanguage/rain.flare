@@ -5,7 +5,6 @@ pragma solidity ^0.8.19;
 import {OperandV2, StackItem} from "rain-interpreter-interface-0.1.0/src/interface/IInterpreterV4.sol";
 import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.0/src/lib/LibIntOrAString.sol";
 import {LibFtsoCurrentPriceUsd} from "../price/LibFtsoCurrentPriceUsd.sol";
-import {DecimalsTooLarge} from "../../err/ErrFtso.sol";
 
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
@@ -44,15 +43,10 @@ library LibOpFtsoCurrentPriceUsd {
             timeout := mload(add(inputs, 0x40))
         }
 
-        (uint256 price, uint256 decimals) = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(
+        (uint256 price, uint8 decimals) = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(
             symbol.toStringV3(), LibDecimalFloat.toFixedDecimalLossless(timeout, 0)
         );
-        if (decimals > type(uint8).max) {
-            revert DecimalsTooLarge(decimals);
-        }
-        // Check above ensures safe downcast.
-        //forge-lint: disable-next-line(unsafe-typecast)
-        Float priceFloat = LibDecimalFloat.fromFixedDecimalLosslessPacked(price, uint8(decimals));
+        Float priceFloat = LibDecimalFloat.fromFixedDecimalLosslessPacked(price, decimals);
 
         StackItem[] memory outputs;
         assembly ("memory-safe") {
