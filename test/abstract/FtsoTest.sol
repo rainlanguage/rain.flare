@@ -12,7 +12,7 @@ import {
     FLARE_CONTRACT_REGISTRY,
     FTSO_REGISTRY_NAME,
     IFlareContractRegistry
-} from "src/lib/registry/LibFlareContractRegistry.sol";
+} from "../../src/lib/registry/LibFlareContractRegistry.sol";
 import {OperandV2, StackItem} from "rain-interpreter-interface-0.1.0/src/interface/IInterpreterV4.sol";
 
 abstract contract FtsoTest is Test {

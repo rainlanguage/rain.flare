@@ -3,11 +3,11 @@
 pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
-import {LibFork} from "test/fork/LibFork.sol";
-import {LibSceptreStakedFlare, SFLR_CONTRACT} from "src/lib/sflr/LibSceptreStakedFlare.sol";
-import {IStakedFlr} from "src/interface/IStakedFlr.sol";
-import {ZeroSFLRRate} from "src/err/ErrFtso.sol";
-import {BLOCK_NUMBER} from "test/fork/ForkConstants.sol";
+import {LibFork} from "../../../fork/LibFork.sol";
+import {LibSceptreStakedFlare, SFLR_CONTRACT} from "../../../../src/lib/sflr/LibSceptreStakedFlare.sol";
+import {IStakedFlr} from "../../../../src/interface/IStakedFlr.sol";
+import {ZeroSFLRRate} from "../../../../src/err/ErrFtso.sol";
+import {BLOCK_NUMBER} from "../../../fork/ForkConstants.sol";
 
 contract LibSceptreStakedFlareTest is Test {
     constructor() {
