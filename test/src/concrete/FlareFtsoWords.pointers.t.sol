@@ -65,9 +65,18 @@ contract FlareFtsoWordsPointersTest is Test {
         assertEq(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].word, bytes32("ftso-current-price-usd"));
         assertEq(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].word, bytes32("ftso-current-price-pair"));
         assertEq(m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].word, bytes32("sflr-exchange-rate"));
-        assertTrue(bytes(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].description).length > 0);
-        assertTrue(bytes(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].description).length > 0);
-        assertTrue(bytes(m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].description).length > 0);
+        assertEq(
+            m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].description,
+            "Returns the current USD price of the given token according to the FTSO. Accepts 2 inputs, the symbol string used by the FTSO and the timeout in seconds. The price is rounded down if it does not fit in a Rainlang number. The timeout will be used to determine if the price is stale and revert if it is."
+        );
+        assertEq(
+            m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].description,
+            "Returns the current price of the given token pair according to the FTSO. Accepts 3 inputs, the symbol string used by the FTSO for the base token, the symbol string used by the FTSO for the quote token and the timeout in seconds. The price is rounded down if it does not fit in a Rainlang number. The timeout will be used to determine if the price is stale and revert if it is. Note that the pair price is derived from two separate FTSO prices mechanically and is not provided directly by the FTSO."
+        );
+        assertEq(
+            m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].description,
+            "Returns the current sFLR per FLR exchange rate self-reported by the Sceptre staked FLR contract, i.e. how many sFLR shares correspond to 1 FLR. A value less than 1 means 1 FLR yields fewer than 1 sFLR share. Accepts 0 inputs."
+        );
     }
 
     function testBytecodeHashMatchesDeployedCode() external {
