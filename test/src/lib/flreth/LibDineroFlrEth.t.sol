@@ -24,6 +24,16 @@ contract LibDineroFlrEthTest is Test {
         assertEq(rate18, 0.989103076939285809e18);
     }
 
+    function testFlrEthRateScaleBand() external view {
+        uint256 ethPerFlrEth = LibDineroFlrEth.getETHPerFLRETH18();
+        assertGe(ethPerFlrEth, 0.1e18, "ETH/flrETH rate below 0.1 -- scale may have changed");
+        assertLe(ethPerFlrEth, 10e18, "ETH/flrETH rate above 10 -- scale may have changed");
+
+        uint256 flrEthPerEth = LibDineroFlrEth.getFLRETHPerETH18();
+        assertGe(flrEthPerEth, 0.1e18, "flrETH/ETH rate below 0.1 -- scale may have changed");
+        assertLe(flrEthPerEth, 10e18, "flrETH/ETH rate above 10 -- scale may have changed");
+    }
+
     // External wrappers needed so vm.expectRevert captures the outer call frame
     // (not the inner LSTPerToken/tokensPerLST staticcall which returns, not reverts).
     function _callGetETHPerFLRETH18() external {
