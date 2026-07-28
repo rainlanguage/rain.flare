@@ -11,7 +11,7 @@ import {PARSE_META_BUILD_DEPTH} from "src/generated/FlareFtsoWords.pointers.sol"
 import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
 import {LibGenParseMeta} from "rain-interpreter-interface-0.1.0/src/lib/codegen/LibGenParseMeta.sol";
 
-contract BuildPointers is Script {
+contract Build is Script {
     function buildFlareFtsoWordsPointers() internal {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
