@@ -61,9 +61,10 @@ library LibFtsoCurrentPriceUsd {
             revert InconsistentFtso();
         }
 
-        // Handle stale prices.
+        // Handle stale prices. Subtraction avoids checked-arithmetic overflow
+        // when timeout is near type(uint256).max (which means "never stale").
         //slither-disable-next-line timestamp
-        if (block.timestamp > priceTimestamp + timeout) {
+        if (block.timestamp > priceTimestamp && block.timestamp - priceTimestamp > timeout) {
             revert StalePrice(priceTimestamp, timeout);
         }
 
