@@ -3,14 +3,13 @@
 pragma solidity ^0.8.19;
 
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
-import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "../../err/ErrFtso.sol";
+import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso, DecimalsTooLarge} from "../../err/ErrFtso.sol";
 import {IFtso} from "../../vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
 
 library LibFtsoCurrentPriceUsd {
     /// @notice Fetches the current FTSO USD price for a symbol and returns the
     /// raw price together with its native decimal count. The caller is
-    /// responsible for normalising to 18 decimals and enforcing the
-    /// DecimalsTooLarge guard.
+    /// responsible for normalising to 18 decimals.
     /// @dev Reverts with InactiveFtso if the FTSO is not active.
     /// Reverts with PriceNotFinalized if the finalization type is not
     /// WEIGHTED_MEDIAN or TRUSTED_ADDRESSES.
@@ -18,11 +17,13 @@ library LibFtsoCurrentPriceUsd {
     /// values (indicates an FTSO bug).
     /// Reverts with StalePrice(priceTimestamp, timeout) if the price is older
     /// than timeout seconds.
+    /// Reverts with DecimalsTooLarge(decimals) if the FTSO reports more
+    /// decimals than fit in a uint8.
     /// @param symbol The FTSO symbol string (e.g. "FLR", "ETH").
     /// @param timeout Max age in seconds; prices older than this revert.
     /// @return price The raw FTSO price in the FTSO's native unit.
     /// @return decimals The decimal precision of the returned price (typically
-    /// 5 for Flare FTSO v1, but not guaranteed).
+    /// 5 for Flare FTSO v1, but not guaranteed). Always <= type(uint8).max.
     function ftsoCurrentPriceUsd(string memory symbol, uint256 timeout) internal view returns (uint256, uint256) {
         // Fetch the FTSO from the registry.
         IFtsoRegistry ftsoRegistry = LibFlareContractRegistry.getFtsoRegistry();
@@ -65,6 +66,12 @@ library LibFtsoCurrentPriceUsd {
         //slither-disable-next-line timestamp
         if (block.timestamp > priceTimestamp + timeout) {
             revert StalePrice(priceTimestamp, timeout);
+        }
+
+        // The FTSO is untrusted so the decimals bound is enforced here, at the
+        // trust boundary, rather than at each call site.
+        if (decimals > type(uint8).max) {
+            revert DecimalsTooLarge(decimals);
         }
 
         return (price, decimals);

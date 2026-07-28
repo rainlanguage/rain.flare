@@ -12,6 +12,7 @@ library LibSceptreStakedFlare {
     /// Fixed 18 decimal place ratio of sFLR to FLR.
     /// For each 1e18 FLR pooled, this is how many sFLR shares it is worth
     /// according to the sFLR contract's current exchange rate.
+    /// Reverts with ZeroSFLRRate if the sFLR contract returns 0.
     //forge-lint: disable-next-line(mixed-case-function)
     function getSFLRPerFLR18() internal view returns (uint256) {
         uint256 rate = SFLR_CONTRACT.getSharesByPooledFlr(1e18);

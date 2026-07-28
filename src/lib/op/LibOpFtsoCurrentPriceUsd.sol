@@ -5,7 +5,6 @@ pragma solidity ^0.8.19;
 import {OperandV2, StackItem} from "rain-interpreter-interface-0.1.0/src/interface/IInterpreterV4.sol";
 import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.0/src/lib/LibIntOrAString.sol";
 import {LibFtsoCurrentPriceUsd} from "../price/LibFtsoCurrentPriceUsd.sol";
-import {DecimalsTooLarge} from "../../err/ErrFtso.sol";
 
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
@@ -26,9 +25,8 @@ library LibOpFtsoCurrentPriceUsd {
     /// address. This registry is used to find the FTSO contract for the symbol
     /// and then the price is fetched from the FTSO. The price is returned as a
     /// Rain Float, normalized from the FTSO's native decimals.
-    /// @dev Propagates InactiveFtso, PriceNotFinalized, InconsistentFtso, and
-    /// StalePrice from LibFtsoCurrentPriceUsd. Additionally reverts with
-    /// DecimalsTooLarge if the FTSO reports more than 255 decimals.
+    /// @dev Propagates InactiveFtso, PriceNotFinalized, InconsistentFtso,
+    /// StalePrice and DecimalsTooLarge from LibFtsoCurrentPriceUsd.
     /// @param inputs The inputs to the operation. Always 2 items.
     ///   0. The symbol of the asset to fetch the price of, encoded as an
     ///      unwrapped `IntOrAString` (i.e. a `uint256`).
@@ -47,10 +45,7 @@ library LibOpFtsoCurrentPriceUsd {
         (uint256 price, uint256 decimals) = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(
             symbol.toStringV3(), LibDecimalFloat.toFixedDecimalLossless(timeout, 0)
         );
-        if (decimals > type(uint8).max) {
-            revert DecimalsTooLarge(decimals);
-        }
-        // Check above ensures safe downcast.
+        // Library guarantees decimals <= type(uint8).max; downcast is safe.
         //forge-lint: disable-next-line(unsafe-typecast)
         Float priceFloat = LibDecimalFloat.fromFixedDecimalLosslessPacked(price, uint8(decimals));
 
