@@ -12,7 +12,7 @@ import {
     SUB_PARSER_PARSE_META,
     PARSE_META_BUILD_DEPTH,
     AuthoringMetaV2
-} from "src/concrete/FlareFtsoWords.sol";
+} from "../../../src/concrete/FlareFtsoWords.sol";
 import {LibGenParseMeta} from "rain-interpreter-interface-0.1.0/src/lib/codegen/LibGenParseMeta.sol";
 import {
     LibFlareFtsoSubParser,
@@ -20,9 +20,9 @@ import {
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR,
     SUB_PARSER_WORD_SFLR_EXCHANGE_RATE,
     SUB_PARSER_WORD_PARSERS_LENGTH
-} from "src/lib/parse/LibFlareFtsoSubParser.sol";
-import {OPCODE_FUNCTION_POINTERS_LENGTH} from "src/abstract/FlareFtsoExtern.sol";
-import {BYTECODE_HASH} from "src/generated/FlareFtsoWords.pointers.sol";
+} from "../../../src/lib/parse/LibFlareFtsoSubParser.sol";
+import {OPCODE_FUNCTION_POINTERS_LENGTH} from "../../../src/abstract/FlareFtsoExtern.sol";
+import {BYTECODE_HASH} from "../../../src/generated/FlareFtsoWords.pointers.sol";
 
 contract FlareFtsoWordsPointersTest is Test {
     function testIntegrityPointers() external {

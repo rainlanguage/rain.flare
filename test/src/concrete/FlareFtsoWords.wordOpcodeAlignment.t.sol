@@ -9,13 +9,13 @@ import {
     SUB_PARSER_WORD_SFLR_EXCHANGE_RATE,
     SUB_PARSER_WORD_PARSERS_LENGTH,
     LibFlareFtsoSubParser
-} from "src/lib/parse/LibFlareFtsoSubParser.sol";
+} from "../../../src/lib/parse/LibFlareFtsoSubParser.sol";
 import {
     OPCODE_FTSO_CURRENT_PRICE_USD,
     OPCODE_FTSO_CURRENT_PRICE_PAIR,
     OPCODE_SFLR_CURRENT_EXCHANGE_RATE,
     OPCODE_FUNCTION_POINTERS_LENGTH
-} from "src/abstract/FlareFtsoExtern.sol";
+} from "../../../src/abstract/FlareFtsoExtern.sol";
 import {AuthoringMetaV2} from "rain-interpreter-interface-0.1.0/src/interface/deprecated/v1/IParserV1.sol";
 
 contract FlareFtsoWordsWordOpcodeAlignmentTest is Test {

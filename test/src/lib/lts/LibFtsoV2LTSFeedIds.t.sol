@@ -25,7 +25,7 @@ import {
     XDC_USD_FEED_ID,
     TRX_USD_FEED_ID,
     JOULE_USD_FEED_ID
-} from "src/lib/lts/LibFtsoV2LTS.sol";
+} from "../../../../src/lib/lts/LibFtsoV2LTS.sol";
 
 /// @title LibFtsoV2LTSFeedIdsTest
 /// @notice Asserts the exact value and Flare-defined derivation of every FTSO
