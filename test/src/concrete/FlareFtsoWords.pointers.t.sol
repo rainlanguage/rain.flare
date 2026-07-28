@@ -21,7 +21,12 @@ import {
     SUB_PARSER_WORD_SFLR_EXCHANGE_RATE,
     SUB_PARSER_WORD_PARSERS_LENGTH
 } from "src/lib/parse/LibFlareFtsoSubParser.sol";
-import {OPCODE_FUNCTION_POINTERS_LENGTH} from "src/abstract/FlareFtsoExtern.sol";
+import {
+    OPCODE_FTSO_CURRENT_PRICE_USD,
+    OPCODE_FTSO_CURRENT_PRICE_PAIR,
+    OPCODE_SFLR_CURRENT_EXCHANGE_RATE,
+    OPCODE_FUNCTION_POINTERS_LENGTH
+} from "src/abstract/FlareFtsoExtern.sol";
 import {BYTECODE_HASH} from "src/generated/FlareFtsoWords.pointers.sol";
 
 contract FlareFtsoWordsPointersTest is Test {
@@ -51,6 +56,28 @@ contract FlareFtsoWordsPointersTest is Test {
         bytes memory expected = LibGenParseMeta.buildParseMetaV2(authoringMeta, PARSE_META_BUILD_DEPTH);
         assertEq(SUB_PARSER_PARSE_META, expected);
         assertEq(uint8(SUB_PARSER_PARSE_META[0]), PARSE_META_BUILD_DEPTH, "parse meta depth byte");
+    }
+
+    /// Committed BYTECODE_HASH is verified against the actual compiled contract
+    /// so any bytecode drift (optimizer change, solc bump, library edit) fires CI red.
+    function testBytecodeHash() external {
+        FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
+        assertEq(address(flareFtsoWords).codehash, BYTECODE_HASH, "BYTECODE_HASH drifted from compiled bytecode");
+    }
+
+    /// Both index-constant sets must agree element-for-element; any reorder
+    /// in either file that breaks the pairing is caught without a fork or RPC.
+    function testWordOpcodeIndicesAligned() external pure {
+        assertEq(SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD, OPCODE_FTSO_CURRENT_PRICE_USD);
+        assertEq(SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR, OPCODE_FTSO_CURRENT_PRICE_PAIR);
+        assertEq(SUB_PARSER_WORD_SFLR_EXCHANGE_RATE, OPCODE_SFLR_CURRENT_EXCHANGE_RATE);
+        assertEq(SUB_PARSER_WORD_PARSERS_LENGTH, OPCODE_FUNCTION_POINTERS_LENGTH);
+
+        bytes memory authoringMetaBytes = LibFlareFtsoSubParser.authoringMetaV2();
+        AuthoringMetaV2[] memory meta = abi.decode(authoringMetaBytes, (AuthoringMetaV2[]));
+        assertEq(meta[OPCODE_FTSO_CURRENT_PRICE_USD].word, bytes32("ftso-current-price-usd"));
+        assertEq(meta[OPCODE_FTSO_CURRENT_PRICE_PAIR].word, bytes32("ftso-current-price-pair"));
+        assertEq(meta[OPCODE_SFLR_CURRENT_EXCHANGE_RATE].word, bytes32("sflr-exchange-rate"));
     }
 
     function testOpcodePointersLength() external {

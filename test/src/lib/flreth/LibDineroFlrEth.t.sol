@@ -24,6 +24,17 @@ contract LibDineroFlrEthTest is Test {
         assertEq(rate18, 0.989103076939285809e18);
     }
 
+    /// #62 — asserts getETHPerFLRETH18 and getFLRETHPerETH18 are reciprocals of
+    /// each other within 0.1%. The product is symmetric, so a swapped
+    /// LSTPerToken / tokensPerLST mapping would preserve it: this test enforces
+    /// reciprocal consistency only, while directional mapping is pinned by the
+    /// exact-value getter assertions above.
+    function testRatesAreReciprocal() external view {
+        uint256 ethPerFlreth = LibDineroFlrEth.getETHPerFLRETH18();
+        uint256 flrethPerEth = LibDineroFlrEth.getFLRETHPerETH18();
+        assertApproxEqRel(ethPerFlreth * flrethPerEth, 1e36, 1e15);
+    }
+
     // External wrappers needed so vm.expectRevert captures the outer call frame
     // (not the inner LSTPerToken/tokensPerLST staticcall which returns, not reverts).
     function _callGetETHPerFLRETH18() external {
