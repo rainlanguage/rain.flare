@@ -77,8 +77,13 @@ bytes21 constant JOULE_USD_FEED_ID = 0x014a4f554c452f555344000000000000000000000
 library LibFtsoV2LTS {
     /// @notice Fetches the current value of a Flare V2 LTS feed.
     /// @dev This is NOT a view function: it sends msg.value to pay the feed
-    /// fee. The caller must supply at least the fee returned by
-    /// IFeeCalculator.calculateFeeByIds; any surplus is NOT refunded.
+    /// fee. The fee is computed internally via `IFeeCalculator` and only that
+    /// exact amount is forwarded to the FTSO. The caller must supply at least
+    /// the fee returned by IFeeCalculator.calculateFeeByIds; any surplus
+    /// (msg.value > fee) is NOT refunded — it remains in the caller's contract
+    /// balance. Callers that receive user funds MUST pre-compute the fee via
+    /// `IFeeCalculator.calculateFeeByIds` and forward exactly that amount, or
+    /// implement their own refund logic on any surplus.
     /// Reverts with StalePrice(timestamp, timeout) if block.timestamp exceeds
     /// the feed timestamp plus timeout.
     /// @param feedId The bytes21 Flare V2 feed ID to read.
