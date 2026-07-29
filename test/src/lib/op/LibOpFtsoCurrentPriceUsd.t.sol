@@ -261,8 +261,11 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         mockPriceDetails(priceDetails);
         mockPrice(FTSO, currentPrice);
 
-        // timeout = max → priceTimestamp + timeout overflows; must not panic.
-        LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(symbol, type(uint256).max);
+        // timeout = max → priceTimestamp + timeout overflows; must not panic, and
+        // the price is treated as fresh, so the mocked values come straight back.
+        (uint256 price, uint256 decimals) = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(symbol, type(uint256).max);
+        assertEq(price, currentPrice.price);
+        assertEq(decimals, currentPrice.decimals);
     }
 
     /// A negative Float timeout must revert with NegativeFixedDecimalConversion.
