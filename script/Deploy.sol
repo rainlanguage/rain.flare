@@ -15,6 +15,10 @@ contract Deploy is Script {
 
         vm.startBroadcast(deployerPrivateKey);
         FlareFtsoWords subParser = new FlareFtsoWords();
+        require(
+            keccak256(subParserDescribedByMeta) == subParser.describedByMetaV1(),
+            "meta file does not match compiled DESCRIBED_BY_META_HASH"
+        );
         LibDescribedByMeta.emitForDescribedAddress(metaboard, subParser, subParserDescribedByMeta);
 
         vm.stopBroadcast();
