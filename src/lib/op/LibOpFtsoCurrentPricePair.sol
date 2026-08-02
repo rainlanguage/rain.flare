@@ -50,8 +50,9 @@ library LibOpFtsoCurrentPricePair {
     function run(OperandV2 operand, StackItem[] memory inputs) internal view returns (StackItem[] memory) {
         uint256 symbolA;
         assembly ("memory-safe") {
-            // Truncating from 3 inputs to 2, so we can forward directly to the
-            // `ftsoCurrentPriceUsd` opcode.
+            // Advance the pointer past the length slot so the virtual 2-element
+            // array starts at inputs[1]=symbolB. Save symbolA so it can be
+            // restored for the second fetch.
             inputs := add(inputs, 0x20)
             symbolA := mload(inputs)
             mstore(inputs, 2)
@@ -60,8 +61,11 @@ library LibOpFtsoCurrentPricePair {
         // above, which exposes [symbolB, timeout] as a 2-element inputs array.
         StackItem[] memory denominatorOutputs = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
         assembly ("memory-safe") {
+            // Replace symbolB with symbolA so the second fetch uses symbolA.
             mstore(add(inputs, 0x20), symbolA)
         }
+        // symbolA is now at inputs[0]; the second fetch resolves the
+        // numerator price.
         StackItem[] memory numeratorOutputs = LibOpFtsoCurrentPriceUsd.run(operand, inputs);
 
         Float numeratorPrice;
