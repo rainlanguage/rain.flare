@@ -29,7 +29,7 @@ library LibFlareFtsoSubParser {
         );
         meta[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE] = AuthoringMetaV2(
             "sflr-exchange-rate",
-            "Returns the current sFLR-per-FLR exchange rate as a Rain Float. Accepts 0 inputs. The value is the number of sFLR shares equivalent to 1 FLR of pooled liquidity (e.g. ~0.877 means 1 FLR buys 0.877 sFLR). To convert in the FLR-per-sFLR direction, take the reciprocal."
+            "Returns the current sFLR-per-FLR exchange rate as a Rain Float, self-reported by the Sceptre staked FLR contract. Accepts 0 inputs. The value is the number of sFLR shares equivalent to 1 FLR of pooled liquidity, so a value less than 1 means 1 FLR yields fewer than 1 sFLR share (e.g. ~0.877 means 1 FLR buys 0.877 sFLR). To convert in the FLR-per-sFLR direction, take the reciprocal."
         );
         return abi.encode(meta);
     }

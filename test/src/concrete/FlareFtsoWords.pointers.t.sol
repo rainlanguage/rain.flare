@@ -10,6 +10,7 @@ import {
     OPCODE_FUNCTION_POINTERS,
     SUB_PARSER_WORD_PARSERS,
     SUB_PARSER_PARSE_META,
+    PARSE_META_BUILD_DEPTH,
     AuthoringMetaV2
 } from "src/concrete/FlareFtsoWords.sol";
 import {LibGenParseMeta} from "rain-interpreter-interface-0.1.0/src/lib/codegen/LibGenParseMeta.sol";
@@ -47,8 +48,9 @@ contract FlareFtsoWordsPointersTest is Test {
     function testSubParserParseMeta() external pure {
         bytes memory authoringMetaBytes = LibFlareFtsoSubParser.authoringMetaV2();
         AuthoringMetaV2[] memory authoringMeta = abi.decode(authoringMetaBytes, (AuthoringMetaV2[]));
-        bytes memory expected = LibGenParseMeta.buildParseMetaV2(authoringMeta, 2);
+        bytes memory expected = LibGenParseMeta.buildParseMetaV2(authoringMeta, PARSE_META_BUILD_DEPTH);
         assertEq(SUB_PARSER_PARSE_META, expected);
+        assertEq(uint8(SUB_PARSER_PARSE_META[0]), PARSE_META_BUILD_DEPTH, "parse meta depth byte");
     }
 
     function testOpcodePointersLength() external {
@@ -63,9 +65,18 @@ contract FlareFtsoWordsPointersTest is Test {
         assertEq(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].word, bytes32("ftso-current-price-usd"));
         assertEq(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].word, bytes32("ftso-current-price-pair"));
         assertEq(m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].word, bytes32("sflr-exchange-rate"));
-        assertTrue(bytes(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].description).length > 0);
-        assertTrue(bytes(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].description).length > 0);
-        assertTrue(bytes(m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].description).length > 0);
+        assertEq(
+            m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].description,
+            "Returns the current USD price of the given token according to the FTSO. Accepts 2 inputs, the symbol string used by the FTSO and the timeout in seconds. The price is rounded down if it does not fit in a Rainlang number. The timeout will be used to determine if the price is stale and revert if it is."
+        );
+        assertEq(
+            m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].description,
+            "Returns the current price of the given token pair according to the FTSO. Accepts 3 inputs, the symbol string used by the FTSO for the base token, the symbol string used by the FTSO for the quote token and the timeout in seconds. The price is rounded down if it does not fit in a Rainlang number. The timeout will be used to determine if the price is stale and revert if it is. Note that the pair price is derived from two separate FTSO prices mechanically and is not provided directly by the FTSO."
+        );
+        assertEq(
+            m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].description,
+            "Returns the current sFLR-per-FLR exchange rate as a Rain Float, self-reported by the Sceptre staked FLR contract. Accepts 0 inputs. The value is the number of sFLR shares equivalent to 1 FLR of pooled liquidity, so a value less than 1 means 1 FLR yields fewer than 1 sFLR share (e.g. ~0.877 means 1 FLR buys 0.877 sFLR). To convert in the FLR-per-sFLR direction, take the reciprocal."
+        );
     }
 
     function testBytecodeHashMatchesDeployedCode() external {
