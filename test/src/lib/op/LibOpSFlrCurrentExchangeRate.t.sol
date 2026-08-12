@@ -77,4 +77,24 @@ contract LibOpSFlrCurrentExchangeRateTest is Test {
         vm.expectRevert(abi.encodeWithSelector(CoefficientOverflow.selector, int256(2 ** 223), int256(-18)));
         this.externalRun(OperandV2.wrap(0), new StackItem[](0));
     }
+
+    /// The extreme of the overflow region, pinned separately from the 2^223
+    /// boundary above because it is the one rate that reaches the coefficient
+    /// bound check through a uint256 -> int256 conversion that WRAPS: as a
+    /// signed value type(uint256).max is -1, which is inside the int224 range.
+    /// A bound check performed after that conversion would therefore accept it
+    /// and emit a NEGATIVE exchange rate of -1e-18 instead of reverting, and no
+    /// test at 2^223 can distinguish the two implementations. The revert is
+    /// pinned by error class rather than by arguments: which coefficient the
+    /// error reports for a wrapped input is the library's to choose, but that
+    /// it refuses the input at all is the property this op depends on.
+    function testRunRateMaxUintOverflow() external {
+        vm.mockCall(
+            address(SFLR_CONTRACT),
+            abi.encodeWithSelector(IStakedFlr.getSharesByPooledFlr.selector, uint256(1e18)),
+            abi.encode(type(uint256).max)
+        );
+        vm.expectRevert(CoefficientOverflow.selector);
+        this.externalRun(OperandV2.wrap(0), new StackItem[](0));
+    }
 }
