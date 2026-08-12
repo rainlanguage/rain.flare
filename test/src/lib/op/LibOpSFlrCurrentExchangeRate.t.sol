@@ -9,6 +9,7 @@ import {IStakedFlr} from "src/interface/IStakedFlr.sol";
 import {SFLR_CONTRACT} from "src/lib/sflr/LibSceptreStakedFlare.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 import {CoefficientOverflow} from "rain-math-float-0.1.1/src/error/ErrDecimalFloat.sol";
+import {ZeroSFLRRate} from "src/err/ErrFtso.sol";
 
 contract LibOpSFlrCurrentExchangeRateTest is Test {
     function externalRun(OperandV2 operand, StackItem[] memory inputs) external view returns (StackItem[] memory) {
@@ -35,17 +36,21 @@ contract LibOpSFlrCurrentExchangeRateTest is Test {
         assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(expected));
     }
 
-    /// A zero rate is exactly representable: the op outputs the canonical
-    /// FLOAT_ZERO encoding.
-    function testRunRateZero() external {
+    /// A zero rate is REJECTED, not encoded. Zero is exactly representable as a
+    /// Float, so nothing in the encoding stops the op returning FLOAT_ZERO here;
+    /// what stops it is `LibSceptreStakedFlare.getSFLRPerFLR18` treating a zero
+    /// exchange rate as the sFLR contract being unusable. This pins that the op
+    /// PROPAGATES that revert rather than swallowing it — a distinct property
+    /// from the lib-level pin, which cannot see whether this caller catches or
+    /// re-encodes what the lib throws.
+    function testRunRateZeroReverts() external {
         vm.mockCall(
             address(SFLR_CONTRACT),
             abi.encodeWithSelector(IStakedFlr.getSharesByPooledFlr.selector, uint256(1e18)),
             abi.encode(uint256(0))
         );
-        StackItem[] memory outputs = this.externalRun(OperandV2.wrap(0), new StackItem[](0));
-        assertEq(outputs.length, 1);
-        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.FLOAT_ZERO));
+        vm.expectRevert(abi.encodeWithSelector(ZeroSFLRRate.selector));
+        this.externalRun(OperandV2.wrap(0), new StackItem[](0));
     }
 
     /// A parity rate (1e18, i.e. exactly 1.0) is exactly representable: the op
