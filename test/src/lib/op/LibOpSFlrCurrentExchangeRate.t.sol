@@ -8,7 +8,7 @@ import {LibOpSFLRCurrentExchangeRate} from "src/lib/op/LibOpSFlrCurrentExchangeR
 import {IStakedFlr} from "src/interface/IStakedFlr.sol";
 import {SFLR_CONTRACT} from "src/lib/sflr/LibSceptreStakedFlare.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
-import {CoefficientOverflow} from "rain-math-float-0.1.1/src/error/ErrDecimalFloat.sol";
+import {CoefficientOverflow, LossyConversionToFloat} from "rain-math-float-0.1.1/src/error/ErrDecimalFloat.sol";
 import {ZeroSFLRRate} from "src/err/ErrFtso.sol";
 
 contract LibOpSFlrCurrentExchangeRateTest is Test {
@@ -83,23 +83,30 @@ contract LibOpSFlrCurrentExchangeRateTest is Test {
         this.externalRun(OperandV2.wrap(0), new StackItem[](0));
     }
 
-    /// The extreme of the overflow region, pinned separately from the 2^223
-    /// boundary above because it is the one rate that reaches the coefficient
-    /// bound check through a uint256 -> int256 conversion that WRAPS: as a
-    /// signed value type(uint256).max is -1, which is inside the int224 range.
-    /// A bound check performed after that conversion would therefore accept it
-    /// and emit a NEGATIVE exchange rate of -1e-18 instead of reverting, and no
-    /// test at 2^223 can distinguish the two implementations. The revert is
-    /// pinned by error class rather than by arguments: which coefficient the
-    /// error reports for a wrapped input is the library's to choose, but that
-    /// it refuses the input at all is the property this op depends on.
-    function testRunRateMaxUintOverflow() external {
+    /// The extreme of the overflow region, and NOT a restatement of the 2^223
+    /// boundary above: the two take different paths and revert with different
+    /// errors, so neither test stands for the other.
+    ///
+    /// 2^223 is one above the coefficient bound, so it is rejected as an
+    /// oversized coefficient. type(uint256).max is far enough above the bound
+    /// that the packing first tries to normalise it down — shifting one decimal
+    /// place, to coefficient `type(uint256).max / 10` at exponent -17 — and
+    /// that shift is what fails, because the digit it drops is non-zero and the
+    /// conversion is required to be lossless. Hence LossyConversionToFloat
+    /// rather than CoefficientOverflow.
+    ///
+    /// Both are pinned exactly, because the property worth holding is not just
+    /// "huge rates revert" but that a huge rate is never silently rounded into
+    /// a representable Float and returned as a real exchange rate.
+    function testRunRateMaxUintReverts() external {
         vm.mockCall(
             address(SFLR_CONTRACT),
             abi.encodeWithSelector(IStakedFlr.getSharesByPooledFlr.selector, uint256(1e18)),
             abi.encode(type(uint256).max)
         );
-        vm.expectRevert(CoefficientOverflow.selector);
+        vm.expectRevert(
+            abi.encodeWithSelector(LossyConversionToFloat.selector, int256(type(uint256).max / 10), int256(-17))
+        );
         this.externalRun(OperandV2.wrap(0), new StackItem[](0));
     }
 }
