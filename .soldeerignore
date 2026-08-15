@@ -1,12 +1,18 @@
 .DS_Store
+.cargo
+.coderabbit.yaml
+.devcontainer.json
+.envrc
 .gas-snapshot
 .git
 .github
 .gitignore
 .pre-commit-config.yaml
+.prettierignore
 .soldeerignore
 .vscode
 CLAUDE.md
+/audit
 /cache
 /dependencies
 /flake.lock
@@ -17,3 +23,4 @@ CLAUDE.md
 /slither.config.json
 /soldeer.lock
 /REUSE.toml
+/deployments
