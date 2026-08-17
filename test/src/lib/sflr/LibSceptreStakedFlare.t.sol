@@ -7,8 +7,7 @@ import {LibFork} from "test/fork/LibFork.sol";
 import {LibSceptreStakedFlare, SFLR_CONTRACT} from "src/lib/sflr/LibSceptreStakedFlare.sol";
 import {IStakedFlr} from "src/interface/IStakedFlr.sol";
 import {ZeroSFLRRate} from "src/err/ErrFtso.sol";
-
-uint256 constant BLOCK_NUMBER = 31843105;
+import {BLOCK_NUMBER} from "test/fork/ForkConstants.sol";
 
 contract LibSceptreStakedFlareTest is Test {
     constructor() {

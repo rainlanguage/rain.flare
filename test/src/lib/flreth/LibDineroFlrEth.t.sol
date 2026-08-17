@@ -7,12 +7,11 @@ import {LibFork} from "test/fork/LibFork.sol";
 import {LibDineroFlrEth, FLRETH_CONTRACT} from "src/lib/flreth/LibDineroFlrEth.sol";
 import {IDineroFlrEth} from "src/interface/IDineroFlrEth.sol";
 import {ZeroFlrEthRate} from "src/err/ErrFlrEth.sol";
-
-uint256 constant BLOCK_NUMBER = 37796420;
+import {FLRETH_BLOCK_NUMBER} from "test/fork/ForkConstants.sol";
 
 contract LibDineroFlrEthTest is Test {
     constructor() {
-        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), FLRETH_BLOCK_NUMBER);
     }
 
     function testGetETHPerFLRETH18() external view {

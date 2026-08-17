@@ -40,13 +40,13 @@ is 0.06 in 18 decimal fixed point math.
 All the same considerations and behaviours of individual USD prices fetches are
 applied to the two internal fetches for this word.
 
-Note that as the price is derived from independent data points, there is no
-real FTSO reporting it, and no guarantee the prices are even from the same block.
-In theory, a large timeout, coupled with high volatility and large discrepencies
-between the two internal FTSO "current price" timestamps could lead to inaccurate
-pricings. Using a short timeout should generally mitigate this risk, as FTSO data
-points aren't backed by directly tradeable liquidity anyway, and are themselves
-derived as a median of several reported values.
+Note that as the price is derived from independent data points, there is no real
+FTSO reporting it, and no guarantee the prices are even from the same block. In
+theory, a large timeout, coupled with high volatility and large discrepencies
+between the two internal FTSO "current price" timestamps could lead to
+inaccurate pricings. Using a short timeout should generally mitigate this risk,
+as FTSO data points aren't backed by directly tradeable liquidity anyway, and
+are themselves derived as a median of several reported values.
 
 Regardless, it is NOT recommended that this word be used for high precision
 calculations, as derived prices can drift from reality simply due to differences
@@ -60,8 +60,8 @@ section below, which also rounds down.
 
 ### Timeouts
 
-The rainlang author must provide a timeout which is used to guarantee that prices
-are never older than this many seconds relative to now.
+The rainlang author must provide a timeout which is used to guarantee that
+prices are never older than this many seconds relative to now.
 
 If the author does not care about the age of some price they can simply set this
 to the max int value.
@@ -105,21 +105,22 @@ CI usage.
 Run `./script/build.sh` to regenerate every committed artifact that the
 `rainix-sol-artifacts` CI check diffs against: `meta/*.rain.meta` (the CBOR
 encoded authoring-meta blob) and — after `build.sh` completes — run the
-`BuildPointers.sol` forge script to update `src/generated/*.pointers.sol`
-(contains `DESCRIBED_BY_META_HASH` and `BYTECODE_HASH`):
+`Build.sol` forge script to update `src/generated/*.pointers.sol` (contains
+`DESCRIBED_BY_META_HASH` and `BYTECODE_HASH`):
 
 ```
 ./script/build.sh
-nix develop .#sol-shell -c forge script ./script/BuildPointers.sol
+nix develop .#sol-shell -c forge script ./script/Build.sol
 ```
 
 Commit the resulting changes whenever word descriptions, operand meta, or the
-deployed contract changes.  The CI `copy-artifacts` job diffs these files and
+deployed contract changes. The CI `copy-artifacts` job diffs these files and
 turns red on drift.
 
 ## Legal stuff
 
-Everything is under DecentraLicense 1.0 (DCL-1.0) which can be found in `LICENSES/`.
+Everything is under DecentraLicense 1.0 (DCL-1.0) which can be found in
+`LICENSES/`.
 
 This is basically `CAL-1.0` which is an open source license
 https://opensource.org/license/cal-1-0
@@ -131,8 +132,8 @@ to those users as relevant, and that private keys remain private.
 Roughly it's "not your keys, not your coins" aware, as close as we could get in
 legalese.
 
-This is the default situation on permissionless blockchains, so shouldn't require
-any additional effort by dev-users to adhere to the license terms.
+This is the default situation on permissionless blockchains, so shouldn't
+require any additional effort by dev-users to adhere to the license terms.
 
 This repo is REUSE 3.2 compliant https://reuse.software/spec-3.2/ and compatible
 with `reuse` tooling (also available in the nix shell here).
