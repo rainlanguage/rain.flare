@@ -40,22 +40,28 @@ is 0.06 in 18 decimal fixed point math.
 All the same considerations and behaviours of individual USD prices fetches are
 applied to the two internal fetches for this word.
 
-Note that as the price is derived from independent data points, there is no
-real FTSO reporting it, and no guarantee the prices are even from the same block.
-In theory, a large timeout, coupled with high volatility and large discrepencies
-between the two internal FTSO "current price" timestamps could lead to inaccurate
-pricings. Using a short timeout should generally mitigate this risk, as FTSO data
-points aren't backed by directly tradeable liquidity anyway, and are themselves
-derived as a median of several reported values.
+Note that as the price is derived from independent data points, there is no real
+FTSO reporting it, and no guarantee the prices are even from the same block. In
+theory, a large timeout, coupled with high volatility and large discrepencies
+between the two internal FTSO "current price" timestamps could lead to
+inaccurate pricings. Using a short timeout should generally mitigate this risk,
+as FTSO data points aren't backed by directly tradeable liquidity anyway, and
+are themselves derived as a median of several reported values.
 
 Regardless, it is NOT recommended that this word be used for high precision
 calculations, as derived prices can drift from reality simply due to differences
 in the reporting times.
 
+The pair derivation divides two decimal floating-point prices using
+`LibDecimalFloat.div`. When the quotient is not exact, it rounds toward zero
+(i.e. slightly understates the derived price for positive prices). This is
+distinct from the single-FTSO decimal rescaling described in the Decimals
+section below, which also rounds down.
+
 ### Timeouts
 
-The rainlang author must provide a timeout which is used to guarantee that prices
-are never older than this many seconds relative to now.
+The rainlang author must provide a timeout which is used to guarantee that
+prices are never older than this many seconds relative to now.
 
 If the author does not care about the age of some price they can simply set this
 to the max int value.
@@ -77,8 +83,8 @@ The rescaling is generally lossless except in two edge cases:
 - When scaling numbers _down_ (i.e. ftso decimals is more than 18) there can be
   loss of precision for the significant figures beyond 18 decimals
 
-In the latter case of precision loss, rounding is always down as per EVM default
-behaviour.
+In the latter case of precision loss, the single-FTSO decimal rescale rounds
+down as per EVM default behaviour.
 
 ## Dev stuff
 
@@ -94,20 +100,47 @@ version of `foundry` for development, to ensure versions are all compatible.
 Read the `flake.nix` file to find some additional commands included for dev and
 CI usage.
 
+### Fork test RPC
+
 The test suite includes fork tests that read the Flare RPC URL from the
 `FLARE_RPC_URL` environment variable. `forge test` fails immediately if it is
-unset, so export it before running the tests locally:
+unset — there is no public-RPC fallback — so export it before running the tests
+locally:
 
 ```
 export FLARE_RPC_URL=<flare rpc endpoint>
 ```
 
-In CI the rainix shared workflow provides `FLARE_RPC_URL` from the
-`RPC_URL_FLARE_FORK` secret.
+In CI the rainix shared workflow supplies it, and the general rule (see rainix's
+README) is a two-name mapping: the org holds a repository/organisation secret
+named `RPC_URL_<NETWORK>_FORK`, and the reusable `rainix-sol-test` workflow
+exposes it to `forge` as the process environment variable `<NETWORK>_RPC_URL`.
+So Solidity always reads the `<NETWORK>_RPC_URL` env name, never the secret
+name. For Flare that is the `RPC_URL_FLARE_FORK` secret surfaced as
+`FLARE_RPC_URL`. This repo's `.github/workflows/rainix-sol.yaml` receives the
+secret through `secrets: inherit`.
+
+### Regenerating committed artifacts
+
+Run `./script/build.sh` to regenerate every committed artifact that the
+`rainix-sol-artifacts` CI check diffs against: `meta/*.rain.meta` (the CBOR
+encoded authoring-meta blob) and — after `build.sh` completes — run the
+`Build.sol` forge script to update `src/generated/*.pointers.sol` (contains
+`DESCRIBED_BY_META_HASH` and `BYTECODE_HASH`):
+
+```
+./script/build.sh
+nix develop .#sol-shell -c forge script ./script/Build.sol
+```
+
+Commit the resulting changes whenever word descriptions, operand meta, or the
+deployed contract changes. The CI `copy-artifacts` job diffs these files and
+turns red on drift.
 
 ## Legal stuff
 
-Everything is under DecentraLicense 1.0 (DCL-1.0) which can be found in `LICENSES/`.
+Everything is under DecentraLicense 1.0 (DCL-1.0) which can be found in
+`LICENSES/`.
 
 This is basically `CAL-1.0` which is an open source license
 https://opensource.org/license/cal-1-0
@@ -119,8 +152,8 @@ to those users as relevant, and that private keys remain private.
 Roughly it's "not your keys, not your coins" aware, as close as we could get in
 legalese.
 
-This is the default situation on permissionless blockchains, so shouldn't require
-any additional effort by dev-users to adhere to the license terms.
+This is the default situation on permissionless blockchains, so shouldn't
+require any additional effort by dev-users to adhere to the license terms.
 
 This repo is REUSE 3.2 compliant https://reuse.software/spec-3.2/ and compatible
 with `reuse` tooling (also available in the nix shell here).
