@@ -114,7 +114,7 @@ nix develop .#sol-shell -c forge script ./script/Build.sol
 ```
 
 Commit the resulting changes whenever word descriptions, operand meta, or the
-deployed contract changes. The CI `copy-artifacts` job diffs these files and
+deployed contract changes. The CI `git-clean` job diffs these files and
 turns red on drift.
 
 ## Legal stuff
