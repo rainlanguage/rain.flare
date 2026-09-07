@@ -3,24 +3,6 @@ name = "rain-flare"
 version = "0.1.2"
 
 [profile.default]
-
-remappings = [
-  # `rain-deploy` 0.1.7, and the `rain-sol-codegen` 0.1.36 it is built on, spell
-  # forge-std as `forge-std-1.16.2/`; the `rainlang` package still spells it
-  # `forge-std-1.16.1/`. Soldeer installs ONE version per package name, so the
-  # older prefix is aliased onto the installed one. Not cosmetic: two forge-std
-  # copies in one compilation are two DISTINCT `Vm` types, and a `vm` handed
-  # from one library to another would not type check.
-  #
-  # These live here rather than in `remappings.txt` because `forge soldeer
-  # install` owns that file and regenerates it from the installed set.
-  "forge-std-1.16.1/=dependencies/forge-std-1.16.2/",
-  # Same, for `rain-sol-codegen`: `rain-deploy` 0.1.7 needs 0.1.36, while
-  # `rainlang` imports the tooling interfaces under the `rain-sol-codegen-0.1.0/`
-  # prefix. Those interfaces are byte-identical between the two versions bar
-  # `pure` widening to `view` on three functions.
-  "rain-sol-codegen-0.1.0/=dependencies/rain-sol-codegen-0.1.36/",
-]
 libs = ['dependencies']
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
@@ -54,7 +36,7 @@ fs_permissions = [
 "rain-solmem" = "0.1.28"
 "rain-string" = "0.2.0"
 "rain-tofu-erc20-decimals" = "0.1.1"
-"rainlang" = "0.2.0"
+"rainlang" = "0.2.1"
 
 [soldeer]
 recursive_deps = false
