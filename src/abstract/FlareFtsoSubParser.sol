@@ -7,18 +7,18 @@ import {
     OperandV2,
     IParserToolingV1,
     ISubParserToolingV1
-} from "rainlang-0.1.2/src/abstract/BaseRainlangSubParser.sol";
+} from "rainlang-0.2.0/src/abstract/BaseRainlangSubParser.sol";
 import {
     OPCODE_FTSO_CURRENT_PRICE_USD,
     OPCODE_FTSO_CURRENT_PRICE_PAIR,
     OPCODE_SFLR_CURRENT_EXCHANGE_RATE
 } from "./FlareFtsoExtern.sol";
-import {LibSubParse, IInterpreterExternV4} from "rainlang-0.1.2/src/lib/parse/LibSubParse.sol";
-import {LibParseOperand} from "rainlang-0.1.2/src/lib/parse/LibParseOperand.sol";
+import {LibSubParse, IInterpreterExternV4} from "rainlang-0.2.0/src/lib/parse/LibSubParse.sol";
+import {LibParseOperand} from "rainlang-0.2.0/src/lib/parse/LibParseOperand.sol";
 import {LibConvert} from "rain-lib-typecast-0.1.0/src/LibConvert.sol";
 //Export this for convenience.
 //forge-lint: disable-next-line(mixed-case-function,unused-import)
-import {AuthoringMetaV2} from "rain-interpreter-interface-0.1.0/src/interface/deprecated/v1/IParserV1.sol";
+import {AuthoringMetaV2} from "rainlang-interface-0.2.8/src/interface/deprecated/v1/IParserV1.sol";
 import {
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD,
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR,
@@ -30,7 +30,7 @@ import {
     SUB_PARSER_WORD_PARSERS,
     PARSE_META as SUB_PARSER_PARSE_META,
     PARSE_META_BUILD_DEPTH
-} from "../generated/FlareFtsoWords.pointers.sol";
+} from "../generated/FlareFtsoWordsPointers.sol";
 
 /// @title FlareFtsoSubParser
 /// Implements the sub parser half of FlareFtsoWords. Responsible for parsing
