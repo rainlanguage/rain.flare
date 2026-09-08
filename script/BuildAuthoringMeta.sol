@@ -3,7 +3,7 @@
 pragma solidity =0.8.25;
 
 import {Script} from "forge-std-1.16.1/src/Script.sol";
-import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
+import {LibFlareFtsoSubParser} from "../src/lib/parse/LibFlareFtsoSubParser.sol";
 
 /// @title FlareFtso subparser Authoring Meta
 /// @notice A script that writes the raw authoring meta out to file so it can be

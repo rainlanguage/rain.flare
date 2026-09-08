@@ -3,8 +3,8 @@
 pragma solidity =0.8.25;
 
 import {OpTest} from "rainlang-0.1.2/src/../test/abstract/OpTest.sol";
-import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
-import {LibFork} from "test/fork/LibFork.sol";
+import {FlareFtsoWords} from "../../../src/concrete/FlareFtsoWords.sol";
+import {LibFork} from "../../../test/fork/LibFork.sol";
 import {Strings} from "@openzeppelin-contracts-5.6.1/utils/Strings.sol";
 import {BLOCK_NUMBER} from "../lib/registry/LibFlareContractRegistry.t.sol";
 import {UnexpectedOperand} from "rainlang-0.1.2/src/error/ErrParse.sol";

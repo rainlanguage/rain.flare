@@ -3,11 +3,11 @@
 pragma solidity =0.8.25;
 
 import {Test} from "forge-std-1.16.1/src/Test.sol";
-import {LibFork} from "test/fork/LibFork.sol";
-import {LibDineroFlrEth, FLRETH_CONTRACT} from "src/lib/flreth/LibDineroFlrEth.sol";
-import {IDineroFlrEth} from "src/interface/IDineroFlrEth.sol";
-import {ZeroFlrEthRate} from "src/err/ErrFlrEth.sol";
-import {FLRETH_BLOCK_NUMBER} from "test/fork/ForkConstants.sol";
+import {LibFork} from "../../../../test/fork/LibFork.sol";
+import {LibDineroFlrEth, FLRETH_CONTRACT} from "../../../../src/lib/flreth/LibDineroFlrEth.sol";
+import {IDineroFlrEth} from "../../../../src/interface/IDineroFlrEth.sol";
+import {ZeroFlrEthRate} from "../../../../src/err/ErrFlrEth.sol";
+import {FLRETH_BLOCK_NUMBER} from "../../../../test/fork/ForkConstants.sol";
 
 contract LibDineroFlrEthTest is Test {
     constructor() {
