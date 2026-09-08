@@ -2,13 +2,13 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.25;
 
-import {BaseRainlangExtern, OperandV2, StackItem} from "rainlang-0.1.2/src/abstract/BaseRainlangExtern.sol";
+import {BaseRainlangExtern, OperandV2, StackItem} from "rainlang-0.2.1/src/abstract/BaseRainlangExtern.sol";
 import {LibConvert} from "rain-lib-typecast-0.1.0/src/LibConvert.sol";
 import {LibOpFtsoCurrentPriceUsd} from "../lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {LibOpFtsoCurrentPricePair} from "../lib/op/LibOpFtsoCurrentPricePair.sol";
 import {LibOpSFLRCurrentExchangeRate} from "../lib/op/LibOpSFlrCurrentExchangeRate.sol";
 
-import {INTEGRITY_FUNCTION_POINTERS, OPCODE_FUNCTION_POINTERS} from "../generated/FlareFtsoWords.pointers.sol";
+import {INTEGRITY_FUNCTION_POINTERS, OPCODE_FUNCTION_POINTERS} from "../generated/FlareFtsoWordsPointers.sol";
 
 /// @dev Index into the function pointers array for the current USD price.
 uint256 constant OPCODE_FTSO_CURRENT_PRICE_USD = 0;

@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {Test} from "forge-std-1.16.1/src/Test.sol";
+import {Test} from "forge-std-1.16.2/src/Test.sol";
 import {
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD,
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR,
@@ -16,7 +16,7 @@ import {
     OPCODE_SFLR_CURRENT_EXCHANGE_RATE,
     OPCODE_FUNCTION_POINTERS_LENGTH
 } from "src/abstract/FlareFtsoExtern.sol";
-import {AuthoringMetaV2} from "rain-interpreter-interface-0.1.0/src/interface/deprecated/v1/IParserV1.sol";
+import {AuthoringMetaV2} from "rainlang-interface-0.2.8/src/interface/deprecated/v1/IParserV1.sol";
 
 contract FlareFtsoWordsWordOpcodeAlignmentTest is Test {
     function testWordOpcodeIndicesAligned() external pure {

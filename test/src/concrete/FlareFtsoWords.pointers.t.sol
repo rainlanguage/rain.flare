@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {Test} from "forge-std-1.16.1/src/Test.sol";
+import {Test} from "forge-std-1.16.2/src/Test.sol";
 import {
     FlareFtsoWords,
     INTEGRITY_FUNCTION_POINTERS,
@@ -13,7 +13,7 @@ import {
     PARSE_META_BUILD_DEPTH,
     AuthoringMetaV2
 } from "src/concrete/FlareFtsoWords.sol";
-import {LibGenParseMeta} from "rain-interpreter-interface-0.1.0/src/lib/codegen/LibGenParseMeta.sol";
+import {LibGenParseMeta} from "rainlang-interface-0.2.8/src/lib/codegen/LibGenParseMeta.sol";
 import {
     LibFlareFtsoSubParser,
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD,
@@ -22,7 +22,7 @@ import {
     SUB_PARSER_WORD_PARSERS_LENGTH
 } from "src/lib/parse/LibFlareFtsoSubParser.sol";
 import {OPCODE_FUNCTION_POINTERS_LENGTH} from "src/abstract/FlareFtsoExtern.sol";
-import {BYTECODE_HASH} from "src/generated/FlareFtsoWords.pointers.sol";
+import {BYTECODE_HASH} from "src/generated/FlareFtsoWordsPointers.sol";
 
 contract FlareFtsoWordsPointersTest is Test {
     function testIntegrityPointers() external {
