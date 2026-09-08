@@ -143,6 +143,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     ) external {
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
+        currentPrice.decimals = bound(currentPrice.decimals, 0, type(uint8).max);
 
         timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
         currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout - 1);
