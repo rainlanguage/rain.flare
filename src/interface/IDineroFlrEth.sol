@@ -5,9 +5,9 @@ pragma solidity ^0.8.25;
 interface IDineroFlrEth {
     //slither-disable-start naming-convention
     //forge-lint: disable-next-line(mixed-case-function)
-    function LSTPerToken() external view returns (uint256 ethAmount);
+    function LSTPerToken() external view returns (uint256 ethPerFlreth18);
     //slither-disable-end
 
     //forge-lint: disable-next-line(mixed-case-function)
-    function tokensPerLST() external view returns (uint256 tokenAmount);
+    function tokensPerLST() external view returns (uint256 flrethPerEth18);
 }
