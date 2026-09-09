@@ -13,13 +13,23 @@ import {IGoverned, IGovernanceSettings} from "src/interface/IGoverned.sol";
 import {IGovernedFeeCalculator} from "src/interface/IGovernedFeeCalculator.sol";
 import {StalePrice} from "src/err/ErrFtso.sol";
 import {FeedConsumer} from "test/lib/lts/FeedConsumer.sol";
+import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
 contract LibFtsoV2LTSTest is Test {
     function testFtsoV2LTSGetFeed() external {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
-        uint256 feedValue = LibFtsoV2LTS.ftsoV2LTSGetFeed(ETH_USD_FEED_ID, 3600);
-        assertEq(feedValue, 2522.575e18);
+        Float feedValue = LibFtsoV2LTS.ftsoV2LTSGetFeed(ETH_USD_FEED_ID, 3600);
+        assertEq(LibDecimalFloat.toFixedDecimalLossless(feedValue, 18), 2522.575e18);
+    }
+
+    function testLtsFeedScaleBand() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        Float feedValue = LibFtsoV2LTS.ftsoV2LTSGetFeed(ETH_USD_FEED_ID, 3600);
+        uint256 feedValueWei = LibDecimalFloat.toFixedDecimalLossless(feedValue, 18);
+        assertGe(feedValueWei, 1e18, "ETH/USD LTS feed below 1 -- scale may have changed");
+        assertLe(feedValueWei, 1e24, "ETH/USD LTS feed above 1e6 -- scale may have changed");
     }
 
     function testFtsoV2LTSGetFeedStale() external {
@@ -42,7 +52,7 @@ contract LibFtsoV2LTSTest is Test {
 
         FeedConsumer feedConsumer = new FeedConsumer();
         vm.warp(1729795768 + 3600);
-        uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
+        uint256 value = LibDecimalFloat.toFixedDecimalLossless(feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600), 18);
         assertGt(value, 0);
     }
 
@@ -73,7 +83,7 @@ contract LibFtsoV2LTSTest is Test {
 
         FeedConsumer feedConsumer = new FeedConsumer();
         vm.warp(1729795768);
-        uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
+        uint256 value = LibDecimalFloat.toFixedDecimalLossless(feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0), 18);
         assertGt(value, 0);
     }
 
@@ -121,15 +131,15 @@ contract LibFtsoV2LTSTest is Test {
 
         vm.deal(alice, fee);
         assertEq(alice.balance, fee);
-        uint256 feedValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
-        assertEq(feedValue, 2522.575e18);
+        Float feedValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
+        assertEq(LibDecimalFloat.toFixedDecimalLossless(feedValue, 18), 2522.575e18);
         assertEq(alice.balance, 0);
 
         // #56 — overpayment: surplus is stranded in the consumer (documents current behavior;
         // replace with refund assertion when a refund mechanism is added).
         vm.deal(alice, uint256(fee) + 1 ether);
-        uint256 overpaidValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
-        assertEq(overpaidValue, 2522.575e18);
+        Float overpaidValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
+        assertEq(LibDecimalFloat.toFixedDecimalLossless(overpaidValue, 18), 2522.575e18);
         assertEq(address(feedConsumer).balance, 1 ether);
         assertEq(alice.balance, 0);
     }
