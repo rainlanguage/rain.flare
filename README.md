@@ -100,6 +100,26 @@ version of `foundry` for development, to ensure versions are all compatible.
 Read the `flake.nix` file to find some additional commands included for dev and
 CI usage.
 
+### Fork test RPC
+
+The test suite includes fork tests that read the Flare RPC URL from the
+`FLARE_RPC_URL` environment variable. `forge test` fails immediately if it is
+unset — there is no public-RPC fallback — so export it before running the tests
+locally:
+
+```
+export FLARE_RPC_URL=<flare rpc endpoint>
+```
+
+In CI the rainix shared workflow supplies it, and the general rule (see rainix's
+README) is a two-name mapping: the org holds a repository/organisation secret
+named `RPC_URL_<NETWORK>_FORK`, and the reusable `rainix-sol-test` workflow
+exposes it to `forge` as the process environment variable `<NETWORK>_RPC_URL`.
+So Solidity always reads the `<NETWORK>_RPC_URL` env name, never the secret
+name. For Flare that is the `RPC_URL_FLARE_FORK` secret surfaced as
+`FLARE_RPC_URL`. This repo's `.github/workflows/rainix-sol.yaml` receives the
+secret through `secrets: inherit`.
+
 ### Regenerating committed artifacts
 
 Run `./script/build.sh` to regenerate every committed artifact that the
