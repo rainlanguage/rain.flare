@@ -13,7 +13,7 @@ import {
     PARSE_META_BUILD_DEPTH,
     AuthoringMetaV2
 } from "src/concrete/FlareFtsoWords.sol";
-import {LibGenParseMeta} from "rainlang-interface-0.2.8/src/lib/codegen/LibGenParseMeta.sol";
+import {LibGenParseMeta} from "rainlang-interface-0.2.9/src/lib/codegen/LibGenParseMeta.sol";
 import {
     LibFlareFtsoSubParser,
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD,

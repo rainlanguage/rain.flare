@@ -8,8 +8,8 @@ import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.0/src/lib/Lib
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {InactiveFtso, StalePrice, PriceNotFinalized, DecimalsTooLarge} from "src/err/ErrFtso.sol";
-import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
-import {DivisionByZero} from "rain-math-float-0.1.1/src/error/ErrDecimalFloat.sol";
+import {LibDecimalFloat, Float} from "rain-math-float-0.2.1/src/lib/LibDecimalFloat.sol";
+import {DivisionByZero} from "rain-math-float-0.2.1/src/error/ErrDecimalFloat.sol";
 
 contract LibOpFtsoCurrentPricePairTest is FtsoTest {
     function externalRun(OperandV2 operand, StackItem[] memory inputs)
