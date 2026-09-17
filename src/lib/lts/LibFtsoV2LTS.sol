@@ -7,6 +7,7 @@ import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContr
 import {FtsoV2Interface} from "../../vendor/flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
 import {StalePrice} from "../../err/ErrFtso.sol";
 import {IFeeCalculator} from "../../vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
+import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
 
 /// @dev FTSO feed IDs.
 /// https://dev.flare.network/ftso/feeds
@@ -83,9 +84,11 @@ library LibFtsoV2LTS {
     /// the feed timestamp plus timeout.
     /// @param feedId The bytes21 Flare V2 feed ID to read.
     /// @param timeout Max age in seconds before the price is considered stale.
-    /// @return value The feed value in wei (1e18 fixed-point).
+    /// @return The feed value as a Float, tagged at this boundary with the
+    /// 18-decimal (wei) scale of `getFeedByIdInWei`, so callers cannot
+    /// reinterpret the scale.
     //forge-lint: disable-next-line(mixed-case-function)
-    function ftsoV2LTSGetFeed(bytes21 feedId, uint256 timeout) internal returns (uint256) {
+    function ftsoV2LTSGetFeed(bytes21 feedId, uint256 timeout) internal returns (Float) {
         // Fetch the FTSO from the registry.
         FtsoV2Interface ftsoRegistry = LibFlareContractRegistry.getFtsoV2LTS();
         IFeeCalculator feeCalculator = LibFlareContractRegistry.getFeeCalculator();
@@ -107,6 +110,6 @@ library LibFtsoV2LTS {
             revert StalePrice(timestamp, timeout);
         }
 
-        return value;
+        return LibDecimalFloat.fromFixedDecimalLosslessPacked(value, 18);
     }
 }
