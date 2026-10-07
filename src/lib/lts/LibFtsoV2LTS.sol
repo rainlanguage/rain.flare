@@ -101,11 +101,14 @@ library LibFtsoV2LTS {
 
         (uint256 value, uint64 timestamp) = ftsoRegistry.getFeedByIdInWei{value: fee}(feedId);
 
-        // Handle stale prices.
-        //slither-disable-next-line timestamp
+        // Handle stale prices. Comparing against block.timestamp IS the
+        // staleness check, so the lint's manipulation concern is the behavior.
+        //slither-disable-start timestamp
+        //forge-lint: disable-next-line(block-timestamp)
         if (block.timestamp > timestamp + timeout) {
             revert StalePrice(timestamp, timeout);
         }
+        //slither-disable-end timestamp
 
         return value;
     }

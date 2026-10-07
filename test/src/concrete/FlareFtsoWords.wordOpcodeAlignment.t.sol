@@ -28,8 +28,13 @@ contract FlareFtsoWordsWordOpcodeAlignmentTest is Test {
 
     function testAuthoringMetaWordNamesMatchOpcodeSlots() external pure {
         AuthoringMetaV2[] memory m = abi.decode(LibFlareFtsoSubParser.authoringMetaV2(), (AuthoringMetaV2[]));
+        // The word names are ASCII literals well under 32 bytes, so bytes32()
+        // is the encoding being asserted rather than a truncating cast.
+        //forge-lint: disable-next-line(unsafe-typecast)
         assertEq(m[OPCODE_FTSO_CURRENT_PRICE_USD].word, bytes32("ftso-current-price-usd"));
+        //forge-lint: disable-next-line(unsafe-typecast)
         assertEq(m[OPCODE_FTSO_CURRENT_PRICE_PAIR].word, bytes32("ftso-current-price-pair"));
+        //forge-lint: disable-next-line(unsafe-typecast)
         assertEq(m[OPCODE_SFLR_CURRENT_EXCHANGE_RATE].word, bytes32("sflr-exchange-rate"));
     }
 }
