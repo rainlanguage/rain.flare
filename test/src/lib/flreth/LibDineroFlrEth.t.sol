@@ -26,11 +26,11 @@ contract LibDineroFlrEthTest is Test {
 
     // External wrappers needed so vm.expectRevert captures the outer call frame
     // (not the inner LSTPerToken/tokensPerLST staticcall which returns, not reverts).
-    function _callGetETHPerFLRETH18() external {
+    function _callGetETHPerFLRETH18() external view {
         LibDineroFlrEth.getETHPerFLRETH18();
     }
 
-    function _callGetFLRETHPerETH18() external {
+    function _callGetFLRETHPerETH18() external view {
         LibDineroFlrEth.getFLRETHPerETH18();
     }
 

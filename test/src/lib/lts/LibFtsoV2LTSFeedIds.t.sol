@@ -60,11 +60,16 @@ contract LibFtsoV2LTSFeedIdsTest is Test {
         for (uint256 i = 0; i < nameBytes.length; i++) {
             packed[i + 1] = nameBytes[i];
         }
+        // `packed` is allocated at exactly 21 bytes above, so bytes21() reads
+        // all of it and drops nothing.
+        //forge-lint: disable-next-line(unsafe-typecast)
         return bytes21(packed);
     }
 
     /// The category byte of a feed id is its first (most significant) byte.
     function categoryByteOf(bytes21 feedId) internal pure returns (bytes1) {
+        // Keeping only the leading byte is the behavior this helper exists for.
+        //forge-lint: disable-next-line(unsafe-typecast)
         return bytes1(feedId);
     }
 

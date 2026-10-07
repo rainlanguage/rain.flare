@@ -62,8 +62,13 @@ contract FlareFtsoWordsPointersTest is Test {
     function testAuthoringMetaContent() external pure {
         AuthoringMetaV2[] memory m = abi.decode(LibFlareFtsoSubParser.authoringMetaV2(), (AuthoringMetaV2[]));
         assertEq(m.length, SUB_PARSER_WORD_PARSERS_LENGTH);
+        // The word names are ASCII literals well under 32 bytes, so bytes32()
+        // is the encoding being asserted rather than a truncating cast.
+        //forge-lint: disable-next-line(unsafe-typecast)
         assertEq(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].word, bytes32("ftso-current-price-usd"));
+        //forge-lint: disable-next-line(unsafe-typecast)
         assertEq(m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR].word, bytes32("ftso-current-price-pair"));
+        //forge-lint: disable-next-line(unsafe-typecast)
         assertEq(m[SUB_PARSER_WORD_SFLR_EXCHANGE_RATE].word, bytes32("sflr-exchange-rate"));
         assertEq(
             m[SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD].description,
