@@ -20,7 +20,7 @@ contract FlareFtsoWordsFtsoCurrentPriceUsdTest is OpTest {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         StackItem[] memory expectedStack = new StackItem[](1);
-        expectedStack[0] = StackItem.wrap(Float.unwrap(LibDecimalFloat.packLossless(2525.74849e5, -5)));
+        expectedStack[0] = StackItem.wrap(Float.unwrap(LibDecimalFloat.packLossless(2729.116e5, -5)));
 
         checkHappy(
             bytes(

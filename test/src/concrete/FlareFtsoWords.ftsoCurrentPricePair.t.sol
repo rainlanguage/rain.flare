@@ -22,9 +22,7 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
         StackItem[] memory expectedStack = new StackItem[](1);
         expectedStack[0] = StackItem.wrap(
             Float.unwrap(
-                LibDecimalFloat.packLossless(
-                    0.03731119849395329429139187416029293517999955454915312408433138156716e68, -68
-                )
+                LibDecimalFloat.packLossless(2780193435782859109269589980156436027045273051983740074270490015516, -68)
             )
         );
 
@@ -47,9 +45,7 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
         StackItem[] memory expectedStack = new StackItem[](1);
         expectedStack[0] = StackItem.wrap(
             Float.unwrap(
-                LibDecimalFloat.packLossless(
-                    0.000005630014253715341229403249093895330805483328231149412663808026269472e72, -72
-                )
+                LibDecimalFloat.packLossless(7471283741695112996296236583567719364072468887361328723293549999340, -72)
             )
         );
 
@@ -67,9 +63,7 @@ contract FlareFtsoWordsFtsoCurrentPricePairTest is OpTest {
 
         expectedStack[0] = StackItem.wrap(
             Float.unwrap(
-                LibDecimalFloat.packLossless(
-                    177619.4437412095639943741209563994374120956399437412095639943741209e61, -61
-                )
+                LibDecimalFloat.packLossless(13384580676802354095144678764100049043648847474252084355076017655713, -62)
             )
         );
         checkHappy(

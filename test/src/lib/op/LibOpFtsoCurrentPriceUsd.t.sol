@@ -40,24 +40,24 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         inputs[1] = StackItem.wrap(bytes32(uint256(3600)));
         StackItem[] memory outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(2525.74849e5, -5)));
+        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(2729.116e5, -5)));
 
         inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("BTC"))));
         outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(67694.11308e5, -5)));
+        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(98162.81e5, -5)));
 
         inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("XRP"))));
         outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(0.53163e5, -5)));
+        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(2.6189e5, -5)));
 
         // USDT is interesting as it probably has different decimals to the
         // others, but should still get normalized to 18 decimals.
         inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3("USDT"))));
         outputs = this.externalRun(OperandV2.wrap(0), inputs);
         assertEq(outputs.length, 1);
-        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(0.99919e5, -5)));
+        assertEq(StackItem.unwrap(outputs[0]), Float.unwrap(LibDecimalFloat.packLossless(0.99997e5, -5)));
     }
 
     function testRunHappy(

@@ -252,9 +252,7 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         assertEq(
             StackItem.unwrap(outputs[0]),
             Float.unwrap(
-                LibDecimalFloat.packLossless(
-                    0.03731119849395329429139187416029293517999955454915312408433138156716e68, -68
-                )
+                LibDecimalFloat.packLossless(2780193435782859109269589980156436027045273051983740074270490015516, -68)
             )
         );
 
@@ -265,9 +263,7 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         assertEq(
             StackItem.unwrap(outputs[0]),
             Float.unwrap(
-                LibDecimalFloat.packLossless(
-                    26.80160488980436844683612975257089038188438152842367927140678999277e65, -65
-                )
+                LibDecimalFloat.packLossless(3596872027425730529592732591798956145506457035904666566023576865182, -65)
             )
         );
     }

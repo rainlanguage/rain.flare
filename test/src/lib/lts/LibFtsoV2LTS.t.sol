@@ -19,7 +19,7 @@ contract LibFtsoV2LTSTest is Test {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         uint256 feedValue = LibFtsoV2LTS.ftsoV2LTSGetFeed(ETH_USD_FEED_ID, 3600);
-        assertEq(feedValue, 2522.575e18);
+        assertEq(feedValue, 2729.116e18);
     }
 
     function testFtsoV2LTSGetFeedStale() external {
@@ -41,7 +41,7 @@ contract LibFtsoV2LTSTest is Test {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         FeedConsumer feedConsumer = new FeedConsumer();
-        vm.warp(1729795768 + 3600);
+        vm.warp(1740156916 + 3600);
         uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
         assertGt(value, 0);
     }
@@ -52,8 +52,8 @@ contract LibFtsoV2LTSTest is Test {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         FeedConsumer feedConsumer = new FeedConsumer();
-        vm.warp(1729795768 + 3600 + 1);
-        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1729795768, 3600));
+        vm.warp(1740156916 + 3600 + 1);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1740156916, 3600));
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
     }
 
@@ -62,8 +62,8 @@ contract LibFtsoV2LTSTest is Test {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         FeedConsumer feedConsumer = new FeedConsumer();
-        vm.warp(1729795768 + 1);
-        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1729795768, 0));
+        vm.warp(1740156916 + 1);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1740156916, 0));
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
     }
 
@@ -72,7 +72,7 @@ contract LibFtsoV2LTSTest is Test {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         FeedConsumer feedConsumer = new FeedConsumer();
-        vm.warp(1729795768);
+        vm.warp(1740156916);
         uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
         assertGt(value, 0);
     }
@@ -91,6 +91,11 @@ contract LibFtsoV2LTSTest is Test {
 
         address[] memory executors = govSettings.getExecutors();
         uint256 timelock = govSettings.getTimelock();
+        // Enacting the fee change warps block.timestamp forward by the whole
+        // timelock, so the staleness timeout must cover that as well as the
+        // feed's age at the fork block, or every read below reverts StalePrice
+        // before any fee is charged.
+        uint256 timeout = timelock + 3600;
 
         vm.prank(gov);
 
@@ -114,22 +119,22 @@ contract LibFtsoV2LTSTest is Test {
         vm.startPrank(alice);
         // OutOfFunds is an EVM error with no Solidity revert data.
         vm.expectRevert(new bytes(0));
-        feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, timeout);
 
         vm.expectRevert(new bytes(0));
-        feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
+        feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, timeout);
 
         vm.deal(alice, fee);
         assertEq(alice.balance, fee);
-        uint256 feedValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
-        assertEq(feedValue, 2522.575e18);
+        uint256 feedValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, timeout);
+        assertEq(feedValue, 2729.116e18);
         assertEq(alice.balance, 0);
 
         // #56 — overpayment: surplus is stranded in the consumer (documents current behavior;
         // replace with refund assertion when a refund mechanism is added).
         vm.deal(alice, uint256(fee) + 1 ether);
-        uint256 overpaidValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, 3600);
-        assertEq(overpaidValue, 2522.575e18);
+        uint256 overpaidValue = feedConsumer.getFeedValue{value: alice.balance}(ETH_USD_FEED_ID, timeout);
+        assertEq(overpaidValue, 2729.116e18);
         assertEq(address(feedConsumer).balance, 1 ether);
         assertEq(alice.balance, 0);
     }
