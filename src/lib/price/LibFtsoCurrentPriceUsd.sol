@@ -63,11 +63,12 @@ library LibFtsoCurrentPriceUsd {
 
         // Handle stale prices. Comparing against block.timestamp IS the
         // staleness check, so the lint's manipulation concern is the behavior.
-        //slither-disable-next-line timestamp
+        //slither-disable-start timestamp
         //forge-lint: disable-next-line(block-timestamp)
         if (block.timestamp > priceTimestamp + timeout) {
             revert StalePrice(priceTimestamp, timeout);
         }
+        //slither-disable-end timestamp
 
         return (price, decimals);
     }

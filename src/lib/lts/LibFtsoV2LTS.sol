@@ -103,11 +103,12 @@ library LibFtsoV2LTS {
 
         // Handle stale prices. Comparing against block.timestamp IS the
         // staleness check, so the lint's manipulation concern is the behavior.
-        //slither-disable-next-line timestamp
+        //slither-disable-start timestamp
         //forge-lint: disable-next-line(block-timestamp)
         if (block.timestamp > timestamp + timeout) {
             revert StalePrice(timestamp, timeout);
         }
+        //slither-disable-end timestamp
 
         return value;
     }
