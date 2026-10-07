@@ -3,7 +3,7 @@
 pragma solidity =0.8.25;
 
 /// @dev Block number used for Flare mainnet fork tests (FtsoRegistry, sflr, LTS, USD price pair).
-uint256 constant BLOCK_NUMBER = 31843105;
+uint256 constant BLOCK_NUMBER = 37796420;
 
 /// @dev Block number used for Flare mainnet fork tests involving the flrETH contract,
 /// which was deployed later than the feeds used by BLOCK_NUMBER.

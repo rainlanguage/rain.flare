@@ -20,7 +20,7 @@ contract LibSceptreStakedFlareTest is Test {
 
     function testGetSFLRPerFLR18() external view {
         uint256 rate18 = LibSceptreStakedFlare.getSFLRPerFLR18();
-        assertEq(rate18, 0.877817288626455057e18);
+        assertEq(rate18, 0.775006975937778042e18);
     }
 
     function testGetSFLRPerFLR18ZeroReverts() external {

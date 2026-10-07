@@ -20,7 +20,7 @@ contract FlareSflrCurrentExchangeRateTest is OpTest {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
 
         StackItem[] memory expectedStack = new StackItem[](1);
-        expectedStack[0] = StackItem.wrap(Float.unwrap(LibDecimalFloat.packLossless(0.877817288626455057e18, -18)));
+        expectedStack[0] = StackItem.wrap(Float.unwrap(LibDecimalFloat.packLossless(0.775006975937778042e18, -18)));
 
         checkHappy(
             bytes(
