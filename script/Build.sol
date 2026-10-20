@@ -2,14 +2,14 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {Script} from "forge-std-1.16.2/src/Script.sol";
+import {Script} from "forge-std-1.17.0/src/Script.sol";
 
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
-import {LibCodeGen} from "rain-sol-codegen-0.1.37/src/lib/LibCodeGen.sol";
-import {LibFs} from "rain-sol-codegen-0.1.37/src/lib/LibFs.sol";
+import {LibCodeGen} from "rain-sol-codegen-0.1.39/src/lib/LibCodeGen.sol";
+import {LibFs} from "rain-sol-codegen-0.1.39/src/lib/LibFs.sol";
 import {PARSE_META_BUILD_DEPTH} from "src/generated/FlareFtsoWordsPointers.sol";
 import {LibFlareFtsoSubParser} from "src/lib/parse/LibFlareFtsoSubParser.sol";
-import {LibGenParseMeta} from "rainlang-interface-0.2.9/src/lib/codegen/LibGenParseMeta.sol";
+import {LibGenParseMeta} from "rainlang-interface-0.2.13/src/lib/codegen/LibGenParseMeta.sol";
 
 contract Build is Script {
     function buildFlareFtsoWordsPointers() internal {
