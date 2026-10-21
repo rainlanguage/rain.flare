@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {Test} from "forge-std-1.16.1/src/Test.sol";
+import {Test} from "forge-std-1.17.0/src/Test.sol";
 import {
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD,
     SUB_PARSER_WORD_FTSO_CURRENT_PRICE_PAIR,
@@ -16,7 +16,7 @@ import {
     OPCODE_SFLR_CURRENT_EXCHANGE_RATE,
     OPCODE_FUNCTION_POINTERS_LENGTH
 } from "src/abstract/FlareFtsoExtern.sol";
-import {AuthoringMetaV2} from "rain-interpreter-interface-0.1.0/src/interface/deprecated/v1/IParserV1.sol";
+import {AuthoringMetaV2} from "rainlang-interface-0.2.13/src/interface/deprecated/v1/IParserV1.sol";
 
 contract FlareFtsoWordsWordOpcodeAlignmentTest is Test {
     function testWordOpcodeIndicesAligned() external pure {
@@ -28,8 +28,13 @@ contract FlareFtsoWordsWordOpcodeAlignmentTest is Test {
 
     function testAuthoringMetaWordNamesMatchOpcodeSlots() external pure {
         AuthoringMetaV2[] memory m = abi.decode(LibFlareFtsoSubParser.authoringMetaV2(), (AuthoringMetaV2[]));
+        // The word names are ASCII literals well under 32 bytes, so bytes32()
+        // is the encoding being asserted rather than a truncating cast.
+        //forge-lint: disable-next-line(unsafe-typecast)
         assertEq(m[OPCODE_FTSO_CURRENT_PRICE_USD].word, bytes32("ftso-current-price-usd"));
+        //forge-lint: disable-next-line(unsafe-typecast)
         assertEq(m[OPCODE_FTSO_CURRENT_PRICE_PAIR].word, bytes32("ftso-current-price-pair"));
+        //forge-lint: disable-next-line(unsafe-typecast)
         assertEq(m[OPCODE_SFLR_CURRENT_EXCHANGE_RATE].word, bytes32("sflr-exchange-rate"));
     }
 }
