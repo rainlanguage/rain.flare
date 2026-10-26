@@ -2,12 +2,12 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {OpTest} from "rainlang-0.2.19/src/../test/abstract/OpTest.sol";
+import {OpTest} from "rainlang-0.2.27/src/../test/abstract/OpTest.sol";
 import {FlareFtsoWords} from "src/concrete/FlareFtsoWords.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {Strings} from "@openzeppelin-contracts-5.7.0/utils/Strings.sol";
 import {BLOCK_NUMBER} from "../lib/registry/LibFlareContractRegistry.t.sol";
-import {UnexpectedOperand} from "rainlang-0.2.19/src/error/ErrParse.sol";
+import {UnexpectedOperand} from "rainlang-0.2.27/src/error/ErrParse.sol";
 
 /// All three FlareFtso words are wired to `handleOperandDisallowed`, i.e. they
 /// MUST reject any explicitly supplied operand at parse time. These tests pin
@@ -25,7 +25,7 @@ contract FlareFtsoWordsOperandDisallowedTest is OpTest {
         bytes memory rainString =
             bytes(string.concat("using-words-from ", address(flareFtsoWords).toHexString(), " ", body));
         vm.expectRevert(abi.encodeWithSelector(UnexpectedOperand.selector));
-        bytes memory bytecode = I_DEPLOYER.parse2(rainString);
+        bytes memory bytecode = I_COMPILER.parse2(rainString);
         (bytecode);
     }
 
