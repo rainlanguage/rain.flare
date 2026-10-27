@@ -16,7 +16,7 @@ import {
     OPCODE_SFLR_CURRENT_EXCHANGE_RATE,
     OPCODE_FUNCTION_POINTERS_LENGTH
 } from "src/abstract/FlareFtsoExtern.sol";
-import {AuthoringMetaV2} from "rainlang-0.2.27/src/interface/deprecated/v1/IParserV1.sol";
+import {AuthoringMetaV2} from "rainlang-0.2.30/src/interface/deprecated/v1/IParserV1.sol";
 
 contract FlareFtsoWordsWordOpcodeAlignmentTest is Test {
     function testWordOpcodeIndicesAligned() external pure {
