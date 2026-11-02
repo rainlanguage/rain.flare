@@ -4,3 +4,5 @@ jobs:
   git-clean:
     uses: rainlanguage/rainix/.github/workflows/rainix-copy-artifacts.yaml@main
     secrets: inherit
+    with:
+      regenerate-command: ./script/build.sh
