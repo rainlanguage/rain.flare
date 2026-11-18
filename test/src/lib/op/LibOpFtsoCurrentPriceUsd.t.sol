@@ -5,7 +5,7 @@ pragma solidity =0.8.25;
 import {FtsoTest, OperandV2, StackItem} from "../../../abstract/FtsoTest.sol";
 import {LibOpFtsoCurrentPriceUsd} from "src/lib/op/LibOpFtsoCurrentPriceUsd.sol";
 import {IFtso} from "src/lib/registry/LibFlareContractRegistry.sol";
-import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.4/src/lib/LibIntOrAString.sol";
+import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.5/src/lib/LibIntOrAString.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge, InconsistentFtso} from "src/err/ErrFtso.sol";
