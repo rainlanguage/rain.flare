@@ -2,8 +2,8 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.19;
 
-import {OperandV2, StackItem} from "rainlang-0.2.37/src/interface/IInterpreterV4.sol";
-import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.4/src/lib/LibIntOrAString.sol";
+import {OperandV2, StackItem} from "rainlang-0.2.39/src/interface/IInterpreterV4.sol";
+import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.5/src/lib/LibIntOrAString.sol";
 import {LibFtsoCurrentPriceUsd} from "../price/LibFtsoCurrentPriceUsd.sol";
 import {DecimalsTooLarge} from "../../err/ErrFtso.sol";
 
