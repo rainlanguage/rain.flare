@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.19;
 
-import {AuthoringMetaV2} from "rainlang-0.2.36/src/interface/deprecated/v1/IParserV1.sol";
+import {AuthoringMetaV2} from "rainlang-0.2.37/src/interface/deprecated/v1/IParserV1.sol";
 
 /// @dev Index into the function pointers array for the current USD price.
 uint256 constant SUB_PARSER_WORD_FTSO_CURRENT_PRICE_USD = 0;
