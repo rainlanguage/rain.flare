@@ -2,9 +2,9 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity ^0.8.19;
 
-import {OperandV2, StackItem} from "rain-interpreter-interface-0.1.0/src/interface/IInterpreterV4.sol";
+import {OperandV2, StackItem} from "rainlang-0.2.39/src/interface/IInterpreterV4.sol";
 import {LibSceptreStakedFlare} from "../sflr/LibSceptreStakedFlare.sol";
-import {LibDecimalFloat, Float} from "rain-math-float-0.1.1/src/lib/LibDecimalFloat.sol";
+import {LibDecimalFloat, Float} from "rain-math-float-0.3.13/src/lib/LibDecimalFloat.sol";
 
 /// @title LibOpSFLRCurrentExchangeRate
 /// Implements the `sflrCurrentExchangeRate` externed opcode.
