@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {Test} from "forge-std-1.16.1/src/Test.sol";
+import {Test} from "forge-std-1.17.0/src/Test.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {
     LibFlareContractRegistry,
@@ -13,8 +13,7 @@ import {
 } from "src/lib/registry/LibFlareContractRegistry.sol";
 import {FtsoV2Interface} from "src/vendor/flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
 import {IFeeCalculator} from "src/vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
-
-uint256 constant BLOCK_NUMBER = 31843105;
+import {BLOCK_NUMBER} from "test/fork/ForkConstants.sol";
 
 contract LibFlareContractRegistryTest is Test {
     constructor() {

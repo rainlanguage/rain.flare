@@ -6,7 +6,7 @@ interface IDineroFlrEth {
     //slither-disable-start naming-convention
     //forge-lint: disable-next-line(mixed-case-function)
     function LSTPerToken() external view returns (uint256 ethAmount);
-    //slither-disable-end
+    //slither-disable-end naming-convention
 
     //forge-lint: disable-next-line(mixed-case-function)
     function tokensPerLST() external view returns (uint256 tokenAmount);

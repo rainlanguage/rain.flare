@@ -2,17 +2,16 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {Test} from "forge-std-1.16.1/src/Test.sol";
+import {Test} from "forge-std-1.17.0/src/Test.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {LibDineroFlrEth, FLRETH_CONTRACT} from "src/lib/flreth/LibDineroFlrEth.sol";
 import {IDineroFlrEth} from "src/interface/IDineroFlrEth.sol";
 import {ZeroFlrEthRate} from "src/err/ErrFlrEth.sol";
-
-uint256 constant BLOCK_NUMBER = 37796420;
+import {FLRETH_BLOCK_NUMBER} from "test/fork/ForkConstants.sol";
 
 contract LibDineroFlrEthTest is Test {
     constructor() {
-        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), FLRETH_BLOCK_NUMBER);
     }
 
     function testGetETHPerFLRETH18() external view {
@@ -40,11 +39,11 @@ contract LibDineroFlrEthTest is Test {
 
     // External wrappers needed so vm.expectRevert captures the outer call frame
     // (not the inner LSTPerToken/tokensPerLST staticcall which returns, not reverts).
-    function _callGetETHPerFLRETH18() external {
+    function _callGetETHPerFLRETH18() external view {
         LibDineroFlrEth.getETHPerFLRETH18();
     }
 
-    function _callGetFLRETHPerETH18() external {
+    function _callGetFLRETHPerETH18() external view {
         LibDineroFlrEth.getFLRETHPerETH18();
     }
 

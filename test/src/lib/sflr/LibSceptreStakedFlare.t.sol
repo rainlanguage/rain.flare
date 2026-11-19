@@ -2,13 +2,12 @@
 // SPDX-FileCopyrightText: Copyright (c) 2020 Rain Open Source Software Ltd
 pragma solidity =0.8.25;
 
-import {Test} from "forge-std-1.16.1/src/Test.sol";
+import {Test} from "forge-std-1.17.0/src/Test.sol";
 import {LibFork} from "test/fork/LibFork.sol";
 import {LibSceptreStakedFlare, SFLR_CONTRACT} from "src/lib/sflr/LibSceptreStakedFlare.sol";
 import {IStakedFlr} from "src/interface/IStakedFlr.sol";
 import {ZeroSFLRRate} from "src/err/ErrFtso.sol";
-
-uint256 constant BLOCK_NUMBER = 31843105;
+import {BLOCK_NUMBER} from "test/fork/ForkConstants.sol";
 
 contract LibSceptreStakedFlareTest is Test {
     constructor() {
@@ -21,7 +20,7 @@ contract LibSceptreStakedFlareTest is Test {
 
     function testGetSFLRPerFLR18() external view {
         uint256 rate18 = LibSceptreStakedFlare.getSFLRPerFLR18();
-        assertEq(rate18, 0.877817288626455057e18);
+        assertEq(rate18, 0.775006975937778042e18);
     }
 
     function testGetSFLRPerFLR18ZeroReverts() external {
