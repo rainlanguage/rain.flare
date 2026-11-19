@@ -10,6 +10,8 @@ IDineroFlrEth constant FLRETH_CONTRACT = IDineroFlrEth(address(0x26A1faB310bd080
 library LibDineroFlrEth {
     /// Fixed 18 decimal place ratio of ETH per FLRETH.
     /// For each 1e18 FLRETH, this is how many ETH are deposited.
+    /// Dinero names are inverted: LSTPerToken() is ETH per 1e18 FLRETH.
+    /// >= 1e18, as FLRETH accrues staking rewards. Reciprocal of getFLRETHPerETH18().
     //forge-lint: disable-next-line(mixed-case-function)
     function getETHPerFLRETH18() internal view returns (uint256) {
         uint256 rate = FLRETH_CONTRACT.LSTPerToken();
@@ -19,6 +21,8 @@ library LibDineroFlrEth {
 
     /// Fixed 18 decimal place ratio of FLRETH per ETH.
     /// For each 1e18 ETH, this is how many FLRETH are minted.
+    /// Dinero names are inverted: tokensPerLST() is FLRETH per 1e18 ETH.
+    /// <= 1e18, as FLRETH accrues staking rewards. Reciprocal of getETHPerFLRETH18().
     //forge-lint: disable-next-line(mixed-case-function)
     function getFLRETHPerETH18() internal view returns (uint256) {
         uint256 rate = FLRETH_CONTRACT.tokensPerLST();
