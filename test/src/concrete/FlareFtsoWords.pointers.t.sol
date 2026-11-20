@@ -35,6 +35,13 @@ contract FlareFtsoWordsPointersTest is Test {
         assertEq(OPCODE_FUNCTION_POINTERS, flareFtsoWords.buildOpcodeFunctionPointers());
     }
 
+    function testFunctionPointersLength() external {
+        FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
+        // Each function pointer is 2 bytes (16-bit).
+        assertEq(flareFtsoWords.buildOpcodeFunctionPointers().length, OPCODE_FUNCTION_POINTERS_LENGTH * 2);
+        assertEq(flareFtsoWords.buildIntegrityFunctionPointers().length, OPCODE_FUNCTION_POINTERS_LENGTH * 2);
+    }
+
     function testSubParserWordParsers() external {
         FlareFtsoWords flareFtsoWords = new FlareFtsoWords();
         assertEq(SUB_PARSER_WORD_PARSERS, flareFtsoWords.buildSubParserWordParsers());
