@@ -5,8 +5,8 @@ pragma solidity ^0.8.19;
 //forge-lint: disable-next-line(unused-import)
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
 import {FtsoV2Interface} from "../../vendor/flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
-import {StalePrice} from "../../err/ErrFtso.sol";
 import {IFeeCalculator} from "../../vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
+import {StalePrice} from "../../err/ErrFtso.sol";
 
 /// @dev FTSO feed IDs.
 /// https://dev.flare.network/ftso/feeds
