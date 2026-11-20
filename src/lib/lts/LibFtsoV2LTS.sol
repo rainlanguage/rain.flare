@@ -6,6 +6,7 @@ pragma solidity ^0.8.19;
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
 import {FtsoV2Interface} from "../../vendor/flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
 import {StalePrice} from "../../err/ErrFtso.sol";
+import {LibTime} from "rain-time-0.1.1/src/lib/LibTime.sol";
 import {IFeeCalculator} from "../../vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
 
 /// @dev FTSO feed IDs.
@@ -101,14 +102,9 @@ library LibFtsoV2LTS {
 
         (uint256 value, uint64 timestamp) = ftsoRegistry.getFeedByIdInWei{value: fee}(feedId);
 
-        // Handle stale prices. Comparing against block.timestamp IS the
-        // staleness check, so the lint's manipulation concern is the behavior.
-        //slither-disable-start timestamp
-        //forge-lint: disable-next-line(block-timestamp)
-        if (block.timestamp > timestamp && block.timestamp - timestamp > timeout) {
+        if (LibTime.isStale(timestamp, timeout)) {
             revert StalePrice(timestamp, timeout);
         }
-        //slither-disable-end timestamp
 
         return value;
     }

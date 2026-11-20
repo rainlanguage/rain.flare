@@ -4,6 +4,7 @@ pragma solidity ^0.8.19;
 
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
 import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "../../err/ErrFtso.sol";
+import {LibTime} from "rain-time-0.1.1/src/lib/LibTime.sol";
 import {IFtso} from "../../vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
 
 library LibFtsoCurrentPriceUsd {
@@ -61,14 +62,9 @@ library LibFtsoCurrentPriceUsd {
             revert InconsistentFtso();
         }
 
-        // Handle stale prices. Comparing against block.timestamp IS the
-        // staleness check, so the lint's manipulation concern is the behavior.
-        //slither-disable-start timestamp
-        //forge-lint: disable-next-line(block-timestamp)
-        if (block.timestamp > priceTimestamp && block.timestamp - priceTimestamp > timeout) {
+        if (LibTime.isStale(priceTimestamp, timeout)) {
             revert StalePrice(priceTimestamp, timeout);
         }
-        //slither-disable-end timestamp
 
         return (price, decimals);
     }

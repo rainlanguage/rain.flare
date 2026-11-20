@@ -90,6 +90,13 @@ checksum = "dc406b191e47c8c0fdf971c8924e4d26d24cfaaa0bcd6cc8f225941f6ffba09a"
 integrity = "2143e5e700610b6e8d9eb944589b9b56e4e7ce744304dba3e63b44aa39ea922a"
 
 [[dependencies]]
+name = "rain-time"
+version = "0.1.1"
+url = "https://soldeer-revisions.s3.amazonaws.com/rain-time/0_1_1_20-11-2026_14:04:41_rain.zip"
+checksum = "7ff659e53e46548bd30ecdfe38f8aaa33239db712c40a1b64a840727833ec6bb"
+integrity = "d6994baf930ecfb034301a4bddb64d2dd8f2a21893f44b097c02a64e5153242c"
+
+[[dependencies]]
 name = "rain-tofu-erc20-decimals"
 version = "0.1.5"
 url = "https://soldeer-revisions.s3.amazonaws.com/rain-tofu-erc20-decimals/0_1_5_02-11-2026_15:54:05_rain.tofu.zip"
