@@ -24,6 +24,19 @@ contract LibDineroFlrEthTest is Test {
         assertEq(rate18, 0.989103076939285809e18);
     }
 
+    /// ethPerFLRETH * flrethPerETH ~= 1e36. Symmetric, so it cannot detect swapped getters.
+    function testRatesAreReciprocal() external view {
+        uint256 ethPerFLRETH = LibDineroFlrEth.getETHPerFLRETH18();
+        uint256 flrethPerETH = LibDineroFlrEth.getFLRETHPerETH18();
+        assertApproxEqRel(ethPerFLRETH * flrethPerETH, 1e36, 1e15);
+    }
+
+    /// Swapped getters flip both inequalities.
+    function testRateDirection() external view {
+        assertGe(LibDineroFlrEth.getETHPerFLRETH18(), 1e18);
+        assertLe(LibDineroFlrEth.getFLRETHPerETH18(), 1e18);
+    }
+
     // External wrappers needed so vm.expectRevert captures the outer call frame
     // (not the inner LSTPerToken/tokensPerLST staticcall which returns, not reverts).
     function _callGetETHPerFLRETH18() external view {
