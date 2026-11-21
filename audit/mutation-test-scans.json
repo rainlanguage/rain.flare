@@ -1,0 +1,18 @@
+[
+  {
+    "timestamp": "2026-11-21T14:24:10Z",
+    "commit": "e4e138bc47497e124ab16e10af79d2ca27cc8603",
+    "testsAfterCommit": "e4e138bc47497e124ab16e10af79d2ca27cc8603",
+    "publishedTag": null,
+    "scope": "PR #125: the two staleness checks (LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd, LibFtsoV2LTS.ftsoV2LTSGetFeed) calling rain-time LibTime.isStale, and their revert arguments",
+    "tool": "adversarial-mutation-test",
+    "skillVersion": "0.35.0",
+    "summary": {
+      "mutants": 12,
+      "killed": 12,
+      "survived": 0,
+      "notes": "Includes the pre-PR check (block.timestamp > ts + timeout) as mutants B1/B2, both killed. The v1 mutants were re-probed with testBytecodeHashMatchesDeployedCode excluded: 6/6 killed by behaviour tests. Fork suite ran against a public Flare RPC.",
+      "filedIssues": []
+    }
+  }
+]
