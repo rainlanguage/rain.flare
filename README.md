@@ -23,8 +23,9 @@ For example the word will error if (non exhaustive list):
     epochs or suffered internal exceptions, etc. which is all disallowed
   - E.g. the finalization type might be unknown if the ftso code returns
     something outside the current `IFtso` interface
-- The finalisation timestamp of the current price is older than the timeout
-  relative to the current block time
+- The finalisation timestamp of the current price is zero, or at least the
+  timeout old relative to the current block time
+- The finalisation timestamp is after the current block time
 - Rescaling prices to 18 decimal fixed point causes an overflow
 
 `ftso-current-price-pair`
@@ -61,7 +62,7 @@ section below, which also rounds down.
 ### Timeouts
 
 The rainlang author must provide a timeout which is used to guarantee that
-prices are never older than this many seconds relative to now.
+prices are always strictly younger than this many seconds relative to now.
 
 If the author does not care about the age of some price they can simply set this
 to the max int value.

@@ -32,10 +32,11 @@ library LibOpFtsoCurrentPricePair {
     /// individual quotes, so SHOULD NOT be relied upon for high precision
     /// calculations.
     /// @dev Propagates all reverts from LibOpFtsoCurrentPriceUsd (InactiveFtso,
-    /// PriceNotFinalized, InconsistentFtso, StalePrice, DecimalsTooLarge) for
-    /// both price fetches. Additionally reverts via LibDecimalFloat.div if the
-    /// second (quote) symbol price is zero. The denominator (symbolB) leg is
-    /// fetched first; errors on that leg abort before the numerator fetch.
+    /// PriceNotFinalized, InconsistentFtso, StalePrice, FutureTimestamp,
+    /// DecimalsTooLarge) for both price fetches. Additionally reverts via
+    /// LibDecimalFloat.div if the second (quote) symbol price is zero. The
+    /// denominator (symbolB) leg is fetched first; errors on that leg abort
+    /// before the numerator fetch.
     /// @param inputs The inputs to the operation.
     ///   0. symbolA — the numerator asset symbol, encoded as an unwrapped
     ///      `IntOrAString` (i.e. a `uint256`).

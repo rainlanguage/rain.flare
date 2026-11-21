@@ -80,10 +80,11 @@ library LibFtsoV2LTS {
     /// @dev This is NOT a view function: it sends msg.value to pay the feed
     /// fee. The caller must supply at least the fee returned by
     /// IFeeCalculator.calculateFeeByIds; any surplus is NOT refunded.
-    /// Reverts with StalePrice(timestamp, timeout) if block.timestamp exceeds
-    /// the feed timestamp plus timeout.
+    /// Reverts with StalePrice(timestamp, timeout) if the feed timestamp is zero
+    /// or at least timeout seconds old, and with FutureTimestamp if it is after
+    /// block.timestamp.
     /// @param feedId The bytes21 Flare V2 feed ID to read.
-    /// @param timeout Max age in seconds before the price is considered stale.
+    /// @param timeout Age in seconds at which the price is stale.
     /// @return value The feed value in wei (1e18 fixed-point).
     //forge-lint: disable-next-line(mixed-case-function)
     function ftsoV2LTSGetFeed(bytes21 feedId, uint256 timeout) internal returns (uint256) {
