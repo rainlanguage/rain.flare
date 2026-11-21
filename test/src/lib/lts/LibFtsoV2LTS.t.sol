@@ -12,6 +12,7 @@ import {FtsoV2Interface} from "../../../../src/vendor/flare-smart-contracts-v2/u
 import {IGoverned, IGovernanceSettings} from "src/interface/IGoverned.sol";
 import {IGovernedFeeCalculator} from "src/interface/IGovernedFeeCalculator.sol";
 import {StalePrice} from "src/err/ErrFtso.sol";
+import {FutureTimestamp} from "rain-time-0.1.1/src/err/ErrTime.sol";
 import {FeedConsumer} from "test/lib/lts/FeedConsumer.sol";
 
 contract LibFtsoV2LTSTest is Test {
@@ -35,13 +36,22 @@ contract LibFtsoV2LTSTest is Test {
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
     }
 
-    /// block.timestamp == feedTimestamp + timeout: the staleness check is strict `>`,
-    /// so this must succeed (not stale).
-    function testFtsoV2LTSGetFeedExactTimeoutNotStale() external {
+    /// block.timestamp == feedTimestamp + timeout: the edge instant is stale.
+    function testFtsoV2LTSGetFeedExactTimeoutStale() external {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         FeedConsumer feedConsumer = new FeedConsumer();
         vm.warp(1740156916 + 3600);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1740156916, 3600));
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
+    }
+
+    /// One second before the edge is fresh.
+    function testFtsoV2LTSGetFeedJustFresh() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1740156916 + 3599);
         uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
         assertGt(value, 0);
     }
@@ -67,13 +77,33 @@ contract LibFtsoV2LTSTest is Test {
         feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
     }
 
-    /// timeout == 0 at exactly feedTimestamp: not stale (0 > 0 is false).
-    function testFtsoV2LTSGetFeedTimeoutZeroExactNotStale() external {
+    /// timeout == 0 at exactly feedTimestamp: stale, as age 0 >= 0.
+    function testFtsoV2LTSGetFeedTimeoutZeroExactStale() external {
         vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
 
         FeedConsumer feedConsumer = new FeedConsumer();
         vm.warp(1740156916);
-        uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 1740156916, 0));
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, 0);
+    }
+
+    /// A feed timestamp ahead of block.timestamp reverts.
+    function testFtsoV2LTSGetFeedFutureTimestampReverts() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(1740156916 - 1);
+        vm.expectRevert(abi.encodeWithSelector(FutureTimestamp.selector, 1740156916, 1740156916 - 1));
+        feedConsumer.getFeedValue(ETH_USD_FEED_ID, 3600);
+    }
+
+    /// timestamp + type(uint256).max overflows; the staleness check must not panic.
+    function testFtsoV2LTSGetFeedMaxTimeoutNotStale() external {
+        vm.createSelectFork(LibFork.rpcUrlFlare(vm), BLOCK_NUMBER);
+
+        FeedConsumer feedConsumer = new FeedConsumer();
+        vm.warp(type(uint256).max);
+        uint256 value = feedConsumer.getFeedValue(ETH_USD_FEED_ID, type(uint256).max);
         assertGt(value, 0);
     }
 

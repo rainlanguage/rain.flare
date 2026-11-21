@@ -6,6 +6,7 @@ pragma solidity ^0.8.19;
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
 import {FtsoV2Interface} from "../../vendor/flare-smart-contracts-v2/userInterfaces/LTS/FtsoV2Interface.sol";
 import {StalePrice} from "../../err/ErrFtso.sol";
+import {LibTime} from "rain-time-0.1.1/src/lib/LibTime.sol";
 import {IFeeCalculator} from "../../vendor/flare-smart-contracts-v2/userInterfaces/IFeeCalculator.sol";
 
 /// @dev FTSO feed IDs.
@@ -79,10 +80,11 @@ library LibFtsoV2LTS {
     /// @dev This is NOT a view function: it sends msg.value to pay the feed
     /// fee. The caller must supply at least the fee returned by
     /// IFeeCalculator.calculateFeeByIds; any surplus is NOT refunded.
-    /// Reverts with StalePrice(timestamp, timeout) if block.timestamp exceeds
-    /// the feed timestamp plus timeout.
+    /// Reverts with StalePrice(timestamp, timeout) if the feed timestamp is zero
+    /// or at least timeout seconds old, and with FutureTimestamp if it is after
+    /// block.timestamp.
     /// @param feedId The bytes21 Flare V2 feed ID to read.
-    /// @param timeout Max age in seconds before the price is considered stale.
+    /// @param timeout Age in seconds at which the price is stale.
     /// @return value The feed value in wei (1e18 fixed-point).
     //forge-lint: disable-next-line(mixed-case-function)
     function ftsoV2LTSGetFeed(bytes21 feedId, uint256 timeout) internal returns (uint256) {
@@ -101,14 +103,9 @@ library LibFtsoV2LTS {
 
         (uint256 value, uint64 timestamp) = ftsoRegistry.getFeedByIdInWei{value: fee}(feedId);
 
-        // Handle stale prices. Comparing against block.timestamp IS the
-        // staleness check, so the lint's manipulation concern is the behavior.
-        //slither-disable-start timestamp
-        //forge-lint: disable-next-line(block-timestamp)
-        if (block.timestamp > timestamp + timeout) {
+        if (LibTime.isStale(timestamp, timeout)) {
             revert StalePrice(timestamp, timeout);
         }
-        //slither-disable-end timestamp
 
         return value;
     }

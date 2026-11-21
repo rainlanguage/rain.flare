@@ -145,9 +145,9 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
     /// even after symbolB was successfully fetched.
     function testRunPairStalePriceSecondLeg() external {
         uint256 priceTimestampA = 1000;
-        uint256 priceTimestampB = 5000;
+        uint256 priceTimestampB = 4000;
         uint256 timeout = 3600;
-        // Warp so symbolA is stale (4601 > 1000+3600) but symbolB is fresh (4601 < 5000+3600).
+        // Warp so symbolA is stale (age 3601 >= 3600) but symbolB is fresh (age 601 < 3600).
         vm.warp(priceTimestampA + timeout + 1);
 
         mockRegistry(2);
@@ -284,7 +284,7 @@ contract LibOpFtsoCurrentPricePairTest is FtsoTest {
         currentPriceB.price = bound(currentPriceB.price, 0, uint256(int256(type(int224).max)));
         currentPriceB.decimals = bound(currentPriceB.decimals, 0, type(uint8).max);
 
-        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
+        timeout = bound(timeout, 1, uint256(int256(type(int224).max)));
         warpNotStale(currentPriceB, timeout, currentTime);
 
         uint256 intSymbolA = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbolA));

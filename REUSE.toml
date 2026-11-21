@@ -9,6 +9,7 @@ path = [
   ".soldeerignore",
   "CLAUDE.md",
   "README.md",
+  "audit/**/",
   "flake.lock",
   "flake.nix",
   "foundry.toml",

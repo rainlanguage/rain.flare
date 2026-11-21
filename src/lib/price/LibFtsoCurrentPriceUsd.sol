@@ -4,6 +4,7 @@ pragma solidity ^0.8.19;
 
 import {IFtsoRegistry, LibFlareContractRegistry} from "../registry/LibFlareContractRegistry.sol";
 import {InactiveFtso, PriceNotFinalized, StalePrice, InconsistentFtso} from "../../err/ErrFtso.sol";
+import {LibTime} from "rain-time-0.1.1/src/lib/LibTime.sol";
 import {IFtso} from "../../vendor/flare-smart-contracts/userInterfaces/IFtso.sol";
 
 library LibFtsoCurrentPriceUsd {
@@ -16,10 +17,11 @@ library LibFtsoCurrentPriceUsd {
     /// WEIGHTED_MEDIAN or TRUSTED_ADDRESSES.
     /// Reverts with InconsistentFtso if the two price reads return different
     /// values (indicates an FTSO bug).
-    /// Reverts with StalePrice(priceTimestamp, timeout) if the price is older
-    /// than timeout seconds.
+    /// Reverts with StalePrice(priceTimestamp, timeout) if the price timestamp
+    /// is zero or at least timeout seconds old, and with FutureTimestamp if it
+    /// is after block.timestamp.
     /// @param symbol The FTSO symbol string (e.g. "FLR", "ETH").
-    /// @param timeout Max age in seconds; prices older than this revert.
+    /// @param timeout Age in seconds at which the price is stale.
     /// @return price The raw FTSO price in the FTSO's native unit.
     /// @return decimals The decimal precision of the returned price (typically
     /// 5 for Flare FTSO v1, but not guaranteed).
@@ -61,14 +63,9 @@ library LibFtsoCurrentPriceUsd {
             revert InconsistentFtso();
         }
 
-        // Handle stale prices. Comparing against block.timestamp IS the
-        // staleness check, so the lint's manipulation concern is the behavior.
-        //slither-disable-start timestamp
-        //forge-lint: disable-next-line(block-timestamp)
-        if (block.timestamp > priceTimestamp + timeout) {
+        if (LibTime.isStale(priceTimestamp, timeout)) {
             revert StalePrice(priceTimestamp, timeout);
         }
-        //slither-disable-end timestamp
 
         return (price, decimals);
     }

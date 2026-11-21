@@ -9,6 +9,8 @@ import {LibIntOrAString, IntOrAString} from "rain-intorastring-0.1.5/src/lib/Lib
 import {LibFork} from "test/fork/LibFork.sol";
 import {BLOCK_NUMBER} from "../registry/LibFlareContractRegistry.t.sol";
 import {InactiveFtso, PriceNotFinalized, StalePrice, DecimalsTooLarge, InconsistentFtso} from "src/err/ErrFtso.sol";
+import {FutureTimestamp} from "rain-time-0.1.1/src/err/ErrTime.sol";
+import {LibFtsoCurrentPriceUsd} from "src/lib/price/LibFtsoCurrentPriceUsd.sol";
 import {LibDecimalFloat, Float} from "rain-math-float-0.3.13/src/lib/LibDecimalFloat.sol";
 import {
     NegativeFixedDecimalConversion,
@@ -73,7 +75,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
 
-        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
+        timeout = bound(timeout, 1, uint256(int256(type(int224).max)));
         currentTime = warpNotStale(currentPrice, timeout, currentTime);
 
         conformPriceDetails(priceDetails, currentPrice);
@@ -111,10 +113,8 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
             bound(currentPrice.decimals, uint256(type(uint8).max) + 1, uint256(int256(type(int32).max)));
         currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
 
-        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
-        currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout);
-        currentTime = bound(currentTime, currentPrice.timestamp, currentPrice.timestamp + timeout);
-        vm.warp(currentTime);
+        timeout = bound(timeout, 1, uint256(int256(type(int224).max)));
+        currentTime = warpNotStale(currentPrice, timeout, currentTime);
 
         conformPriceDetails(priceDetails, currentPrice);
         finalizePrice(priceDetails);
@@ -132,7 +132,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         this.externalRun(operand, inputs);
     }
 
-    /// If the timestamp is too old, the price is stale.
+    /// A price at least `timeout` old is stale.
     function testRunStale(
         OperandV2 operand,
         string memory symbol,
@@ -145,8 +145,8 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
 
         timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
-        currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout - 1);
-        currentTime = bound(currentTime, currentPrice.timestamp + timeout + 1, type(uint256).max);
+        currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout);
+        currentTime = bound(currentTime, currentPrice.timestamp + timeout, type(uint256).max);
         vm.warp(currentTime);
 
         conformPriceDetails(priceDetails, currentPrice);
@@ -165,27 +165,20 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         this.externalRun(operand, inputs);
     }
 
-    /// Deterministic boundary: when `block.timestamp == priceTimestamp + timeout`
-    /// the price is NOT yet stale (the staleness check is strictly
-    /// greater-than). It MUST be accepted and returned, not reverted as
-    /// StalePrice. The fuzzed `testRunStale`/`testRunHappy` only land on this
-    /// exact boundary by chance, so pin it explicitly.
-    function testRunStaleBoundaryNotStale(OperandV2 operand) external {
+    function boundaryRun(uint256 priceTimestamp, uint256 currentTime)
+        internal
+        returns (StackItem[] memory inputs, CurrentPrice memory currentPrice)
+    {
         string memory symbol = "ETH";
-        uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
-        uint256 timeout = 3600;
-
-        CurrentPrice memory currentPrice;
         currentPrice.price = 98765;
         currentPrice.decimals = 5;
-        currentPrice.timestamp = 50000;
+        currentPrice.timestamp = priceTimestamp;
 
         PriceDetails memory priceDetails;
         conformPriceDetails(priceDetails, currentPrice);
         finalizePrice(priceDetails);
 
-        // Exactly on the boundary: not stale.
-        vm.warp(currentPrice.timestamp + timeout);
+        vm.warp(currentTime);
 
         mockRegistry();
         mockFtsoRegistry(FTSO, symbol);
@@ -193,15 +186,43 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         mockPriceDetails(priceDetails);
         mockPrice(FTSO, currentPrice);
 
-        StackItem[] memory inputs = new StackItem[](2);
-        inputs[0] = StackItem.wrap(bytes32(intSymbol));
-        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(timeout, 0)));
+        inputs = new StackItem[](2);
+        inputs[0] = StackItem.wrap(bytes32(IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol))));
+        inputs[1] = StackItem.wrap(Float.unwrap(LibDecimalFloat.fromFixedDecimalLosslessPacked(3600, 0)));
+    }
+
+    /// `block.timestamp == priceTimestamp + timeout` is stale: the edge instant
+    /// fails closed.
+    function testRunStaleBoundaryIsStale(OperandV2 operand) external {
+        (StackItem[] memory inputs,) = boundaryRun(50000, 50000 + 3600);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 50000, 3600));
+        this.externalRun(operand, inputs);
+    }
+
+    /// One second before the edge is fresh, and the price is returned.
+    function testRunStaleBoundaryJustFresh(OperandV2 operand) external {
+        (StackItem[] memory inputs, CurrentPrice memory currentPrice) = boundaryRun(50000, 50000 + 3599);
         StackItem[] memory outputs = this.externalRun(operand, inputs);
         assertEq(outputs.length, 1);
         assertEq(
             StackItem.unwrap(outputs[0]),
             Float.unwrap(LibDecimalFloat.packLossless(int256(currentPrice.price), -int256(currentPrice.decimals)))
         );
+    }
+
+    /// A zero (unset) price timestamp is stale even when its age is within the
+    /// timeout.
+    function testRunZeroTimestampIsStale(OperandV2 operand) external {
+        (StackItem[] memory inputs,) = boundaryRun(0, 1);
+        vm.expectRevert(abi.encodeWithSelector(StalePrice.selector, 0, 3600));
+        this.externalRun(operand, inputs);
+    }
+
+    /// A price timestamp ahead of `block.timestamp` reverts.
+    function testRunFutureTimestampReverts(OperandV2 operand) external {
+        (StackItem[] memory inputs,) = boundaryRun(50001, 50000);
+        vm.expectRevert(abi.encodeWithSelector(FutureTimestamp.selector, 50001, 50000));
+        this.externalRun(operand, inputs);
     }
 
     /// Anything other than WEIGHTED_MEDIAN or TRUSTED_ADDRESSES should revert
@@ -235,6 +256,31 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
 
         vm.expectRevert(abi.encodeWithSelector(PriceNotFinalized.selector, priceDetails.priceFinalizationType));
         this.externalRun(operand, inputs);
+    }
+
+    /// priceTimestamp + type(uint256).max overflows; the staleness check must not panic.
+    function testRunTimestampPlusTimeoutOverflow(string memory symbol, PriceDetails memory priceDetails) external {
+        vm.assume(bytes(symbol).length > 0 && bytes(symbol).length <= 31);
+
+        CurrentPrice memory currentPrice;
+        currentPrice.price = 1;
+        currentPrice.timestamp = 1;
+        currentPrice.decimals = 5;
+
+        vm.warp(type(uint256).max);
+
+        conformPriceDetails(priceDetails, currentPrice);
+        finalizePrice(priceDetails);
+
+        mockRegistry();
+        mockFtsoRegistry(FTSO, symbol);
+        activateFtso();
+        mockPriceDetails(priceDetails);
+        mockPrice(FTSO, currentPrice);
+
+        (uint256 price, uint256 decimals) = LibFtsoCurrentPriceUsd.ftsoCurrentPriceUsd(symbol, type(uint256).max);
+        assertEq(price, currentPrice.price);
+        assertEq(decimals, currentPrice.decimals);
     }
 
     /// A negative Float timeout must revert with NegativeFixedDecimalConversion.
@@ -297,7 +343,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
 
-        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
+        timeout = bound(timeout, 1, uint256(int256(type(int224).max)));
         currentTime = warpNotStale(currentPrice, timeout, currentTime);
 
         conformPriceDetails(priceDetails, currentPrice);
@@ -340,7 +386,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
 
-        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
+        timeout = bound(timeout, 1, uint256(int256(type(int224).max)));
         currentTime = warpNotStale(currentPrice, timeout, currentTime);
 
         conformPriceDetails(priceDetails, currentPrice);
@@ -379,13 +425,13 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
     ) external {
         currentPrice.price = bound(currentPrice.price, 0, uint256(int256(type(int224).max)));
         currentPrice.decimals = bound(currentPrice.decimals, 0, type(uint8).max);
-        // The divergent timestamp MUST differ from the details timestamp.
-        vm.assume(divergentTimestamp != currentPrice.timestamp);
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
 
-        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
+        timeout = bound(timeout, 1, uint256(int256(type(int224).max)));
         currentTime = warpNotStale(currentPrice, timeout, currentTime);
+        // The divergent timestamp MUST differ from the details timestamp.
+        vm.assume(divergentTimestamp != currentPrice.timestamp);
 
         conformPriceDetails(priceDetails, currentPrice);
         finalizePrice(priceDetails);
@@ -424,7 +470,7 @@ contract LibOpFtsoCurrentPriceUsdTest is FtsoTest {
         vm.assume(bytes(symbol).length <= 31);
         uint256 intSymbol = IntOrAString.unwrap(LibIntOrAString.fromStringV3(symbol));
 
-        timeout = bound(timeout, 0, uint256(int256(type(int224).max)));
+        timeout = bound(timeout, 1, uint256(int256(type(int224).max)));
         currentTime = warpNotStale(currentPrice, timeout, currentTime);
 
         conformPriceDetails(priceDetails, currentPrice);

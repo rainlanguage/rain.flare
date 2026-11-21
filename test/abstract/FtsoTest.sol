@@ -41,8 +41,9 @@ abstract contract FtsoTest is Test {
         internal
         returns (uint256)
     {
-        currentPrice.timestamp = bound(currentPrice.timestamp, 0, type(uint256).max - timeout);
-        currentTime = bound(currentTime, currentPrice.timestamp, currentPrice.timestamp + timeout);
+        // Fresh: a non-zero timestamp aged strictly less than `timeout` (>= 1).
+        currentPrice.timestamp = bound(currentPrice.timestamp, 1, type(uint256).max - timeout + 1);
+        currentTime = bound(currentTime, currentPrice.timestamp, currentPrice.timestamp + (timeout - 1));
         vm.warp(currentTime);
         return currentTime;
     }
